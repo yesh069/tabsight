@@ -1,4 +1,4 @@
-"""ts.geo: bundled names, matching, detection and coverage (Phase 5)."""
+"""ts.geo: bundled names, matching, detection and coverage."""
 
 from __future__ import annotations
 

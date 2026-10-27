@@ -70,7 +70,7 @@ Standard Class makes up 62% of total Sales. (based on all data)
 Consumer makes up 54% of total Sales. (based on all data)
 ```
 
-Each insight carries a tag saying which data it describes. Dashboards (phase 8) will recompute the simple ones when the viewer filters and mark them "for current filters".
+Each insight carries a tag saying which data it describes. Dashboards recompute them when the viewer filters and mark them "for current filters".
 
 ## Comparing periods
 

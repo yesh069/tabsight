@@ -4,12 +4,12 @@
 
 ## Working on the documentation
 
-The documentation is the Markdown in `docs/`. It reads well on GitHub and is built into a website with MkDocs Material:
+The documentation is the Markdown in `docs/`. It reads well on GitHub and is built into a website with [Zensical](https://zensical.org) (the successor to Material for MkDocs), which reads `mkdocs.yml`:
 
 ```bash
 python -m pip install -e ".[docs]"
-python -m mkdocs serve      # live preview at http://127.0.0.1:8000
-python -m mkdocs build --strict
+zensical serve              # live preview at http://localhost:8000
+zensical build --strict     # warnings, such as broken links, fail the build
 ```
 
 Every Python example in the docs runs. To show what an example prints, put an empty block right after it:

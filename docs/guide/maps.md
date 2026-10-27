@@ -150,4 +150,3 @@ Borders follow Natural Earth's default view, including where borders are dispute
 Not in this release:
 - districts (level 2), which would need an opt-in download
 - your own GeoJSON shapes
-- density maps and flow maps, which come in phase 6

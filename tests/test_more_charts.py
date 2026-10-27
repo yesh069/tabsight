@@ -1,4 +1,4 @@
-"""Phase 6: advanced charts, numeric x-axis, small multiples, df.plot and df.ts."""
+"""Advanced charts, numeric x-axis, small multiples, df.plot and df.ts."""
 
 from __future__ import annotations
 

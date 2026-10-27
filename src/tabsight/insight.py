@@ -4,7 +4,7 @@ Each rule states a fact the numbers show ("Sales peaked in Nov 2017"), never a r
 ("because of the holiday sale"). Sentences come from templates in ``tabsight/i18n`` so
 they can be translated, and every number in them is formatted like the charts.
 
-Rules (PLAN section 13): peak and low, biggest contributor, concentration, negative
+Rules: peak and low, biggest contributor, concentration, negative
 segments, trend direction, change against the previous period, outliers, seasonality.
 Every threshold can be changed with ``thresholds={...}`` (see ``THRESHOLDS``).
 """

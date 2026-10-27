@@ -1,4 +1,4 @@
-"""Choropleth and symbol maps (Phase 5).
+"""Choropleth and symbol maps.
 
 The place column is matched to the bundled shapes first (``tabsight.geo``), then each
 row is tagged with its region id and aggregated exactly like any other chart, so

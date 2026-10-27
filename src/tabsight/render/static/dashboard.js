@@ -1987,6 +1987,9 @@
       tables[name] = new Table(payload.datasets[name]);
     });
     var table = tables.main;
+    // Server mode: the page holds no rows; it posts its filters to this address and draws
+    // the small tables (or finished charts) that come back. See tabsight/server.py.
+    var server = payload.server && typeof root.fetch === "function" ? payload.server.url : null;
     var state = {}; // col -> {type, values|lo,hi, source, mode}
     var tiles = [];
     var themes = payload.themes || [payload.theme.name];
@@ -2230,6 +2233,7 @@
       body.appendChild(t.status);
       box.appendChild(body);
       grid.appendChild(box);
+      t.box = box;
       tiles.push(t);
     });
 
@@ -2294,10 +2298,77 @@
         if (result && result.note) t.notes.appendChild(el("p", "ts-note", result.note));
       }
       var status = [];
-      if (flat.static && Object.keys(state).length) status.push("Not affected by filters: " + flat.static);
+      if (flat.static && !server && Object.keys(state).length) status.push("Not affected by filters: " + flat.static);
       else if (filtered && flat.binding) status.push(payload.words.current);
       skipped.forEach(function (f) { status.push(payload.words.not_affected.replace("{field}", f)); });
       t.status.textContent = status.join(" · ");
+    }
+
+    // ---- server mode: one request for every tile that needs new numbers
+    var queue = {};
+    var queued = false;
+    var insightTable = null;
+    var insightKey = null;
+    var wantInsights = false;
+
+    function remoteKey(t) {
+      var flat = flatTile(t, themeName);
+      return JSON.stringify([state, t.view, t.drill.map(function (d) { return d.col; }), flat.static ? themeName : ""]);
+    }
+
+    function ask(t) {
+      if (t) queue[t.tile.id] = t;
+      if (queued) return;
+      queued = true;
+      setTimeout(flush, 0);
+    }
+
+    function flush() {
+      queued = false;
+      var list = Object.keys(queue).map(function (id) { return queue[id]; });
+      queue = {};
+      var keys = list.map(remoteKey);
+      var stateKey = JSON.stringify(state);
+      var withInsights = wantInsights;
+      wantInsights = false;
+      if (!list.length && !withInsights) return;
+      list.forEach(function (t) { t.box.setAttribute("aria-busy", "true"); });
+      var body = {
+        state: state,
+        insights: withInsights,
+        tiles: list.map(function (t) {
+          return { id: t.tile.id, view: t.view, drill: t.drill.map(function (d) { return d.col; }), theme: themeName };
+        }),
+      };
+      root
+        .fetch(server, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+                         credentials: "same-origin", cache: "no-store" })  // prettier-ignore
+        .then(function (r) {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
+        .then(function (reply) {
+          list.forEach(function (t, i) {
+            t.box.removeAttribute("aria-busy");
+            if (t.pending !== keys[i]) return; // the viewer has moved on; a newer answer is coming
+            t.remote = (reply.tiles || {})[t.tile.id] || { empty: true };
+            t.remoteKey = keys[i];
+            t.pending = null;
+            render(t);
+          });
+          if (withInsights && reply.insights && JSON.stringify(state) === stateKey) {
+            insightTable = new Table(reply.insights);
+            insightKey = stateKey;
+            showInsights();
+          }
+        })
+        .catch(function () {
+          list.forEach(function (t) {
+            t.box.removeAttribute("aria-busy");
+            t.pending = null;
+            t.status.textContent = "Could not reach the server for new numbers.";
+          });
+        });
     }
 
     function render(t) {
@@ -2310,8 +2381,39 @@
       t.titleEl.textContent = fig.title;
       t.target.setAttribute("aria-label", fig.title);
       if (t.pickKind) t.pickKind.value = String(t.drill.length ? 0 : t.view);
-      if (flat.binding) {
-        result = compute(payload, tbl, flat, prepare(tf.filters));
+      var answer = null;
+      if (server) {
+        var want = remoteKey(t);
+        if (t.remoteKey !== want) {
+          if (t.pending !== want) {
+            t.pending = want;
+            ask(t);
+          }
+          if (t.chart || t.target.childNodes.length) return; // keep the last drawing until the answer comes
+        } else {
+          answer = t.remote;
+        }
+      }
+      if (answer && answer.empty) {
+        if (t.chart) {
+          t.chart.dispose();
+          t.chart = null;
+        }
+        t.target.style.height = "";
+        t.target.textContent = "";
+        t.target.appendChild(el("p", "ts-note", payload.words.no_data));
+        t.keys = [];
+        showCrumbs(t);
+        t.notes.textContent = "";
+        t.status.textContent = "";
+        return;
+      }
+      if (answer && answer.figure) {
+        fig = answer.figure;
+        flat = { id: flat.id, action: flat.action, figure: fig, binding: null, static: null, kind: flat.kind };
+      }
+      if (flat.binding && (!server || answer)) {
+        result = compute(payload, server ? new Table(answer.table) : tbl, flat, prepare(tf.filters));
         t.keys = result.keys;
         t.other = result.other || [];
         t.result = result;
@@ -2335,7 +2437,7 @@
       var raw = clone(fig.option);
       var multi = (raw.series || []).filter(function (s) { return String(s.name || "").charAt(0) !== HELPER; }).length > 1;
       if (multi && raw.legend) {
-        // A legend click highlights its series (PLAN 5.6); that needs series to fade the others.
+        // A legend click highlights its series; that needs series to fade the others.
         raw.series.forEach(function (s) {
           if (s.type === "bar" || s.type === "line" || s.type === "scatter") s.emphasis = Object.assign({ focus: "series" }, s.emphasis || {});
         });
@@ -2494,7 +2596,7 @@
       pickMany(t, [key], add);
     }
 
-    // Click semantics (PLAN 5.6): a click filters to that value; clicking it again removes
+    // Click semantics: a click filters to that value; clicking it again removes
     // the filter; Ctrl/Shift + click adds or removes values.
     function pickMany(t, keys, add) {
       var col = flatTile(t, themeName).binding.click;
@@ -2583,8 +2685,14 @@
     function showInsights() {
       if (!panel) return;
       var filtered = Object.keys(state).length > 0;
+      if (server && filtered && payload.live_insights && insightKey !== JSON.stringify(state)) {
+        wantInsights = true; // the answer calls showInsights again
+        ask(null);
+        return;
+      }
       panel.textContent = "";
-      var items = filtered && payload.live_insights ? computeInsights(payload, table, prepare(state)) : null;
+      var source = server ? insightTable : table;
+      var items = filtered && payload.live_insights ? computeInsights(payload, source, prepare(state)) : null;
       if (!items) {
         (payload.insights || []).forEach(function (i) { panel.appendChild(el("li", null, i.text)); });
         if (insightNote) insightNote.textContent = filtered ? "These describe all the data, not the current filters." : payload.words.all_data;

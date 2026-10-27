@@ -1,6 +1,6 @@
 """Group-by with exact re-aggregation, date buckets, top N + "Other", and missing periods.
 
-Every result is computed through *parts* (PLAN.md section 5.2): sums and counts for
+Every result is computed through *parts*: sums and counts for
 means, Σ(w·x) and Σw for weighted averages, raw values for medians and distinct counts.
 Combining parts again after filtering gives exactly the same numbers as computing from
 the raw rows, which is what the browser runtime will rely on. One code path is used for

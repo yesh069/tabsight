@@ -1,3 +1,5 @@
+# Built with Zensical (`zensical build`), which reads this file. Material for MkDocs, which
+# it replaces, reaches end of life on 5 May 2027.
 site_name: tabsight
 site_description: BI-quality charts, world maps and dashboards from a pandas DataFrame. Rule-based, no LLM, one offline HTML file.
 site_url: https://yesh069.github.io/tabsight/
@@ -104,6 +106,8 @@ nav:
       - Small multiples: guide/small-multiples.md
       - Trends, forecasts and insights: guide/analytics.md
       - Dashboards: guide/dashboards.md
+      - One-line dashboards and the CLI: guide/auto-and-cli.md
+      - Web apps and server mode: guide/web-apps.md
       - Notebooks and df.plot: guide/notebooks.md
       - Choosing a chart: guide/choosing-charts.md
       - Maps: guide/maps.md
@@ -120,7 +124,6 @@ nav:
       - Map coverage: reference/map-coverage.md
       - Warnings and errors: reference/warnings-and-errors.md
   - Project:
-      - Roadmap: project/roadmap.md
       - Security: project/security.md
       - Security checklist: SECURITY_CHECKLIST.md
       - Design decisions: decisions/0001-echarts-version.md

@@ -29,24 +29,24 @@ Ruled out:
        line            a line implies an order between categories; use bars
 ```
 
-Each suggestion has a score out of 100 and a reason. Charts that arrive in a later phase are still listed, marked with their phase, so you can see where the ranking is going. The "Ruled out" list is often the most useful part. Discount is a rate, so tabsight averages it, and averages don't add up to a whole. A donut or a treemap of them would show shares of a total that doesn't exist.
+Each suggestion has a score out of 100 and a reason. The "Ruled out" list is often the most useful part. Discount is a rate, so tabsight averages it, and averages don't add up to a whole. A donut or a treemap of them would show shares of a total that doesn't exist.
 
 The same fields with a different measure get a different answer:
 
 ```python
 recs = ts.recommend(orders, x="Region", y="Sales")
 for r in recs:
-    print(f"{r.score:>3}  {r.kind:<10} {'now' if r.available else f'phase {r.phase}'}")
+    print(f"{r.score:>3}  {r.kind}")
 print("best:", recs.best.kind)
 print(recs.why_not("line"))
 ```
 
 ```text title="Output"
- 90  bar        now
- 80  hbar       now
- 76  donut      now
- 50  lollipop   now
- 40  table      now
+ 90  bar
+ 80  hbar
+ 76  donut
+ 50  lollipop
+ 40  table
 best: bar
 a line implies an order between categories; use bars
 ```

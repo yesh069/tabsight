@@ -40,7 +40,6 @@ class Recommendation:
     reason: str
     spec: ChartSpec
     available: bool  # True when ts.chart can draw it today
-    phase: int | None = None  # the roadmap phase that adds it, when not available yet
 
 
 @dataclasses.dataclass(frozen=True)
@@ -71,8 +70,7 @@ class Recommendations:
     def show(self) -> str:
         lines = [f"Charts for {self.fields}:", ""]
         for r in self.items:
-            when = "" if r.available else f"  (phase {r.phase})"
-            lines.append(f"  {r.score:>3}  {r.kind:<15} {r.reason}{when}")
+            lines.append(f"  {r.score:>3}  {r.kind:<15} {r.reason}")
         if self.rejected:
             lines += ["", "Ruled out:"]
             lines += [f"       {kind:<15} {why}" for kind, why in self.rejected]
@@ -102,7 +100,6 @@ class Recommendations:
                     "score": r.score,
                     "reason": r.reason,
                     "available": r.available,
-                    "phase": r.phase,
                     "spec": r.spec.to_dict(),
                 }
                 for r in self.items
@@ -201,16 +198,14 @@ def recommend(
     _measure_facts(f)
     candidates, rejected = _rules(f)
 
-    from tabsight.charts import _LATER, DRAWN_KINDS
+    from tabsight.charts import DRAWN_KINDS
 
     best: dict[str, tuple[int, str]] = {}
     for kind, score, reason in candidates:  # a kind suggested twice keeps its higher score
         if kind not in best or score > best[kind][0]:
             best[kind] = (max(0, min(100, score)), reason)
     items = [
-        Recommendation(
-            kind, score, reason, _spec_for(kind, f), kind in DRAWN_KINDS, _LATER.get(kind)
-        )
+        Recommendation(kind, score, reason, _spec_for(kind, f), kind in DRAWN_KINDS)
         for kind, (score, reason) in best.items()
     ]
     order = {k: i for i, k in enumerate(CHART_KINDS)}

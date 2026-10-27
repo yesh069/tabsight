@@ -1,6 +1,6 @@
 # tabsight documentation
 
-This folder is the documentation. It reads directly on GitHub, and the same files build the documentation website (`python -m mkdocs serve`).
+This folder is the documentation. It reads directly on GitHub, and the same files build the documentation website (`zensical serve`).
 
 ## Get started
 - [Home](index.md)
@@ -31,7 +31,6 @@ This folder is the documentation. It reads directly on GitHub, and the same file
 - [Warnings and errors](reference/warnings-and-errors.md)
 
 ## Project
-- [Roadmap](project/roadmap.md)
 - [Security](project/security.md) and the [security checklist](SECURITY_CHECKLIST.md)
 - [Design decisions](decisions/0001-echarts-version.md)
 - [Changelog](../CHANGELOG.md)

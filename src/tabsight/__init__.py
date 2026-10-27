@@ -1,12 +1,13 @@
 """tabsight: BI-quality charts, world maps and dashboards from a pandas DataFrame.
 
-Rule-based, no LLM, one offline HTML file. See PLAN.md for the roadmap.
+Rule-based, no LLM, one offline HTML file. Docs: https://yesh069.github.io/tabsight/
 """
 
-from tabsight import analytics, geo, warnings
+from tabsight import analytics, geo, warnings, web
 from tabsight._version import __version__
 from tabsight.accessor import register as _register_accessors
 from tabsight.aggregate import Aggregation, Measure, aggregate, bucket
+from tabsight.auto import auto
 from tabsight.charts import chart
 from tabsight.check import CheckReport, check
 from tabsight.clean import CleanReport, clean
@@ -23,10 +24,12 @@ from tabsight.plotting import plot  # also lets pandas find the backend without 
 from tabsight.profile import Field, Profile, profile
 from tabsight.recommend import Recommendation, Recommendations, recommend
 from tabsight.render.assets import ECHARTS_VERSION, TOPOJSON_CLIENT_VERSION, runtime_js
+from tabsight.server import DashboardServer
 from tabsight.settings import Settings, config, current, set_defaults
 from tabsight.spec import CHART_KINDS, ChartSpec
 from tabsight.tablecalc import table_calc
 from tabsight.theme import Theme, custom_theme
+from tabsight.web import serve_payload, streamlit
 
 __all__ = [
     "CHART_KINDS",
@@ -40,6 +43,7 @@ __all__ = [
     "ColorRegistry",
     "Comparison",
     "Dashboard",
+    "DashboardServer",
     "Field",
     "Figure",
     "Insight",
@@ -55,6 +59,7 @@ __all__ = [
     "__version__",
     "aggregate",
     "analytics",
+    "auto",
     "bucket",
     "calc",
     "chart",
@@ -73,9 +78,12 @@ __all__ = [
     "profile",
     "recommend",
     "runtime_js",
+    "serve_payload",
     "set_defaults",
+    "streamlit",
     "table_calc",
     "warnings",
+    "web",
 ]
 
 _register_accessors()  # df.ts and series.ts

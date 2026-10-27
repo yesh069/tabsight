@@ -51,12 +51,14 @@ function summary(tile, result) {
   return { labels: cat.data, series };
 }
 
-const out = cases.filters.map((filters) => {
+// Server mode: cases.tables[k][tileId] is the small table the server sent for filter case k.
+const tableFor = (k, id) => (cases.tables ? new D.Table(cases.tables[k][id]) : table);
+const out = cases.filters.map((filters, k) => {
   const prepared = D.prepare(filters);
   return payload.tiles
     .map((t) => D.flatTile({ tile: t, view: 0 }, payload.theme.name))
     .filter((t) => t.binding)
-    .map((t) => ({ id: t.id, ...summary(t, D.compute(payload, table, t, prepared)) }));
+    .map((t) => ({ id: t.id, ...summary(t, D.compute(payload, tableFor(k, t.id), t, prepared)) }));
 });
 const sanitized = (cases.sanitize || []).map((raw) => D.sanitize(raw, table, payload));
 process.stdout.write(JSON.stringify(cases.sanitize ? { results: out, sanitized } : out));

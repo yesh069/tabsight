@@ -150,6 +150,27 @@ class Figure:
             Path(path).write_text(svg, encoding="utf-8")
         return svg
 
+    def to_png(
+        self, path: str | Path | None = None, *, width: int = 800, scale: float = 2.0
+    ) -> bytes:
+        """The chart as a PNG image (the SVG picture, rasterised), drawn without a browser.
+
+        Needs ``pip install tabsight[png]`` (dukpy and resvg-py). ``scale=2`` gives sharp
+        images on high-density screens. Writes it to ``path`` if given."""
+        if not isinstance(scale, int | float) or not 0.25 <= scale <= 8:
+            raise InvalidSpecError("scale must be a number 0.25-8")
+        try:
+            import resvg_py
+        except ImportError as e:
+            raise ImportError("PNG export needs resvg-py: pip install tabsight[png]") from e
+        svg = self.to_svg(width=width)  # checked: no scripts, links or outside resources
+        png = bytes(
+            resvg_py.svg_to_bytes(svg_string=svg, zoom=float(scale), background=self.theme.page)
+        )
+        if path is not None:
+            Path(path).write_bytes(png)
+        return png
+
     def explain(self) -> str:
         """Every choice tabsight made for this chart, and why, in plain English."""
         what = {"kpi": "KPI card", "table": "table", "multi_line": "multi-line chart",

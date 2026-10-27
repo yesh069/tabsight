@@ -181,4 +181,3 @@ ts.Dashboard.load("sales.json").bind(new_orders).to_html("sales_november.html")
 ## Not built yet
 
 - touch gestures beyond tapping (long-press to filter)
-- server mode, where filtering runs on a server for data too big for one file (Phase 9)

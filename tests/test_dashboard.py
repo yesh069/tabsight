@@ -1,4 +1,4 @@
-"""Phase 8: dashboards. The browser must give the same numbers as Python after any filter."""
+"""Dashboards. The browser must give the same numbers as Python after any filter."""
 
 from __future__ import annotations
 

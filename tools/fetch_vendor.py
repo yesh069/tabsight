@@ -37,7 +37,7 @@ FILES: list[tuple[str, str]] = [
         f"{_JSD}/topojson-client@{TOPOJSON_CLIENT}/dist/topojson-client.min.js",
     ),
     ("licenses/topojson-client-LICENSE.txt", f"{_JSD}/topojson-client@{TOPOJSON_CLIENT}/LICENSE"),
-    # Raw map data (not committed, not shipped; turned into TopoJSON in Phase 5).
+    # Raw map data (not committed, not shipped; turned into TopoJSON by tools/build_geo.py).
     (
         "data-raw/naturalearth/ne_110m_admin_0_countries.geojson",
         f"{_NE}/ne_110m_admin_0_countries.geojson",

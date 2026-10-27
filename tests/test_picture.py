@@ -16,7 +16,7 @@ from tabsight.spec import CHART_KINDS
 from tabsight.warnings import InvalidSpecError
 
 from .test_html_security import EVIL
-from .test_phase6_charts import KIND_ARGS, _evil
+from .test_more_charts import KIND_ARGS, _evil
 
 pytest.importorskip("dukpy", exc_type=ImportError)  # also skips where the system blocks its DLL
 

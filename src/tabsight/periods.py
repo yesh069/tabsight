@@ -1,6 +1,6 @@
 """Period comparisons: this year against last year, this month against last month, and so on.
 
-Rules (PLAN section 13):
+Rules:
 
 - "Today" is the latest date in the data, never the computer's clock, so the result is
   the same on every run. ``as_of="2017-12-31"`` overrides it.
