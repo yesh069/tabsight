@@ -225,3 +225,9 @@ def test_python_and_javascript_projections_agree(tmp_path: Path) -> None:
     for name, projected in js.items():
         for (lon, lat), xy in zip(points, projected, strict=True):
             assert project(name, lon, lat) == pytest.approx(tuple(xy), abs=1e-9), (name, lon, lat)
+
+
+def test_flow_map_with_no_matching_places_says_so() -> None:
+    df = pd.DataFrame({"From": ["Texas", "Ohio"], "To": ["West", "East"], "Sales": [1.0, 2.0]})
+    with pytest.raises(InvalidSpecError, match="no flows to draw"):
+        ts.chart(df, "flow_map", source="From", target="To", y="Sales")
