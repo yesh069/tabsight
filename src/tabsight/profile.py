@@ -256,7 +256,7 @@ _DATE_FORMAT_RE = re.compile(r"(%[YymdbBHMSfjUWaAp]|[ ./:,T-])+")
 def _unknown_column(name: object, names: Iterable[str]) -> str:
     names = list(names)
     hint = difflib.get_close_matches(str(name)[:_MAX_NAME], names, n=1)
-    extra = f"; did you mean {hint[0]!r}?" if hint else ""
+    extra = f"; did you mean {safe_repr(hint[0])}?" if hint else ""
     return f"column {safe_repr(name)} not found{extra}"
 
 
@@ -718,7 +718,11 @@ def _hierarchies(
             if parent.distinct >= child.distinct or parent.name == child.name:
                 continue
             pair = frame[[parent.name, child.name]].dropna()
-            if pair.empty or pair.groupby(child.name, sort=False)[parent.name].nunique().max() != 1:
+            if (
+                pair.empty
+                or pair.groupby(child.name, sort=False, observed=True)[parent.name].nunique().max()
+                != 1
+            ):
                 continue
             if (
                 best is None

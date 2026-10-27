@@ -131,7 +131,9 @@ CASES: list[tuple[dict[str, object], str, str | None, str]] = [
     ({"x": "Product", "y": "Profit", "color": "Channel"}, "grouped_bar", None, "negative totals don't stack"),
     ({"x": "Region", "y": "Discount_Rate", "color": "Segment"}, "grouped_bar", None, "averages don't stack"),
     ({"x": "Segment", "y": "Satisfaction_Score", "color": "Channel"}, "grouped_bar", None, "averages don't stack"),
-    ({"x": "Category", "y": "Revenue", "color": "Product"}, "table", "treemap", "nested, 12 products: too many colours for bars"),
+    # Label changed after hands-on review: we first said "table, ideally a treemap". One bar
+    # per product, coloured by its category, shows all 12 with no empty slots.
+    ({"x": "Category", "y": "Revenue", "color": "Product"}, "stacked_bar", "treemap", "nested: product bars coloured by category"),
     # Label changed after review: we first said "table, ideally a heatmap". Putting the
     # 4 regions in the colours and the 12 products on x gives a readable stacked bar.
     ({"x": "Region", "y": "Revenue", "color": "Product"}, "stacked_bar", None, "swap: products on x, regions as colours"),

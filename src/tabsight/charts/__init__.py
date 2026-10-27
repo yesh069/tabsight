@@ -82,6 +82,7 @@ def chart(
         pick = recs.best
         kind, x, color = pick.kind, pick.spec.x, pick.spec.color
         top = top if top is not None else pick.spec.top
+        sort = sort if sort is not None else pick.spec.sort
         runner_up = next((r for r in recs if r.available and r.kind != pick.kind), None)
         chosen.append(
             f"{pick.kind.replace('_', ' ')} chosen automatically (score {pick.score}): {pick.reason}"
@@ -167,7 +168,9 @@ class _Context:
             elif self.spec.agg:
                 why = "as asked"
             else:
-                why = "; ".join(field.reasons) or "the default for this column"
+                # "averaged, because ..." would repeat the verb: keep only the reason
+                why = "; ".join(r.split(", because ", 1)[-1] if r.startswith(_AGG_WORDS.get(agg, "~")) else r
+                                for r in field.reasons) or "the default for this column"  # fmt: skip
             self.decisions.append(f"{name} is {_AGG_WORDS.get(agg, agg)}: {why}")
             self.facts.setdefault("measures", []).append(
                 {
@@ -262,6 +265,13 @@ def _same_parents(frame: pd.DataFrame, parents: list[str], i: int) -> bool:
     return all(frame[p].iloc[i] == frame[p].iloc[i - 1] for p in parents)
 
 
+def _table_sort(ctx: _Context, d: str, has_measures: bool) -> Any:
+    """Without a measure there is nothing to rank by, so rows keep their natural order."""
+    if has_measures or ctx.spec.sort is not None or ctx.prof[d].ordered:
+        return ctx.spec.sort
+    return "none"
+
+
 def _order_words(sort: Any, ordered: bool) -> str:
     if isinstance(sort, tuple):
         return "in the order you gave"
@@ -292,7 +302,8 @@ def _missing(name: str, prof: Profile) -> InvalidSpecError:
 
     hint = difflib.get_close_matches(name, prof.names(), n=1)
     return InvalidSpecError(
-        f"column {safe_repr(name)} not found" + (f"; did you mean {hint[0]!r}?" if hint else "")
+        f"column {safe_repr(name)} not found"
+        + (f"; did you mean {safe_repr(hint[0])}?" if hint else "")
     )
 
 
@@ -364,11 +375,7 @@ def _echarts(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
         values[x] = values[x].astype("object").where(values[x].notna(), text("unknown"))
     x_values = list(dict.fromkeys(values[x].tolist()))
     labels = _labels(pd.Series(x_values), grain, ctx, compact=len(x_values) > 8)
-    other_x = (
-        set(values.loc[values[OTHER_FLAG].fillna(False).astype(bool), x])
-        if OTHER_FLAG in values
-        else set()
-    )
+    other_x = set(values.loc[values[OTHER_FLAG].eq(True), x]) if OTHER_FLAG in values else set()
 
     if kind == "donut":
         option, kind = _build.donut(values, x, labels, measures[0], other_x, ctx)
@@ -412,6 +419,8 @@ def _echarts(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
         categories=len(x_values), longest_label=max((len(lb) for lb in labels), default=0),
         series=int(values[color].nunique(dropna=False)) if color else len(measures),
         negative=bool((numbers < 0).any()), partial_period=result.partial_period,
+        one_segment=bool(color) and int(values.groupby(x, dropna=False, observed=True)[str(color)].nunique().max() or 0) <= 1,
+        rows=int(numbers.notna().sum()),
     )  # fmt: skip
 
     if color:
@@ -508,7 +517,7 @@ def _table(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
     if dims:
         ctx.decisions.append(
             "a parent value is shown once rather than repeated on every row" if len(dims) > 1
-            else f"{dims[0]} is {_order_words(ctx.spec.sort, bool(ctx.prof[dims[0]].ordered))}"
+            else f"{dims[0]} is {_order_words(_table_sort(ctx, dims[0], bool(measures)), bool(ctx.prof[dims[0]].ordered))}"
         )  # fmt: skip
     ctx.describe_format(measures, "; one number of decimals per column so the digits line up")
     ctx.facts.update(rows_total=total_rows, rows_shown=len(shown))

@@ -287,7 +287,8 @@ def _unknown(name: object, names: Iterable[str]) -> InvalidSpecError:
     names = list(names)
     hint = difflib.get_close_matches(str(name)[:200], names, n=1)
     return InvalidSpecError(
-        f"column {safe_repr(name)} not found" + (f"; did you mean {hint[0]!r}?" if hint else "")
+        f"column {safe_repr(name)} not found"
+        + (f"; did you mean {safe_repr(hint[0])}?" if hint else "")
     )
 
 
@@ -350,9 +351,28 @@ def _time_values(col: pd.Series, prof: Profile, name: str) -> pd.Series:
         years = pd.to_numeric(col, errors="coerce")
         return pd.to_datetime(years.astype("Int64").astype("string") + "-01-01", errors="coerce")
     if pd.api.types.is_datetime64_any_dtype(col):
-        return col
+        return _local_time(col)
     reading = read_dates(col, dayfirst=field.dayfirst, threshold=0.0)
-    return reading.values if reading is not None else pd.to_datetime(col, errors="coerce")
+    return _local_time(
+        reading.values if reading is not None else pd.to_datetime(col, errors="coerce")
+    )
+
+
+def _local_time(values: pd.Series) -> pd.Series:
+    """Time-zone-aware dates are grouped by their wall-clock date: in the ``tz`` setting
+    if one is set, otherwise in their own time zone."""
+    if getattr(values.dt, "tz", None) is None:
+        return values
+    from tabsight.settings import current
+
+    tz = current().tz
+    if tz is not None:
+        try:
+            values = values.dt.tz_convert(tz)
+        except Exception as err:  # an unknown zone name
+            raise InvalidSpecError(f"unknown time zone {safe_repr(tz)}") from err
+    naive: pd.Series = values.dt.tz_localize(None)
+    return naive
 
 
 # ---------------------------------------------------------------- the main entry point
@@ -713,13 +733,13 @@ def _sort(
             by = sort[3:]
             if by not in outputs:
                 raise _unknown(by, outputs)
-        totals = work.groupby(first, dropna=False, sort=False)[by].transform("sum")
+        totals = work.groupby(first, dropna=False, sort=False, observed=True)[by].transform("sum")
         work["_s"] = totals
         keys.append("_s")
         asc.append(sort == "asc")
     if OTHER_FLAG in work:
         # "Other" goes last: last overall, or last within each date when grouping by date first.
-        work["_other"] = work[OTHER_FLAG].fillna(False).astype(bool)
+        work["_other"] = work[OTHER_FLAG].eq(True)
         at = 1 if first in grains else 0
         keys.insert(at, "_other")
         asc.insert(at, True)

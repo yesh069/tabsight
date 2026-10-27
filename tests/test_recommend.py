@@ -204,6 +204,8 @@ def _lint_triggers() -> dict[str, Callable[[pd.DataFrame], ts.Figure]]:
             d[d["Order_Date"] < "2024-03-01"], "line", x="Order_Date", y="Revenue", freq="year"
         ),
         "table_truncated": lambda d: ts.chart(d, "table", x="Order_ID", y="Revenue"),
+        "mixed_units": lambda d: ts.chart(d, "line", x="Order_Date", y=["Revenue", "Units"]),
+        "no_data": lambda d: ts.chart(d.iloc[0:0], "bar", x="Region", y="Revenue"),
     }
 
 
@@ -264,3 +266,109 @@ def test_lint_messages_are_safe() -> None:
     fig = ts.chart(df, "bar", x="Region", y="Revenue").update({"yAxis": {"min": "<b>" + "9" * 300}})
     message = next(i.message for i in fig.lint() if i.code == "bar_axis_not_zero")
     assert len(message) < 160
+
+
+# ---------------------------------------------------------------- found by hands-on review
+
+
+def test_recommend_validates_its_fields() -> None:
+    df, prof = data()
+    for kw, message in [
+        ({}, "pick at least one column"),
+        ({"x": [], "y": []}, "pick at least one column"),
+        ({"x": "Revenue", "y": "Revenue"}, "used once"),
+        ({"x": "Region", "y": ["Revenue", "Revenue"]}, "used once"),
+        ({"x": 5, "y": "Revenue"}, "column name"),
+        ({"x": ["Region"] * 21, "y": "Revenue"}, "up to 20"),
+    ]:
+        with pytest.raises(InvalidSpecError, match=message):
+            ts.recommend(df, prof=prof, **kw)
+    long = "C" * 150
+    with pytest.raises(InvalidSpecError) as err:
+        ts.recommend(df.rename(columns={"Region": long}), x=long[:-1], y="Revenue")
+    assert len(str(err.value)) < 200  # the "did you mean" hint is shortened too
+
+
+def test_numeric_x_keeps_numeric_order() -> None:
+    df, prof = data()
+    recs = ts.recommend(df, x="Units", y="Revenue", prof=prof)
+    assert recs[0].kind == "scatter" and recs.best.kind == "bar"
+    assert recs.best.spec.sort == "none" and "donut" in dict(recs.rejected)
+    fig = ts.chart(df, "auto", x="Units", y="Revenue", prof=prof)
+    labels = fig.option["xAxis"]["data"]
+    assert labels == sorted(labels, key=int)
+    assert ts.recommend(df, x="Revenue", y="Units", prof=prof).best.kind == "table"
+
+
+def test_very_many_categories_keep_the_top_bars() -> None:
+    many = pd.DataFrame({"Store": [f"Store {i % 80}" for i in range(400)], "Revenue": range(400)})
+    recs = ts.recommend(many, x="Store", y="Revenue")
+    assert recs.best.kind == "hbar" and recs.best.spec.top == 20
+    assert "too many" in dict(recs.rejected)["donut"] and "bar" in dict(recs.rejected)
+    fig = ts.chart(many, "auto", x="Store", y="Revenue")
+    assert len(fig.option["yAxis"]["data"]) == 21 and fig.lint().ok  # 20 + Other
+
+
+def test_one_period_is_not_a_line() -> None:
+    one = pd.DataFrame({"D": pd.to_datetime(["2024-03-01"] * 3), "V": [1.0, 2.0, 3.0]})
+    recs = ts.recommend(one, x="D", y="V")
+    assert recs.best.kind == "bar" and "at least two" in dict(recs.rejected)["line"]
+
+
+def test_nested_fields_draw_child_bars_coloured_by_parent() -> None:
+    df, prof = data()
+    for x, color in [("Category", "Product"), ("Product", "Category")]:
+        recs = ts.recommend(df, x=x, y="Revenue", color=color, prof=prof)
+        assert (recs.best.spec.x, recs.best.spec.color) == ("Product", "Category")
+        assert "grouped_bar" in dict(recs.rejected)
+    fig = ts.chart(df, "auto", x="Category", y="Profit", color="Product", prof=prof)
+    assert fig.facts["one_segment"] and not fig.lint().codes  # negatives, but nothing stacks
+
+
+def test_time_zone_aware_dates() -> None:
+    days = pd.DataFrame(
+        {"D": pd.date_range("2024-01-31 22:00", periods=6, freq="h", tz="UTC"), "V": 1.0}
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")  # no "dropping time zone" noise either
+        by_utc = ts.aggregate(days, "D", "V", freq="month").values
+    assert list(by_utc["V"]) == [2.0, 4.0]  # 22:00 and 23:00 UTC are still January
+    with ts.config(tz="Asia/Kolkata"):  # UTC+5:30: all six are February there
+        assert list(ts.aggregate(days, "D", "V", freq="month").values["V"]) == [6.0]
+    with ts.config(tz="Mars/Olympus"), pytest.raises(InvalidSpecError, match="time zone"):
+        ts.aggregate(days, "D", "V", freq="month")
+    assert ts.chart(days, "auto", x="D", y="V").kind in ("line", "bar")
+
+
+def test_table_without_measure_says_natural_order(store: pd.DataFrame) -> None:
+    fig = ts.chart(store, "table", x="Region")
+    assert "natural order" in fig.explain()
+    rows = [r[0] for r in fig.table["rows"]]
+    assert rows == sorted(rows)
+
+
+def test_explain_wording() -> None:
+    df, prof = data()
+    fig = ts.chart(df, "multi_line", x="Order_Date", y="Discount_Rate", color="Region", prof=prof)
+    text = fig.explain()
+    assert "(multi-line chart)" in text
+    assert "Discount_Rate is averaged: " in text and "averaged, because" not in text
+
+
+def test_lint_ignore_types() -> None:
+    df, _ = data()
+    fig = ts.chart(df, "bar", x="Region", y="Revenue")
+    assert fig.lint(ignore=None).ok and fig.lint(ignore={"no_data"}).ok
+    with pytest.raises(InvalidSpecError, match="rule code"):
+        fig.lint(ignore=5)  # type: ignore[arg-type]
+
+
+def test_other_line_starts_hidden() -> None:
+    df, prof = data()
+    kw = {"x": "Order_Date", "y": "Revenue", "color": "Product", "top": 3, "prof": prof}
+    fig = ts.chart(df, "multi_line", freq="year", **kw)
+    hidden = fig.option["legend"]["selected"]
+    assert list(hidden.values()) == [False] and next(iter(hidden)).startswith("Other (")
+    assert "Other line starts hidden" in fig.explain()
+    stacked = ts.chart(df, "stacked_area", **kw)
+    assert "selected" not in stacked.option["legend"]  # in a stack, Other is part of the total

@@ -39,6 +39,8 @@ RULES: dict[str, tuple[str, str]] = {
     "single_category": ("info", "a bar chart with only one bar"),
     "incomplete_last_period": ("info", "a trend that ends on a period that isn't over"),
     "table_truncated": ("info", "a table that shows only some of its rows"),
+    "mixed_units": ("info", "measures in different units sharing one axis"),
+    "no_data": ("warning", "a chart with nothing to show"),
 }  # fmt: skip
 
 _BARS = ("bar", "hbar", "grouped_bar", "stacked_bar", "stacked100_bar")
@@ -113,8 +115,12 @@ class LintReport:
 def lint(fig: Figure, *, ignore: Iterable[str] = (), strict: bool = False) -> LintReport:
     """Check ``fig``. ``ignore`` skips rule codes; ``strict=True`` raises
     ``ChartLintError`` when any warning is found."""
-    if isinstance(ignore, str):
+    if ignore is None:
+        ignore = ()
+    elif isinstance(ignore, str):
         ignore = (ignore,)
+    elif not isinstance(ignore, list | tuple | set | frozenset):
+        raise InvalidSpecError("ignore must be a rule code or a list of rule codes")
     skip = tuple(ignore)
     for code in skip:
         if code not in RULES:
@@ -162,7 +168,10 @@ def _check(fig: Figure) -> Iterator[LintIssue]:
         if not_additive:
             yield _issue("pie_not_additive", f"{not_additive[0]} values don't add up to a whole, so the slices mean nothing",
                          "use bars", {"kind": "bar"})  # fmt: skip
-    if kind in _STACKED:
+    if "rows" in facts and facts["rows"] == 0:
+        yield _issue("no_data", "there are no values to draw, so the chart is empty",
+                     "check the filters and that the measure column has numbers")  # fmt: skip
+    if kind in _STACKED and not facts.get("one_segment"):  # one segment per bar isn't a stack
         if not_additive:
             yield _issue("stacked_not_additive", f"{not_additive[0]} values don't add up, so the stacked totals mean nothing",
                          "put the bars side by side or draw one line each",
@@ -203,6 +212,11 @@ def _check(fig: Figure) -> Iterator[LintIssue]:
             yield _issue("labels_skipped", "some category labels are hidden, so readers can't tell which bar is which",
                          "use horizontal bars", {"kind": "hbar"} if kind == "bar" else None)  # fmt: skip
             break
+    units = {m.get("unit") for m in measures if m.get("agg") not in ("count", "countd")}
+    if (kind in _LINES or kind in _BARS) and len(units) > 1:
+        yield _issue("mixed_units", f"{' and '.join(str(m.get('column')) for m in measures)} have different units "
+                     "on one axis, so the smaller one looks flat",
+                     "chart them separately; two-axis combo charts arrive in phase 6")  # fmt: skip
     if kind == "table" and int(facts.get("rows_total", 0)) > int(facts.get("rows_shown", 0)):
         yield _issue("table_truncated", f"only {facts['rows_shown']:,} of {facts['rows_total']:,} rows are shown",
                      "group by fewer columns or keep the top rows", {"top": 50})  # fmt: skip

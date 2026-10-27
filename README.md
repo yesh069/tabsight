@@ -137,7 +137,7 @@ en_IN ₹12.3L
 
 **Draws charts that follow the rules.** Bars, lines, areas, donuts, KPI cards and tables. Every label is readable, or the chart turns horizontal and tells you so. Lines are never smoothed, bars start at zero, the same region keeps the same colour in every chart, and a chart that ends on a half-finished month says so instead of implying a crash.
 
-**Picks the chart, and tells you why.** `ts.recommend` ranks the charts that fit your fields and lists what it ruled out. `kind="auto"` draws the winner, `fig.explain()` lists every decision, and `fig.lint()` checks any chart, including one you changed by hand, against 15 design rules.
+**Picks the chart, and tells you why.** `ts.recommend` ranks the charts that fit your fields and lists what it ruled out. `kind="auto"` draws the winner, `fig.explain()` lists every decision, and `fig.lint()` checks any chart, including one you changed by hand, against 17 design rules.
 
 ```python
 print(ts.recommend(orders, x="Sub_Category", y="Discount"))
@@ -218,10 +218,10 @@ The same pages build a documentation website with search and dark mode: `python 
 | 3 | Bar, line, area, donut, KPI and table charts as offline HTML | Done |
 | 4 | "Show Me" chart recommender with reasons, chart linter, `fig.explain()` | Done |
 | 5 | World maps: countries, states and provinces for every country, cities | Next |
-| 6 | Heatmaps, treemaps, Sankey, scatter, distributions, small multiples | Planned |
+| 6 | Heatmaps, treemaps, Sankey, scatter, distributions, small multiples; `df.plot` / `df.ts` in notebooks | Planned |
 | 7 | Trend lines, forecasts, period comparisons, plain-English insights | Planned |
 | 8 | Dashboards with cross-filtering, drill-down and filters | Planned |
-| 9 | `ts.auto(df)` one-line dashboards, command line, web-framework helpers | Planned |
+| 9 | `ts.auto(df)` one-line dashboards, command line, web-framework helpers, optional PNG export | Planned |
 | 10 | First release on PyPI | Planned |
 
 Every decision behind these phases is in [`PLAN.md`](PLAN.md).

@@ -285,6 +285,15 @@ def lines(
     multi = len(series) > 1
     if multi:
         option["legend"] = _legend(ctx)
+        others = [s["name"] for s in series if str(s["name"]).startswith("Other (") and not stacked]
+        if others:
+            # An "Other" line is the total of several values, so it would tower over the
+            # rest and flatten them. It starts hidden; one click on the legend shows it.
+            option["legend"]["selected"] = {name: False for name in others}
+            ctx.decisions.append(
+                "the Other line starts hidden (click it in the legend): as a total of several "
+                "values it would dwarf the others"
+            )
     option["grid"] = {
         "left": 8,
         "right": 24,

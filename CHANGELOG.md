@@ -8,13 +8,26 @@ All notable changes are listed here. The project follows [Semantic Versioning](h
 - `ts.recommend(data, x, y, color)`: ranks the chart kinds that fit, each with a score and a reason, lists the kinds it ruled out with reasons, and `why_not(kind)`. Charts from later phases are listed with their phase; `.best` is the best one drawable today. Rules look at dates and their span, category counts and label lengths, whether a measure adds up, negative totals, IDs, nesting and units.
 - `ts.chart(..., kind="auto")` draws the best recommendation; anything you pass still wins.
 - `fig.explain()`: every decision tabsight made for a chart, in plain English.
-- `fig.lint(ignore=..., strict=...)`: 15 design rules (`tabsight.lint.RULES`) with fixes and the `ts.chart` arguments that apply them. Reads the figure itself, so `fig.update()` patches are checked too. `ChartLintError` for strict mode.
+- `fig.lint(ignore=..., strict=...)`: 17 design rules (`tabsight.lint.RULES`) with fixes and the `ts.chart` arguments that apply them. Reads the figure itself, so `fig.update()` patches are checked too. `ChartLintError` for strict mode.
 - 70 labelled recommender cases (`tests/recommend_cases.py`); every automatic chart for them passes its own linter.
 - When two categories are picked and the colour field has many values, the one with fewer values goes in the colours. With more than 8 lines, `auto` keeps the biggest 6.
 - Docs: "Choosing a chart" guide and the lint rules reference.
 
 ### Fixed (Phase 4)
 - Grouping by an ordered categorical column crashed on pandas 2 while sorting (found by the recommender cases).
+- Time-zone-aware dates crashed `ts.aggregate` with a month, quarter or year grain. They're now grouped by their own wall-clock date, or in the `tz` setting's zone when it's set (the setting existed but did nothing until now).
+- pandas 2 printed FutureWarnings (`observed=False`, silent downcasting) from profiling, aggregation and charts.
+- "Did you mean" hints in error messages are shortened like the rest of the message.
+
+### Changed (after hands-on review of Phase 4)
+- `ts.recommend` checks its fields: at least one column, each used once, names must be text.
+- A number used as x (like Quantity) keeps numeric order and suggests a scatter plot; more than 15 distinct numbers leads to a table.
+- More than 50 categories: horizontal bars of the top 20 plus Other; donuts are ruled out.
+- Nested fields (Region and State): one bar per State, coloured by its Region, instead of a table. Grouped and 100% bars are ruled out for nested fields.
+- A date with only one period gets a bar, not an invisible one-point line.
+- An "Other" line in a multi-line chart starts hidden (one click in the legend shows it), because as a total it dwarfs the real lines.
+- New lint rules: `mixed_units` (info) and `no_data` (warning). Stacking rules no longer fire when each bar has one segment. `ignore=None` is accepted.
+- `explain()` wording: "multi-line chart", no repeated "averaged ... averaged"; a table without a measure says it's in natural order.
 
 ### Added (Phase 3: core charts)
 - `ts.chart`: bar, hbar, grouped, stacked and 100% stacked bars; line, multi-line, area, stacked area and sparkline; donut; KPI card; table. BI rules by default: all labels shown (switching to horizontal bars when labels are long), lines never smoothed, zero baseline for bars, one colour per series, the same colour for the same value across charts, top 7 + grey "Other" for donuts, grouped parents in tables.

@@ -682,6 +682,8 @@ tabsight/
     render/
       html.py              single-file export, embedding policy, size estimate, safe JSON
       jupyter.py           detect the notebook environment; load once (Lab, classic) or per output (VS Code, Colab)
+      plotting.py          pandas plotting backend: pd.options.plotting.backend = "tabsight"
+      accessor.py          df.ts.chart(...), df.ts.bar(...), df.ts.recommend(...), df.ts.profile()
       server.py            FastAPI / Flask payload helpers
       integrations.py      Streamlit and Dash helpers
       png.py               optional Playwright export
@@ -886,6 +888,19 @@ These are measured in `benchmarks/` on every release, not guessed.
 | JS runtime | Ships inside the Python package; npm package `tabsight-js` after 0.1.0 |
 | Open source | CONTRIBUTING guide, code of conduct, issue and pull request templates, SECURITY policy (how to report a vulnerability) |
 
+
+### 17.1 Working like `df.plot` in notebooks (Phase 6)
+
+Asked for on 27 Oct 2026, after Phase 4, and moved from Phase 9 to Phase 6 at the user's request. Figures already draw themselves at the end of a Jupyter cell; this adds the familiar way of calling them.
+
+- **Numeric x-axis.** Line and area charts take a number column as x on a real value axis (a sine wave of 126 points draws as a smooth curve, not 126 category labels), alongside scatter in the same phase.
+
+- **pandas plotting backend.** Registered through the `pandas_plotting_backends` entry point in `pyproject.toml`, so `pd.options.plotting.backend = "tabsight"` makes `df.plot(...)`, `df.plot.bar(...)` and `series.plot(...)` return a tabsight `Figure`. Kind mapping: `line` to line, `bar` to bar, `barh` to hbar, `area` to area, `pie` to donut; `scatter`, `hist`, `box`, `kde`, `hexbin` map to the Phase 6 kinds. Unsupported pandas arguments (matplotlib styling such as `figsize`, `ax`, `style`) give one clear warning, never a crash.
+- **`df.ts` accessor.** Registered with `pd.api.extensions.register_dataframe_accessor` when tabsight is imported (no global pandas setting needed): `df.ts.chart(kind, ...)`, one method per drawable kind (`df.ts.bar(...)`), `df.ts.recommend(...)`, `df.ts.profile()`, `df.ts.check()`. A Series accessor covers `s.ts.line()` and friends.
+- **Differences from pandas, kept on purpose and documented.** tabsight aggregates (sum of Sales by Region rather than one bar per row; identical when x is already unique). No `x` uses the index, like pandas. `df.plot()` with no `y` charts every number column only when they share a unit; otherwise it suggests `kind="auto"` with chosen fields.
+- **Notebook size.** Loading the runtime once per notebook (Lab, classic) is the default; VS Code and Colab isolate outputs, so there `cdn=True` is suggested once when a notebook passes about 10 MB of inlined charts.
+- **Done when.** Tests run the backend and the accessor on pandas 2 and 3; the security tests cover them like `ts.chart`; charts are checked by hand in JupyterLab, classic Notebook, VS Code and Colab; a "Using tabsight in Jupyter" docs page with real output.
+
 ---
 
 ## 18. Tests
@@ -940,10 +955,10 @@ These go in the README to show tabsight is better, with numbers.
 | 3. Core charts | bar family, line family, donut, KPI, table, Figure, **minimal `tabsight.js`** (named formatters and chart drawing) and the Node parity test setup | A single chart opens offline with formatted numbers, passes lint, escapes malicious values, and JS formatters match Python |
 | 4. Recommender, linter, explain | rules, scores, reasons, lint rules, explain, labelled test set | Agreement rate published |
 | 5. World geo | level 0, level 1 for all countries, cities, matching (all name languages), display language, detection, projections, insets, tiny-country dots, opt-in level 2 download, top-30 country checks, coverage table | 20+ countries detected correctly; unmatched names reported; coverage table written |
-| 6. Advanced charts | heatmap, calendar heatmap, treemap, sunburst, Sankey, scatter/bubble, histogram, box, waterfall, funnel, gauge, combo, Pareto, bullet, density and flow maps, small multiples | Gallery shows all 33 types and facets |
+| 6. Advanced charts | heatmap, calendar heatmap, treemap, sunburst, Sankey, scatter/bubble, histogram, box, waterfall, funnel, gauge, combo, Pareto, bullet, density and flow maps, small multiples, numeric x-axis for line and area charts, notebooks like `df.plot`: pandas `.plot` backend, `df.ts` accessor, runtime loaded once per notebook (section 17.1) | Gallery shows all 33 types and facets |
 | 7. Analytics and insights | reference lines, trend, forecast (with season lengths), outliers, comparisons (shifted window, `as_of`), fiscal years, insight rules | Insights and comparisons correct on all test datasets |
 | 8. Dashboard and runtime | model, layout, the rest of the JS runtime on top of the Phase 3 minimal one, shared data table (9.2), comparisons under date filters, click and legend semantics (5.6), filters, brush, cross-filter, drill, chips, reset, URL state, tile menu, per-tile data, insight and forecast updates, theme toggle, lazy draw, accessibility, touch, bind, `to_dict(pure=True)` | Example dashboards cross-filter correctly in the browser, by mouse, keyboard and touch |
-| 9. Auto, CLI and integrations | `ts.auto`, CLI, FastAPI/Flask/Streamlit/Dash helpers, Jupyter loading | One line or one command makes a full dashboard for every test dataset |
+| 9. Auto, CLI and integrations | `ts.auto`, CLI, FastAPI/Flask/Streamlit/Dash helpers, optional PNG export (so notebooks show charts on GitHub) | One line or one command makes a full dashboard for every test dataset |
 | 10. Release | docs site, gallery, benchmarks, open-source files (CONTRIBUTING, code of conduct, SECURITY, templates), trademark name check, wheel, 0.1.0 on PyPI | Install from PyPI works in a clean environment |
 | Later | Tier 2 items, each as its own phase | — |
 

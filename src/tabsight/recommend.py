@@ -20,7 +20,7 @@ import pandas as pd
 from tabsight.aggregate import Measure, aggregate
 from tabsight.io import as_frame
 from tabsight.profile import Profile, _prepare, profile
-from tabsight.spec import CHART_KINDS, ChartSpec
+from tabsight.spec import CHART_KINDS, ChartSpec, _name
 from tabsight.warnings import InvalidSpecError, safe_repr
 
 __all__ = ["Recommendation", "Recommendations", "recommend"]
@@ -28,6 +28,8 @@ __all__ = ["Recommendation", "Recommendations", "recommend"]
 LONG_LABEL = 16
 MANY_CATEGORIES = 15
 DONUT_MAX = 8
+MAX_BARS = 50
+TOP_BARS = 20
 TOP_LINES = 6
 
 
@@ -124,12 +126,16 @@ class _Fields:
     freq: str | None = None
     hierarchy: bool = False
     swapped: bool = False
+    layout: dict[str, tuple[str, str | None]] = dataclasses.field(default_factory=dict)
 
 
-def _names(value: str | Sequence[str] | None) -> list[str]:
+def _names(value: str | Sequence[str] | None, what: str) -> list[str]:
     if value is None:
         return []
-    return [value] if isinstance(value, str) else list(value)
+    items = [value] if isinstance(value, str) else value
+    if not isinstance(items, list | tuple) or len(items) > 20:
+        raise InvalidSpecError(f"{what} must be a column name or a list of up to 20")
+    return [_name(v, what) for v in items]
 
 
 def _suggest_freq(dates: pd.Series) -> str | None:
@@ -158,8 +164,10 @@ def recommend(
     ``y`` the measure(s)."""
     frame, _ = _prepare(as_frame(data))
     prof = prof if prof is not None else profile(frame, quiet=True)
-    dims = _names(x) + _names(color)
-    ys = _names(y)
+    dims = _names(x, "x") + _names(color, "color")
+    ys = _names(y, "y")
+    if not dims and not ys:
+        raise InvalidSpecError("pick at least one column: x= to group by and/or y= to measure")
     for name in dims + ys:
         if name not in prof:
             import difflib
@@ -167,10 +175,10 @@ def recommend(
             hint = difflib.get_close_matches(name, prof.names(), n=1)
             raise InvalidSpecError(
                 f"column {safe_repr(name)} not found"
-                + (f"; did you mean {hint[0]!r}?" if hint else "")
+                + (f"; did you mean {safe_repr(hint[0])}?" if hint else "")
             )
-    if len(set(dims)) != len(dims):
-        raise InvalidSpecError("each column can be used once")
+    if len(set(dims + ys)) != len(dims + ys):
+        raise InvalidSpecError("each column can be used once (in x, color or y)")
 
     measures = []
     for name in ys:
@@ -238,9 +246,12 @@ def _measure_facts(f: _Fields) -> None:
         a, b = f.cats
         pair = f.frame[[a, b]].dropna()
         f.hierarchy = bool(len(pair)) and (
-            pair.groupby(b)[a].nunique().max() == 1 or pair.groupby(a)[b].nunique().max() == 1
+            pair.groupby(b, observed=True)[a].nunique().max() == 1
+            or pair.groupby(a, observed=True)[b].nunique().max() == 1
         )
-        if not f.hierarchy and f.card[b] > DONUT_MAX and f.card[a] < f.card[b]:
+        if f.hierarchy:
+            f.cats = sorted(f.cats, key=lambda c: f.card[c])  # parent first, then child
+        elif f.card[b] > DONUT_MAX and f.card[a] < f.card[b]:
             f.cats = [b, a]  # the field with fewer values goes in the colours
             f.swapped = True
     if not f.measures:
@@ -284,6 +295,13 @@ def _rules(f: _Fields) -> tuple[list[tuple[str, int, str]], list[tuple[str, str]
             c += [("scatter", 85, "two measures: a scatter plot shows how they relate"),
                   ("table", 65, "a small table lists each total side by side")]  # fmt: skip
         r.append(("bar", "nothing to group by: pick an x column for bars"))
+        return c, r
+
+    if nt == 1 and nc == 0 and f.periods == 1:
+        c.append(("bar", 85, "there is only one period, and a line needs at least two points"))
+        c.append(("kpi", 70, "one period: a single number says it"))
+        c.append(("table", 30, "a table lists the value"))
+        r.append(("line", "a line needs at least two periods; this data has one"))
         return c, r
 
     if nt == 1 and nc == 0:
@@ -360,7 +378,22 @@ def _rules(f: _Fields) -> tuple[list[tuple[str, int, str]], list[tuple[str, str]
         d = f.cats[0]
         card, long = f.card[d], f.longest[d] > LONG_LABEL
         is_id = f.prof[d].role == "id"
-        penalty = 30 if is_id else 0
+        numeric = f.prof[d].role == "measure"
+        r.append(("line", "a line implies an order between categories; use bars"))
+        if numeric:
+            c.append(
+                ("scatter", 86, f"{d} is a number too: a scatter plot shows how the two relate")
+            )
+            if card > MANY_CATEGORIES:
+                c.append(
+                    ("table", 60, f"{d} has {card} different values, too many for one bar each")
+                )
+                r.append(("bar", f"{d} has {card} different values, too many for one bar each"))
+            else:
+                c.append(("bar", 80, f"{d} is a number, so the bars keep its numeric order"))
+                c.append(("table", 40, "a table lists exact values"))
+            r.append(("donut", f"{d} is a number, not a set of parts"))
+            return c, r
         if is_id:
             c.append(
                 (
@@ -369,7 +402,17 @@ def _rules(f: _Fields) -> tuple[list[tuple[str, int, str]], list[tuple[str, str]
                     f"{d} looks like an ID, so grouping by it gives one bar per row; a table reads better",
                 )
             )
-        if long or card > MANY_CATEGORIES:
+        penalty = 30 if is_id else 0
+        if card > MAX_BARS:
+            c.append(
+                (
+                    "hbar",
+                    70 - penalty,
+                    f"{card} categories: horizontal bars of the top {TOP_BARS}, the rest grouped as Other",
+                )
+            )
+            r.append(("bar", f"{card} categories are too many for upright bars"))
+        elif long or card > MANY_CATEGORIES:
             c.append(
                 (
                     "hbar",
@@ -396,7 +439,7 @@ def _rules(f: _Fields) -> tuple[list[tuple[str, int, str]], list[tuple[str, str]
             )
         elif card <= DONUT_MAX:
             c.append(("donut", 62 - penalty, f"{card} slices is the most a donut should have"))
-        else:
+        elif card <= MANY_CATEGORIES:
             c.append(
                 (
                     "donut",
@@ -404,6 +447,8 @@ def _rules(f: _Fields) -> tuple[list[tuple[str, int, str]], list[tuple[str, str]
                     f"{card} slices is too many; tabsight would keep 7 and group the rest",
                 )
             )
+        else:
+            r.append(("donut", f"{card} slices are far too many to compare"))
         if whole and card >= 8:
             c.append(("treemap", 72 - penalty, "many parts of a whole: a treemap fits them all"))
             c.append(
@@ -413,21 +458,40 @@ def _rules(f: _Fields) -> tuple[list[tuple[str, int, str]], list[tuple[str, str]
                     "a Pareto chart shows how few categories make most of the total",
                 )
             )
-        c.append(("lollipop", 50 - penalty, "a lighter alternative to bars"))
+        if card <= MAX_BARS:
+            c.append(("lollipop", 50 - penalty, "a lighter alternative to bars"))
         if card == 1:
             c.append(("kpi", 85, "only one category: a single number is clearer"))
         c.append(("table", 40, "a table lists exact values"))
-        r.append(("line", "a line implies an order between categories; use bars"))
         return c, r
 
     if nc == 2 and nm == 1:
         a, b = f.cats
-        cb = f.card[b]
-        if f.hierarchy and whole:
-            c.append(("treemap", 88, f"{a} and {b} are nested, so a treemap shows both levels"))
-            c.append(("sunburst", 74, "a sunburst also shows the two levels"))
-        if f.hierarchy and whole and 8 < cb <= 10:
-            c.append(("stacked_bar", 76, f"each {a} bar split into the {b} values inside it"))
+        ca, cb = f.card[a], f.card[b]
+        if f.hierarchy:
+            # nested: every b belongs to one a (f.cats is ordered parent, child)
+            r.append(
+                (
+                    "grouped_bar",
+                    f"{b} sits inside {a}, so side-by-side bars would be mostly empty slots",
+                )
+            )
+            r.append(
+                ("stacked100_bar", f"{b} sits inside {a}, so every 100% bar would be one colour")
+            )
+            if whole:
+                c.append(("treemap", 88, f"{a} and {b} are nested, so a treemap shows both levels"))
+                c.append(("sunburst", 74, "a sunburst also shows the two levels"))
+            if ca <= 10 and cb <= MANY_CATEGORIES and f.longest[b] <= LONG_LABEL:
+                f.layout["stacked_bar"] = (b, a)
+                c.append(("stacked_bar", 80, f"one bar per {b}, coloured by the {a} it belongs to"))
+            elif whole and cb <= 8:
+                c.append(
+                    ("stacked_bar", 82, f"totals per {a}, each split into the {b} values inside it")
+                )
+            c.append(("table", 55, "a table lists every combination"))
+            r.append(("donut", "a donut shows one split, not two"))
+            return c, r
         swap = f"; {b} has fewer values, so it goes in the colours" if f.swapped else ""
         if whole and cb <= 8:
             c.append(("stacked_bar", 85, f"totals per {a}, split by {b}{swap}"))
@@ -435,9 +499,17 @@ def _rules(f: _Fields) -> tuple[list[tuple[str, int, str]], list[tuple[str, str]
         elif not whole:
             r.append(("stacked_bar", why_not_whole))
             r.append(("stacked100_bar", why_not_whole))
-        c.append(("grouped_bar", 80 if cb <= 4 else (58 if cb <= 10 else 35), f"side-by-side bars compare each {b} directly"
-                  + ("" if cb <= 4 else f"; {cb} bars per group is crowded" + ("" if cb <= 10 else ", and more than 10 colours can't be told apart"))))  # fmt: skip
-        if f.card[a] >= 5 and cb >= 5:
+        crowded = "" if cb <= 4 else f"; {cb} bars per group is crowded"
+        if cb > 10:
+            crowded += ", and more than 10 colours can't be told apart"
+        c.append(
+            (
+                "grouped_bar",
+                80 if cb <= 4 else (58 if cb <= 10 else 35),
+                f"side-by-side bars compare each {b} directly{crowded}",
+            )
+        )
+        if ca >= 5 and cb >= 5:
             c.append(
                 ("heatmap", 78, "two categories with many values: a heatmap shows the whole grid")
             )
@@ -484,5 +556,13 @@ def _spec_for(kind: str, f: _Fields) -> ChartSpec:
         color = f.cats[0]
     elif len(f.cats) == 2:
         color = f.cats[1]
-    top = TOP_LINES if kind == "multi_line" and color and f.card.get(color, 0) > 8 else None
-    return ChartSpec(kind, x=x, y=y, color=color, top=top, options=options)
+    if kind in f.layout:
+        x, color = f.layout[kind]
+    top = None
+    if kind == "multi_line" and color and f.card.get(color, 0) > 8:
+        top = TOP_LINES
+    elif kind == "hbar" and x in f.card and f.card[x] > MAX_BARS:
+        top = TOP_BARS
+    numeric_x = x is not None and not f.times and f.prof[x].role == "measure"
+    sort = "none" if numeric_x and kind in ("bar", "hbar", "lollipop") else None
+    return ChartSpec(kind, x=x, y=y, color=color, top=top, sort=sort, options=options)

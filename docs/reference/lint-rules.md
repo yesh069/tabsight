@@ -19,5 +19,7 @@ What `fig.lint()` checks. Each rule has a stable code you can pass to `ignore=`.
 | `single_category` | info | A bar chart with one bar | `kind="kpi"` |
 | `incomplete_last_period` | info | A trend ending on a period that isn't over | filter to complete periods |
 | `table_truncated` | info | A table showing only its first 500 rows | `top=50` |
+| `mixed_units` | info | Measures in different units (money and a count) on one axis | chart them separately |
+| `no_data` | warning | A chart with no values to draw | check filters and the measure column |
 
 The checks read the figure itself, including any `fig.update()` patch, so a smoothed line or a cut axis is caught however it got there. See [choosing a chart](../guide/choosing-charts.md) for examples.

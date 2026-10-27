@@ -88,10 +88,10 @@ def table_calc(
     v = work["v"]
     # One group for everything when there is nothing to restart on.
     keys = [g.loc[work.index] for g in groups] or [pd.Series(0, index=work.index)]
-    by = v.groupby(keys, sort=False)
+    by = v.groupby(keys, sort=False, observed=True)
 
     if kind == "running_total":
-        out = v.fillna(0).groupby(keys, sort=False).cumsum()
+        out = v.fillna(0).groupby(keys, sort=False, observed=True).cumsum()
     elif kind == "pct_of_total":
         total = (
             pd.Series(float(fixed_total), index=v.index)

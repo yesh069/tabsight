@@ -79,9 +79,10 @@ class Figure:
 
     def explain(self) -> str:
         """Every choice tabsight made for this chart, and why, in plain English."""
-        what = {"kpi": "KPI card", "table": "table"}.get(
+        what = {"kpi": "KPI card", "table": "table", "multi_line": "multi-line chart",
+                "stacked100_bar": "100% stacked bar chart", "hbar": "horizontal bar chart"}.get(
             self.kind, self.kind.replace("_", " ") + " chart"
-        )
+        )  # fmt: skip
         lines = [f"{self.title} ({what})", ""]
         lines += [f"- {d}" for d in self.decisions]
         if self.notes:

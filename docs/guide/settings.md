@@ -46,7 +46,7 @@ When the same setting is given in several places, the most specific wins: an arg
 | `fiscal_start` | `1` | Month the fiscal year starts, e.g. `4` for April |
 | `week_start` | `"monday"` | `"monday"`, `"sunday"` or `"saturday"` |
 | `missing` | `"gap"` | Empty periods: `"gap"`, `"zero"` or `"connect"` |
-| `tz` | `None` | Time zone name |
+| `tz` | `None` | Time zone that time-zone-aware dates are converted to before grouping, like `"Europe/Dublin"`. By default they're grouped in their own zone |
 | `theme` | `"light"` | `"light"`, `"dark"` or `"print"` |
 | `palette` | `"classic10"` | Colour palette |
 | `top` | `10` | Default top N for charts |

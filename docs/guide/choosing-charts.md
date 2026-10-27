@@ -100,7 +100,7 @@ print(fig.explain())
 ```
 
 ```text title="Output"
-Sum of Sales by Order Date (multi line chart)
+Sum of Sales by Order Date (multi-line chart)
 
 - multi line chosen automatically (score 92): one line per Region; next best: stacked area (80)
 - Sales is summed: name suggests money
