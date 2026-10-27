@@ -1,0 +1,47 @@
+{
+  "data-raw/naturalearth/ne_10m_admin_1_states_provinces.geojson": {
+    "bytes": 40726851,
+    "sha256": "22d0e3ad85eb3e27f17cabf8ba2d50e554fbc27a87796ff891d958185da62fb5",
+    "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_1_states_provinces.geojson"
+  },
+  "data-raw/naturalearth/ne_10m_populated_places_simple.geojson": {
+    "bytes": 4932147,
+    "sha256": "fd3fa867a320cbd5c5b6bb5bc550afeec2939fb2cef688e508007282a55ac42f",
+    "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_populated_places_simple.geojson"
+  },
+  "data-raw/naturalearth/ne_110m_admin_0_countries.geojson": {
+    "bytes": 838726,
+    "sha256": "6866c877d39cba9c357620878839b336d569f8c662d3cfab4cb1dbe2d39c977f",
+    "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_110m_admin_0_countries.geojson"
+  },
+  "data-raw/naturalearth/ne_50m_admin_0_countries.geojson": {
+    "bytes": 3083490,
+    "sha256": "3e458fc036ad0a66411f2c1e6cac49c5d7bfb81cb1123bc513b22511a2b7fdeb",
+    "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_50m_admin_0_countries.geojson"
+  },
+  "licenses/echarts-LICENSE.txt": {
+    "bytes": 11990,
+    "sha256": "634293835b43a6dd2094fa39182a3d9a6b9ca43b7fdb9ac354e8037af2a3093a",
+    "url": "https://cdn.jsdelivr.net/npm/echarts@6.1.0/LICENSE"
+  },
+  "licenses/echarts-NOTICE.txt": {
+    "bytes": 168,
+    "sha256": "d491d358344f842685c1b1585970999db65fe30ecf7ef3867af8814f4016c016",
+    "url": "https://cdn.jsdelivr.net/npm/echarts@6.1.0/NOTICE"
+  },
+  "licenses/topojson-client-LICENSE.txt": {
+    "bytes": 734,
+    "sha256": "4c4d15b635e04e691825a76db7d33f7f2033b55669a7430011694f31e6c65999",
+    "url": "https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/LICENSE"
+  },
+  "src/tabsight/render/static/echarts.min.js": {
+    "bytes": 1121883,
+    "sha256": "b66b25aeb4df84e33199dc21694014d336d222cbd9deb0e5a7c14bd6aa0d0fd0",
+    "url": "https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"
+  },
+  "src/tabsight/render/static/topojson-client.min.js": {
+    "bytes": 7169,
+    "sha256": "25cd02ae486cc5063e0215a4e4cfb15de83700c87ac48bac4d57dc6aaf3ebb89",
+    "url": "https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"
+  }
+}

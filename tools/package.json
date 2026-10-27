@@ -1,0 +1,10 @@
+{
+  "name": "tabsight-tools",
+  "private": true,
+  "description": "Build-time tools for tabsight (not shipped): map simplification and JS checks.",
+  "devDependencies": {
+    "echarts": "6.1.0",
+    "mapshaper": "0.7.98",
+    "topojson-client": "3.1.0"
+  }
+}

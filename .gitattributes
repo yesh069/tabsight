@@ -1,0 +1,6 @@
+# Normalise our own text files to LF in the repository.
+* text=auto eol=lf
+
+# Vendored files are hash-checked (tools/vendor.lock.json): store and check out byte-for-byte.
+src/tabsight/render/static/*.min.js -text
+licenses/* -text

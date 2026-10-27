@@ -1,0 +1,79 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tabsight"
+dynamic = ["version"]
+description = "BI-quality charts, world maps and dashboards from a pandas DataFrame. Rule-based, no LLM, one offline HTML file."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE", "NOTICE", "licenses/*"]
+requires-python = ">=3.11"
+authors = [{ name = "tabsight contributors" }]
+keywords = ["dashboard", "visualization", "charts", "maps", "pandas", "echarts", "bi"]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Typing :: Typed",
+]
+dependencies = ["pandas>=2.2"]
+
+[project.optional-dependencies]
+excel = ["openpyxl>=3.1"]
+parquet = ["pyarrow>=15"]
+polars = ["polars>=1.0", "pyarrow>=15"]
+png = ["playwright>=1.45"]
+dev = [
+    "pytest>=8",
+    "hypothesis>=6.100",
+    "ruff>=0.6",
+    "mypy>=1.10",
+    "pandas-stubs",
+]
+
+[project.scripts]
+tabsight = "tabsight.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/tabsight/tabsight"
+Issues = "https://github.com/tabsight/tabsight/issues"
+
+[tool.hatch.version]
+path = "src/tabsight/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/tabsight"]
+
+[tool.hatch.build.targets.sdist]
+exclude = ["/data-raw", "/tools/node_modules", "/.github"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+    "node: needs Node.js (JS parity and ECharts checks)",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["src", "tests"]
+extend-exclude = ["data-raw", "tools/node_modules"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "PTH"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["src/tabsight"]

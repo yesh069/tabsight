@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install -e ".[dev]"
+      - run: python -m ruff check .
+      - run: python -m ruff format --check .
+      - run: python -m mypy
+
+  test:
+    name: test (${{ matrix.os }}, py${{ matrix.python }}, pandas ${{ matrix.pandas }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ["3.11", "3.12", "3.13", "3.14"]
+        pandas: ["3"]
+        include:
+          - { os: ubuntu-latest, python: "3.11", pandas: "2" }
+          - { os: ubuntu-latest, python: "3.13", pandas: "2" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install -e ".[dev]"
+      - if: matrix.pandas == '2'
+        run: python -m pip install "pandas>=2.2,<3"
+      - run: python -m pytest -m "not node"
+
+  node:
+    name: node checks (py3.13)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - run: python -m pip install -e ".[dev]"
+      - run: python tools/fetch_vendor.py
+      - run: npm install --ignore-scripts --no-audit --no-fund
+        working-directory: tools
+      - run: python -m pytest -m node
