@@ -90,6 +90,7 @@ def main() -> int:
     _setup()
     old_cwd = Path.cwd()
     os.chdir(ROOT)
+    before = {f for f in ROOT.iterdir() if f.is_file()}
     stale = []
     try:
         for page in pages():
@@ -107,6 +108,13 @@ def main() -> int:
             tabsight.settings.reset_defaults()
     finally:
         os.chdir(old_cwd)
+    left_behind = sorted(f.name for f in ROOT.iterdir() if f.is_file() and f not in before)
+    if left_behind:
+        # Examples must not write files into the repository (mark such lines "# not run").
+        for name in left_behind:
+            (ROOT / name).unlink()
+        print("examples wrote files (removed): " + ", ".join(left_behind))
+        return 1
     if stale:
         print(("stale: " if args.check else "updated: ") + ", ".join(stale))
     return 1 if (stale and args.check) else 0
