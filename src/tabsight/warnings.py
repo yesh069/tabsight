@@ -12,6 +12,7 @@ import warnings as _stdlib_warnings
 from typing import Any
 
 __all__ = [
+    "ChartLintError",
     "CleanWarning",
     "DataWarning",
     "FormatWarning",
@@ -55,6 +56,10 @@ class InvalidSpecError(TabsightError, ValueError):
 
 class UnsafeInputError(TabsightError, ValueError):
     """Input rejected for safety reasons (for example a URL instead of a local file)."""
+
+
+class ChartLintError(TabsightError):
+    """``fig.lint(strict=True)`` found a chart design problem."""
 
 
 _MAX_REPR = 60

@@ -105,6 +105,7 @@ class Aggregation:
     notes: tuple[str, ...] = ()
     suppressed: int = 0
     outputs: tuple[str, ...] = ()  # measure and calculated-field columns, in the order asked for
+    partial_period: bool = False  # the last date period isn't over (see notes)
 
     @property
     def values(self) -> pd.DataFrame:
@@ -435,6 +436,7 @@ def aggregate(
     # Working copy: only the needed columns, read as proper types.
     work: dict[str, pd.Series] = {}
     grains: dict[str, str] = {}
+    partial_period = False
     for d in dim_list:
         col = frame[d]
         if prof[d].role == "time":
@@ -450,6 +452,7 @@ def aggregate(
             partial = _incomplete_last_period(dates, work[d], grain)
             if partial:
                 notes.append(partial)
+                partial_period = True
         else:
             work[d] = col
 
@@ -562,6 +565,7 @@ def aggregate(
         notes=tuple(notes),
         suppressed=suppressed,
         outputs=tuple(outputs),
+        partial_period=partial_period,
     )
 
 
@@ -622,7 +626,7 @@ def _top_n(
     if type(n) is not int or not 1 <= n <= 1000:
         raise InvalidSpecError("top must be an integer 1-1000")
     totals = finish(combine_parts(parts, [dim], measures))
-    totals = totals.assign(_k=totals[dim].map(natural_key))
+    totals = totals.assign(_k=totals[dim].astype("object").map(natural_key))
     totals = totals.sort_values([key, "_k"], ascending=[False, True], na_position="last")
     values = totals[dim].tolist()
     count = len(values)
@@ -700,7 +704,7 @@ def _sort(
             order = {v: i for i, v in enumerate(prof[first].ordered or ())}
             work["_s"] = work[first].map(lambda v: order.get(str(v), len(order)))
         else:
-            work["_s"] = work[first].map(natural_key)
+            work["_s"] = work[first].astype("object").map(natural_key)
         keys.append("_s")
         asc.append(True)
     elif primary is not None:
@@ -719,12 +723,12 @@ def _sort(
         at = 1 if first in grains else 0
         keys.insert(at, "_other")
         asc.insert(at, True)
-    work["_n"] = work[first].map(natural_key)
+    work["_n"] = work[first].astype("object").map(natural_key)
     keys.append("_n")
     asc.append(True)
     for d in dims[1:]:
         col = f"_d_{d}"
-        work[col] = work[d] if d in grains else work[d].map(natural_key)
+        work[col] = work[d] if d in grains else work[d].astype("object").map(natural_key)
         keys.append(col)
         asc.append(True)
     work = work.sort_values(keys, ascending=asc, kind="mergesort", na_position="last")

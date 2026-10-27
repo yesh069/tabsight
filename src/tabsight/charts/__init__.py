@@ -67,8 +67,32 @@ def chart(
     prof: Profile | None = None,
 ) -> Figure:
     """Build a chart. ``x`` is what you group by, ``y`` the measure(s), ``color`` splits
-    the series. Everything else has a sensible default and can be overridden."""
+    the series. Everything else has a sensible default and can be overridden.
+
+    ``kind="auto"`` draws the best chart ``ts.recommend`` finds for these fields."""
     settings = resolve(locale=locale, currency=currency, palette=palette)
+    chosen: list[str] = []
+    freq_source = "asked" if freq else None
+    if kind == "auto":
+        from tabsight.recommend import recommend
+
+        data, _ = _prepare(as_frame(data))
+        prof = prof if prof is not None else profile(data, quiet=True)
+        recs = recommend(data, x=x, y=y, color=color, prof=prof)
+        pick = recs.best
+        kind, x, color = pick.kind, pick.spec.x, pick.spec.color
+        top = top if top is not None else pick.spec.top
+        runner_up = next((r for r in recs if r.available and r.kind != pick.kind), None)
+        chosen.append(
+            f"{pick.kind.replace('_', ' ')} chosen automatically (score {pick.score}): {pick.reason}"
+            + (
+                f"; next best: {runner_up.kind.replace('_', ' ')} ({runner_up.score})"
+                if runner_up
+                else ""
+            )
+        )
+        if freq is None and pick.spec.options.get("freq"):
+            freq, freq_source = pick.spec.options["freq"], "auto"
     theme_obj = theme if isinstance(theme, Theme) else get_theme(theme or settings.theme)
     options: dict[str, Any] = {"freq": freq} if freq else {}
     spec = ChartSpec(
@@ -85,6 +109,8 @@ def chart(
     frame, _ = _prepare(as_frame(data))
     prof = prof if prof is not None else profile(frame, quiet=True)
     ctx = _Context(spec, prof, settings, theme_obj, ColorRegistry(settings.palette, pinned=colors))
+    ctx.decisions.extend(chosen or [f"{spec.kind.replace('_', ' ')} chart, as asked"])
+    ctx.freq_source = freq_source
 
     if spec.kind == "kpi":
         return _kpi(frame, ctx, height)
@@ -115,6 +141,9 @@ class _Context:
         self.theme = theme
         self.colors = colors
         self.notes: list[str] = []
+        self.decisions: list[str] = []
+        self.facts: dict[str, Any] = {}
+        self.freq_source: str | None = None
 
     @property
     def locale(self) -> str:
@@ -134,8 +163,33 @@ class _Context:
             if field.role in ("dimension", "text", "time") and agg not in ("count", "countd"):
                 agg = "countd"
                 self.notes.append(f"{name} is not a number, so it is counted (distinct values)")
+                why = "it is not a number"
+            elif self.spec.agg:
+                why = "as asked"
+            else:
+                why = "; ".join(field.reasons) or "the default for this column"
+            self.decisions.append(f"{name} is {_AGG_WORDS.get(agg, agg)}: {why}")
+            self.facts.setdefault("measures", []).append(
+                {
+                    "column": name,
+                    "agg": agg,
+                    "unit": field.unit,
+                    "role": field.role,
+                    "default_agg": field.agg,
+                }
+            )
             out.append(Measure(name, agg))
         return out
+
+    def describe_format(self, measures: list[Measure], where: str) -> None:
+        for m in measures:
+            kw = self.number_kwargs(m)
+            unit = kw["unit"]
+            how = f"{unit} in {kw['currency']}" if unit == "currency" else unit
+            pattern = f" with the pattern {kw['pattern']!r}" if "pattern" in kw else ""
+            self.decisions.append(
+                f"{m.label} is formatted as {how} for {self.locale}{pattern}{where}"
+            )
 
     def dims(self) -> list[str]:
         xs = self.spec.x
@@ -197,8 +251,31 @@ class _Context:
         return text("by", measure=what, dimension=_join([_pretty(d) for d in dims]))
 
 
+_AGG_WORDS = {
+    "sum": "summed", "mean": "averaged", "median": "summarised by its median", "min": "summarised by its minimum",
+    "max": "summarised by its maximum", "count": "counted", "countd": "counted (distinct values)",
+    "wavg": "a weighted average",
+}  # fmt: skip
+
+
 def _same_parents(frame: pd.DataFrame, parents: list[str], i: int) -> bool:
     return all(frame[p].iloc[i] == frame[p].iloc[i - 1] for p in parents)
+
+
+def _order_words(sort: Any, ordered: bool) -> str:
+    if isinstance(sort, tuple):
+        return "in the order you gave"
+    if sort == "none":
+        return "in natural order (A to Z, 2 before 10)"
+    if sort is None and ordered:
+        return "in its own order (like Low, Medium, High)"
+    if sort == "asc":
+        return "sorted smallest first, as asked"
+    return "sorted largest first, so the ranking reads at a glance"
+
+
+def _colors_pinned(ctx: _Context) -> bool:
+    return bool(ctx.colors.to_dict().get("pinned"))
 
 
 def _pretty(name: str) -> str:
@@ -261,9 +338,26 @@ def _echarts(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
         missing="zero" if kind in BAR_KINDS else None, prof=ctx.prof,
     )  # fmt: skip
     ctx.notes.extend(result.notes)
-    if x in result.categories and result.other:
-        ctx.notes.append(text("top_n_of", n=top, total=result.categories[x]))
+    cut = next((d for d in group if d in result.categories), None)
+    if cut is not None and result.other:
+        ctx.notes.append(text("top_n_of", n=top, total=result.categories[cut]))
+        why = (
+            ", because a donut with more slices can't be read"
+            if kind == "donut" and spec.top is None
+            else ""
+        )
+        ctx.decisions.append(
+            f"only the top {top} {cut} values are drawn; the rest are grouped as Other, in grey{why}"
+        )
     grain = spec.options.get("freq") or ctx.prof[x].grain
+    x_time = ctx.prof[x].role == "time"
+    if x_time:
+        source = {"asked": "as asked", "auto": "to suit the time span"}.get(
+            ctx.freq_source or "", "the grain of the dates"
+        )
+        ctx.decisions.append(f"{x} is grouped by {grain} ({source}) and shown in time order")
+    else:
+        ctx.decisions.append(f"{x} is {_order_words(spec.sort, bool(ctx.prof[x].ordered))}")
 
     values = result.frame.copy()
     if not pd.api.types.is_datetime64_any_dtype(values[x]):
@@ -280,6 +374,9 @@ def _echarts(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
         option, kind = _build.donut(values, x, labels, measures[0], other_x, ctx)
         if kind != "donut":
             ctx.notes.append("negative values cannot be shown as slices, so this is drawn as bars")
+            ctx.decisions.append(
+                "drawn as horizontal bars, because negative values can't be slices"
+            )
     elif kind in BAR_KINDS:
         if kind == "bar" and (
             max((len(lb) for lb in labels), default=0) > HBAR_LABEL_CHARS
@@ -287,9 +384,35 @@ def _echarts(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
         ):
             kind = "hbar"
             ctx.notes.append("drawn as horizontal bars so every label can be read")
+            ctx.decisions.append(
+                f"switched to horizontal bars: {len(labels)} categories or labels longer than "
+                f"{HBAR_LABEL_CHARS} characters would not fit side by side"
+            )
         option = _build.bars(values, x, x_values, labels, measures, color, kind, other_x, ctx)
+        ctx.decisions.append("the value axis starts at zero, so bar lengths are honest")
+        if color:
+            ctx.decisions.append("a missing combination is shown as 0")
     else:
         option = _build.lines(values, x, x_values, labels, measures, color, kind, ctx)
+        ctx.decisions.append("lines are straight between real data points, never smoothed")
+        ctx.decisions.append(
+            {"gap": "a missing period is left as a gap", "zero": "a missing period is drawn as 0",
+             "connect": "a missing period is bridged by the line"}[ctx.settings.missing]
+        )  # fmt: skip
+    if color:
+        pinned = " (with your pinned colours)" if _colors_pinned(ctx) else ""
+        ctx.decisions.append(
+            f"{color} values take colours from the {ctx.settings.palette} palette in sorted order, "
+            f"so each value keeps its colour in every chart{pinned}"
+        )
+    ctx.describe_format(measures, "; short on the axis, in full in tooltips")
+    numbers = pd.concat([pd.to_numeric(values[m.label], errors="coerce") for m in measures])
+    ctx.facts.update(
+        x_time=x_time, x_ordered=bool(ctx.prof[x].ordered) or isinstance(spec.sort, tuple),
+        categories=len(x_values), longest_label=max((len(lb) for lb in labels), default=0),
+        series=int(values[color].nunique(dropna=False)) if color else len(measures),
+        negative=bool((numbers < 0).any()), partial_period=result.partial_period,
+    )  # fmt: skip
 
     if color:
         n_colors = values[color].nunique()
@@ -309,6 +432,8 @@ def _echarts(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
         theme=ctx.theme,
         height=fig_height,
         notes=tuple(dict.fromkeys(ctx.notes)),
+        decisions=tuple(dict.fromkeys(ctx.decisions)),
+        facts=ctx.facts,
     )
 
 
@@ -325,6 +450,7 @@ def _kpi(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
     result = aggregate(frame, None, measures, prof=ctx.prof)
     value = result.values[m.label].iloc[0] if len(result.frame) else None
     label = ctx.spec.title or _pretty(ctx.measure_title(m))
+    ctx.describe_format(measures, "; short on the card, in full on hover")
     kpi = {
         "label": None,  # the tile title already names the measure
         "value_text": ctx.fmt(value, m, "compact") or text("no_data"),
@@ -333,7 +459,8 @@ def _kpi(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
     }
     return Figure(
         kind="kpi", spec=ctx.spec, title=label, kpi=kpi, locales=locale_payload([ctx.locale]),
-        theme=ctx.theme, height=height or 120, notes=tuple(ctx.notes),
+        theme=ctx.theme, height=height or 120, notes=tuple(ctx.notes), decisions=tuple(ctx.decisions),
+        facts=ctx.facts,
     )  # fmt: skip
 
 
@@ -378,6 +505,13 @@ def _table(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
                 kw["decimals"] = 1  # one setting per column, so the numbers line up
         for i, v in enumerate(shown[m.label]):
             cells[i].append(format_number(v, unit, "full", **kw))
+    if dims:
+        ctx.decisions.append(
+            "a parent value is shown once rather than repeated on every row" if len(dims) > 1
+            else f"{dims[0]} is {_order_words(ctx.spec.sort, bool(ctx.prof[dims[0]].ordered))}"
+        )  # fmt: skip
+    ctx.describe_format(measures, "; one number of decimals per column so the digits line up")
+    ctx.facts.update(rows_total=total_rows, rows_shown=len(shown))
     note = None
     if total_rows > MAX_TABLE_ROWS:
         note = f"showing the first {MAX_TABLE_ROWS:,} of {total_rows:,} rows"
@@ -385,4 +519,5 @@ def _table(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
         kind="table", spec=ctx.spec, title=ctx.title(measures, dims) if measures else ", ".join(dims),
         subtitle=ctx.spec.subtitle, table={"columns": columns, "rows": cells, "note": note},
         locales=locale_payload([ctx.locale]), theme=ctx.theme, height=height or 400, notes=tuple(ctx.notes),
+        decisions=tuple(ctx.decisions), facts=ctx.facts,
     )  # fmt: skip

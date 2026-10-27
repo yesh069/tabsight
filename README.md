@@ -35,7 +35,7 @@ tabsight starts one step earlier. It works out what each column actually is, tel
 </p>
 <p align="center"><sub>Real output from <code>ts.chart</code> on the sample data in this repository, nothing edited by hand.</sub></p>
 
-> **Status:** early development. Phases 0–3 of 10 are done: reading, profiling, checking, cleaning, formatting, exact aggregation and the first 13 chart types work today. The chart recommender, world maps and cross-filtering dashboards are next. See the [roadmap](#roadmap).
+> **Status:** early development. Phases 0–4 of 10 are done: reading, profiling, checking, cleaning, formatting, exact aggregation, the first 13 chart types and a chart recommender that explains itself work today. World maps and cross-filtering dashboards are next. See the [roadmap](#roadmap).
 
 ## A first look
 
@@ -137,11 +137,33 @@ en_IN ₹12.3L
 
 **Draws charts that follow the rules.** Bars, lines, areas, donuts, KPI cards and tables. Every label is readable, or the chart turns horizontal and tells you so. Lines are never smoothed, bars start at zero, the same region keeps the same colour in every chart, and a chart that ends on a half-finished month says so instead of implying a crash.
 
+**Picks the chart, and tells you why.** `ts.recommend` ranks the charts that fit your fields and lists what it ruled out. `kind="auto"` draws the winner, `fig.explain()` lists every decision, and `fig.lint()` checks any chart, including one you changed by hand, against 15 design rules.
+
+```python
+print(ts.recommend(orders, x="Sub_Category", y="Discount"))
+```
+
+```text title="Output"
+Charts for 1 category field, 1 measure:
+
+   90  bar             a measure by category: bars, largest first, are easiest to compare
+   80  hbar            horizontal bars work too, and suit longer labels
+   50  lollipop        a lighter alternative to bars  (phase 6)
+   40  table           a table lists exact values
+
+Ruled out:
+       donut           these values are averages or distinct counts, which don't add up to a whole
+       treemap         these values are averages or distinct counts, which don't add up to a whole
+       line            a line implies an order between categories; use bars
+```
+
+A donut of average discounts would show shares of a total that doesn't exist, so it's ruled out. Rules, not a model: the same data always gets the same answer, and the rules are checked against 70 labelled cases.
+
 ## How it compares
 
 | | tabsight | PyGWalker | Lux | Vizro | Plotly / pyecharts |
 |---|---|---|---|---|---|
-| Picks charts for you, with reasons | Phase 4 (rule-based) | No (drag and drop) | Yes (no longer maintained) | No | No |
+| Picks charts for you, with reasons | Yes (rule-based) | No (drag and drop) | Yes (no longer maintained) | No | No |
 | Understands units and formats them | Yes | No | No | No | Manual |
 | Exact numbers after filtering | Yes | Partly | — | Server-side | — |
 | One offline HTML file | Yes | Limited | No | No (needs a server) | Charts, not dashboards |
@@ -183,8 +205,8 @@ The full guide lives in [`docs/`](docs/README.md) and reads directly on GitHub. 
 
 - [Quickstart](docs/getting-started/quickstart.md): one file from CSV to chart
 - [How tabsight thinks](docs/getting-started/concepts.md): the ideas behind the defaults
-- User guide: [profiling](docs/guide/profiling.md), [aggregating](docs/guide/aggregating.md), [calculated fields](docs/guide/calculated-fields.md), [charts](docs/guide/charts.md), [formatting](docs/guide/formatting.md) and more
-- Reference: [formula functions](docs/reference/formula-functions.md), [locales](docs/reference/locales.md), [chart kinds](docs/reference/chart-kinds.md)
+- User guide: [profiling](docs/guide/profiling.md), [aggregating](docs/guide/aggregating.md), [calculated fields](docs/guide/calculated-fields.md), [charts](docs/guide/charts.md), [choosing a chart](docs/guide/choosing-charts.md), [formatting](docs/guide/formatting.md) and more
+- Reference: [formula functions](docs/reference/formula-functions.md), [locales](docs/reference/locales.md), [chart kinds](docs/reference/chart-kinds.md), [lint rules](docs/reference/lint-rules.md)
 
 The same pages build a documentation website with search and dark mode: `python -m pip install -e ".[docs]"`, then `python -m mkdocs serve`.
 
@@ -194,8 +216,8 @@ The same pages build a documentation website with search and dark mode: `python 
 |-------|------|--------|
 | 0–2 | Setup, foundation (reading, profiling, cleaning, formatting), exact aggregation and calculated fields | Done |
 | 3 | Bar, line, area, donut, KPI and table charts as offline HTML | Done |
-| 4 | "Show Me" chart recommender with reasons, chart linter, `fig.explain()` | Next |
-| 5 | World maps: countries, states and provinces for every country, cities | Planned |
+| 4 | "Show Me" chart recommender with reasons, chart linter, `fig.explain()` | Done |
+| 5 | World maps: countries, states and provinces for every country, cities | Next |
 | 6 | Heatmaps, treemaps, Sankey, scatter, distributions, small multiples | Planned |
 | 7 | Trend lines, forecasts, period comparisons, plain-English insights | Planned |
 | 8 | Dashboards with cross-filtering, drill-down and filters | Planned |
@@ -210,7 +232,7 @@ Every decision behind these phases is in [`PLAN.md`](PLAN.md).
 python -m pip install -e ".[dev,docs]"
 python tools/fetch_vendor.py                   # pinned, hash-checked third-party files
 cd tools && npm install --ignore-scripts && cd ..
-python -m pytest                               # about 400 tests, including Node checks
+python -m pytest                               # about 600 tests, including Node checks
 python -m ruff check . && python -m mypy
 python tools/render_doc_outputs.py             # refresh the real outputs in docs and README
 python tools/make_gallery.py                   # every chart kind, into ./gallery

@@ -100,6 +100,7 @@ nav:
       - Table calculations: guide/table-calculations.md
       - Calculated fields: guide/calculated-fields.md
       - Making charts: guide/charts.md
+      - Choosing a chart: guide/choosing-charts.md
       - Formatting numbers and dates: guide/formatting.md
       - Colours and themes: guide/colors-and-themes.md
       - Settings: guide/settings.md
@@ -109,6 +110,7 @@ nav:
       - Formula functions: reference/formula-functions.md
       - Locales and currencies: reference/locales.md
       - Chart kinds: reference/chart-kinds.md
+      - Lint rules: reference/lint-rules.md
       - Warnings and errors: reference/warnings-and-errors.md
   - Project:
       - Roadmap: project/roadmap.md

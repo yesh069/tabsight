@@ -11,6 +11,7 @@ tabsight produces HTML files that other people open, reads files from many sourc
 | Your data | Never modified; every function works on a copy. |
 | Saved files | Specs, schemas, cleaning decisions and colour registries are validated against allow-lists; unknown keys are rejected; sizes are limited. |
 | HTML output (from Phase 3) | Every data value is escaped; embedded JSON cannot break out of its script tag; CSV downloads are protected from spreadsheet formula injection. |
+| Chart advice (from Phase 4) | Recommendations, `explain()` and lint reports are plain text and are never written into the HTML page. Column names in them are checked against the data first, and unknown names or lint codes are refused with shortened, quoted messages. |
 | Styling | Colours must be hex codes; fonts may only contain safe characters, so CSS cannot be injected. |
 | File formats | Excel only with `defusedxml` (blocks XML bombs); Parquet only with pyarrow 15+ (after CVE-2023-47248); no pickle. |
 | Privacy | `min_group_size` hides small groups; no telemetry; no clock. |

@@ -100,6 +100,14 @@ def test_every_chart_kind_is_documented() -> None:
         assert f"`{alias}`" in page
 
 
+def test_every_lint_rule_is_documented() -> None:
+    from tabsight.lint import RULES
+
+    page = (DOCS / "reference" / "lint-rules.md").read_text(encoding="utf-8")
+    documented = dict(re.findall(r"^\| `(\w+)` \| (\w+) \|", page, re.M))
+    assert documented == {code: severity for code, (severity, _) in RULES.items()}
+
+
 def test_every_setting_is_documented() -> None:
     page = (DOCS / "guide" / "settings.md").read_text(encoding="utf-8")
     import dataclasses

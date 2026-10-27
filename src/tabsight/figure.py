@@ -4,13 +4,17 @@ from __future__ import annotations
 
 import copy
 import dataclasses
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from tabsight.render.html import page, srcdoc_iframe
 from tabsight.spec import ChartSpec
 from tabsight.theme import THEMES, Theme
 from tabsight.warnings import InvalidSpecError, safe_repr
+
+if TYPE_CHECKING:
+    from tabsight.lint import LintReport
 
 __all__ = ["FIGURE_VERSION", "Figure"]
 
@@ -34,6 +38,8 @@ class Figure:
     theme: Theme = THEMES["light"]
     height: int = 420
     notes: tuple[str, ...] = ()
+    decisions: tuple[str, ...] = ()  # why the chart looks the way it does; see explain()
+    facts: dict[str, Any] = dataclasses.field(default_factory=dict)  # what lint() checks
 
     def to_dict(self) -> dict[str, Any]:
         out: dict[str, Any] = {
@@ -70,6 +76,23 @@ class Figure:
         """Jupyter display: the page inside a sandboxed iframe, isolated from the notebook."""
         extra = 150 if self.kind not in ("kpi", "table") else 260
         return srcdoc_iframe(self.to_html(), self.height + extra)
+
+    def explain(self) -> str:
+        """Every choice tabsight made for this chart, and why, in plain English."""
+        what = {"kpi": "KPI card", "table": "table"}.get(
+            self.kind, self.kind.replace("_", " ") + " chart"
+        )
+        lines = [f"{self.title} ({what})", ""]
+        lines += [f"- {d}" for d in self.decisions]
+        if self.notes:
+            lines += ["", "Notes shown on the chart:"] + [f"- {n}" for n in self.notes]
+        return "\n".join(lines)
+
+    def lint(self, *, ignore: Iterable[str] = (), strict: bool = False) -> LintReport:
+        """Check this chart against the rules of good chart design. See ``tabsight.lint``."""
+        from tabsight.lint import lint
+
+        return lint(self, ignore=ignore, strict=strict)
 
     def update(self, patch: dict[str, Any]) -> Figure:
         """Return a copy with ``patch`` deep-merged into the ECharts option.

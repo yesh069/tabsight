@@ -1,6 +1,6 @@
 # Chart kinds
 
-The 33 kinds a [`ChartSpec`](../guide/chart-specs.md) accepts. Kinds marked **now** can be drawn with [`ts.chart`](../guide/charts.md); the rest arrive in the phase shown.
+The 33 kinds a [`ChartSpec`](../guide/chart-specs.md) accepts. Kinds marked **now** can be drawn with [`ts.chart`](../guide/charts.md); the rest arrive in the phase shown. `kind="auto"` is not a kind of its own: it draws the best chart [`ts.recommend`](../guide/choosing-charts.md) finds for your fields.
 
 | Family | Kind | Available |
 |--------|------|-------|

@@ -44,6 +44,18 @@ Generated from the docstrings in the source code, so it always matches the insta
 
 ::: tabsight.figure.Figure
 
+## Choosing and checking charts
+
+::: tabsight.recommend.recommend
+
+::: tabsight.recommend.Recommendations
+
+::: tabsight.recommend.Recommendation
+
+::: tabsight.lint.LintReport
+
+::: tabsight.lint.LintIssue
+
 ::: tabsight.render.assets.runtime_js
 
 ## Calculated fields

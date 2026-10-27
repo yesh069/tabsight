@@ -52,6 +52,10 @@ CALLS: dict[str, Callable[[pd.DataFrame], Any]] = {
         ts.chart(d, "kpi", y="Profit"),
         ts.chart(d, "table", x=["Category", "Sub_Category"], y=["Sales", "Discount"]),
     ),
+    "recommend": lambda d: ts.recommend(d, x="Order_Date", y="Sales", color="Region").to_dict(),
+    "chart auto + explain + lint": lambda d: (lambda f: (f.explain(), f.lint()))(
+        ts.chart(d, "auto", x="Category", y="Sales", color="Segment")
+    ),
 }
 
 

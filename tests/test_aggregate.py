@@ -316,3 +316,18 @@ def test_other_stays_inside_each_date_when_grouping_by_date_first() -> None:
     vals = aggregate(df, ["Month", "Region"], "Sales", freq="month", top=1).values
     assert vals["Month"].is_monotonic_increasing
     assert vals["Region"].tolist() == ["A", "Other (2)", "A", "Other (2)"]
+
+
+def test_ordered_categorical_keeps_its_order() -> None:
+    # pandas 2 crashed mapping a categorical to sort keys (tuples became a MultiIndex)
+    df = pd.DataFrame(
+        {
+            "Priority": pd.Categorical(
+                ["Low", "High", "Low", "Medium"], categories=["Low", "Medium", "High"], ordered=True
+            ),
+            "Sales": [1.0, 2.0, 3.0, 4.0],
+        }
+    )
+    result = aggregate(df, "Priority", "Sales").values
+    assert list(result["Priority"]) == ["Low", "Medium", "High"]
+    assert list(result["Sales"]) == [4.0, 4.0, 2.0]

@@ -31,6 +31,7 @@ To turn every tabsight warning into an error, use strict mode: `ts.set_defaults(
 |-------|------|
 | `TabsightError` | Base class (and strict-mode warnings) |
 | `InvalidSpecError` | An argument, setting, spec, schema or saved decision failed validation (also a `ValueError`) |
+| `ChartLintError` | `fig.lint(strict=True)` found a chart design problem (see [lint rules](lint-rules.md)) |
 | `UnsafeInputError` | Input refused for safety: a URL, an unsupported file type, Excel without defusedxml, old pyarrow (also a `ValueError`) |
 | `CalcError` | A formula cannot be parsed or evaluated (in `tabsight.formulas`; a subclass of `InvalidSpecError`) |
 

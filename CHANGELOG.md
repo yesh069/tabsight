@@ -4,6 +4,18 @@ All notable changes are listed here. The project follows [Semantic Versioning](h
 
 ## Unreleased
 
+### Added (Phase 4: choosing and checking charts)
+- `ts.recommend(data, x, y, color)`: ranks the chart kinds that fit, each with a score and a reason, lists the kinds it ruled out with reasons, and `why_not(kind)`. Charts from later phases are listed with their phase; `.best` is the best one drawable today. Rules look at dates and their span, category counts and label lengths, whether a measure adds up, negative totals, IDs, nesting and units.
+- `ts.chart(..., kind="auto")` draws the best recommendation; anything you pass still wins.
+- `fig.explain()`: every decision tabsight made for a chart, in plain English.
+- `fig.lint(ignore=..., strict=...)`: 15 design rules (`tabsight.lint.RULES`) with fixes and the `ts.chart` arguments that apply them. Reads the figure itself, so `fig.update()` patches are checked too. `ChartLintError` for strict mode.
+- 70 labelled recommender cases (`tests/recommend_cases.py`); every automatic chart for them passes its own linter.
+- When two categories are picked and the colour field has many values, the one with fewer values goes in the colours. With more than 8 lines, `auto` keeps the biggest 6.
+- Docs: "Choosing a chart" guide and the lint rules reference.
+
+### Fixed (Phase 4)
+- Grouping by an ordered categorical column crashed on pandas 2 while sorting (found by the recommender cases).
+
 ### Added (Phase 3: core charts)
 - `ts.chart`: bar, hbar, grouped, stacked and 100% stacked bars; line, multi-line, area, stacked area and sparkline; donut; KPI card; table. BI rules by default: all labels shown (switching to horizontal bars when labels are long), lines never smoothed, zero baseline for bars, one colour per series, the same colour for the same value across charts, top 7 + grey "Other" for donuts, grouped parents in tables.
 - Notes on figures, including a warning when the last period is incomplete and would look low.

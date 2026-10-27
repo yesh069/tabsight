@@ -14,7 +14,9 @@ from tabsight.figure import Figure
 from tabsight.formats import format_date, format_number
 from tabsight.formulas import CalcField, calc
 from tabsight.io import load
+from tabsight.lint import LintIssue, LintReport
 from tabsight.profile import Field, Profile, profile
+from tabsight.recommend import Recommendation, Recommendations, recommend
 from tabsight.render.assets import ECHARTS_VERSION, TOPOJSON_CLIENT_VERSION, runtime_js
 from tabsight.settings import Settings, config, current, set_defaults
 from tabsight.spec import CHART_KINDS, ChartSpec
@@ -33,8 +35,12 @@ __all__ = [
     "ColorRegistry",
     "Field",
     "Figure",
+    "LintIssue",
+    "LintReport",
     "Measure",
     "Profile",
+    "Recommendation",
+    "Recommendations",
     "Settings",
     "Theme",
     "__version__",
@@ -51,6 +57,7 @@ __all__ = [
     "format_number",
     "load",
     "profile",
+    "recommend",
     "runtime_js",
     "set_defaults",
     "table_calc",
