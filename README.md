@@ -36,7 +36,7 @@ tabsight starts one step earlier. It works out what each column actually is, tel
 </p>
 <p align="center"><sub>Real output from <code>ts.chart</code> on the sample data in this repository, nothing edited by hand.</sub></p>
 
-> **Status:** early development. Phases 0–9 of 10 are done: reading, profiling, checking, cleaning, formatting, exact aggregation, all 33 chart types with small multiples, a chart recommender that explains itself, offline maps of every country's regions, `df.plot` in notebooks, trend lines, forecasts, period comparisons, plain-English insights and cross-filtering dashboards with drill-down, `ts.auto(df)`, the `tabsight` command line, server mode for web apps and PNG export work today. The first PyPI release is next. See the [roadmap](#roadmap).
+> **Status:** early development, not yet on PyPI. Install it from this repository (see [Install](#install)).
 
 ## A first look
 
@@ -283,22 +283,6 @@ The full guide lives in [`docs/`](docs/README.md) and reads directly on GitHub. 
 - Reference: [formula functions](docs/reference/formula-functions.md), [locales](docs/reference/locales.md), [chart kinds](docs/reference/chart-kinds.md), [lint rules](docs/reference/lint-rules.md), [map coverage](docs/reference/map-coverage.md)
 
 The same pages build a documentation website with search and dark mode: `python -m pip install -e ".[docs]"`, then `zensical serve`.
-
-## Roadmap
-
-| Phase | What | Status |
-|-------|------|--------|
-| 0–2 | Setup, foundation (reading, profiling, cleaning, formatting), exact aggregation and calculated fields | Done |
-| 3 | Bar, line, area, donut, KPI and table charts as offline HTML | Done |
-| 4 | "Show Me" chart recommender with reasons, chart linter, `fig.explain()` | Done |
-| 5 | World maps: countries, states and provinces for every country, cities | Done |
-| 6 | Heatmaps, treemaps, Sankey, scatter, distributions, small multiples; `df.plot` / `df.ts` in notebooks | Done |
-| 7 | Trend lines, forecasts, period comparisons, plain-English insights; charts in saved notebooks | Done |
-| 8 | Dashboards with cross-filtering, filters and drill-down | Done |
-| 9 | `ts.auto(df)` one-line dashboards, command line, server mode and web-framework helpers, PNG export | Done |
-| 10 | First release on PyPI | Next |
-
-Every decision behind these phases is in [`PLAN.md`](PLAN.md).
 
 ## Working on tabsight
 

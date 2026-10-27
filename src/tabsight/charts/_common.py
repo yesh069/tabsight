@@ -1,4 +1,4 @@
-"""Helpers shared by the chart families added after Phase 3: colour scales, numbers, figures."""
+"""Helpers shared by the chart families: colour scales, numbers, figures."""
 
 from __future__ import annotations
 

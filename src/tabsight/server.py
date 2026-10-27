@@ -1,4 +1,4 @@
-"""Server mode (PLAN 9.3): the data stays in Python; the page asks for numbers.
+"""Server mode: the data stays in Python; the page asks for numbers.
 
 An offline dashboard carries one shared table and filters it in the browser. That table
 has a size limit, and medians and distinct counts need every value. In server mode the

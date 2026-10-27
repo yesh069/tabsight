@@ -112,7 +112,7 @@ ignore = ["E501"]
 # Tests may use assert and run Node/Python subprocesses with fixed arguments.
 "tests/**" = ["S101", "S603", "S607"]
 # The server-mode tests talk to a local test server they start themselves.
-"tests/test_phase9.py" = ["S310"]
+"tests/test_auto_server_web.py" = ["S310"]
 # The vendor fetcher downloads fixed, pinned https URLs (hash-checked afterwards).
 "tools/fetch_vendor.py" = ["S310"]
 

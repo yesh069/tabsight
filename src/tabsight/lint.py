@@ -227,7 +227,7 @@ def _check(fig: Figure) -> Iterator[LintIssue]:
     if (kind in _LINES or kind in _BARS) and len(units) > 1:
         yield _issue("mixed_units", f"{' and '.join(str(m.get('column')) for m in measures)} have different units "
                      "on one axis, so the smaller one looks flat",
-                     "chart them separately; two-axis combo charts arrive in phase 6")  # fmt: skip
+                     "chart them separately, or use kind=\"combo\" for two axes")  # fmt: skip
     if kind == "table" and int(facts.get("rows_total", 0)) > int(facts.get("rows_shown", 0)):
         yield _issue("table_truncated", f"only {facts['rows_shown']:,} of {facts['rows_total']:,} rows are shown",
                      "group by fewer columns or keep the top rows", {"top": 50})  # fmt: skip

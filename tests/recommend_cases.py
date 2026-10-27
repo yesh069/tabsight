@@ -9,7 +9,7 @@ looked at case by case and the reasoning is in the comment.
 
 The data is synthetic and deterministic so every case is reproducible.
 
-Since Phase 6 every chart kind can be drawn, so ``best`` and ``ideal`` agree; the eight
+Every chart kind can be drawn, so ``best`` and ``ideal`` agree; the eight
 cases that used to fall back to a table or bars until a kind existed now expect that kind.
 """
 

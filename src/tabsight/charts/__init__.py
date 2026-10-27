@@ -1,7 +1,6 @@
 """``ts.chart``: from a DataFrame to a finished, BI-quality chart.
 
-Phase 3 draws bar, line, area, donut, KPI and table charts. The rest of the 33 kinds in
-``tabsight.spec.CHART_KINDS`` raise a clear "arrives in phase N" error until they land.
+Draws all 33 kinds in ``tabsight.spec.CHART_KINDS``, plus small multiples.
 """
 
 from __future__ import annotations
@@ -36,7 +35,6 @@ EXTRA_KINDS = ("bullet", "gauge", "combo")
 GRID_KINDS = ("heatmap", "calendar_heatmap", "sankey")
 DRAWN_KINDS = (*BAR_KINDS, *LINE_KINDS, "donut", "kpi", "table", *MAP_KINDS, *RELATION_KINDS, *PART_KINDS,
                *EXTRA_KINDS, "lollipop", *GRID_KINDS)  # fmt: skip
-_LATER: dict[str, int] = {}  # every kind can be drawn now
 MAX_TABLE_ROWS = 500
 MAX_DONUT_SLICES = 8
 HBAR_LABEL_CHARS = 16
@@ -165,10 +163,6 @@ def chart(
         kind, x=_as_tuple(x), y=_as_tuple(y), color=color, agg=agg, sort=_as_tuple(sort), top=top, unit=unit, currency=currency,
         decimals=decimals, format=format, title=title, subtitle=subtitle, options=options, geo=geo, lat=lat, lon=lon, size=size, source=source, target=target, facet=facet,
     )  # fmt: skip
-    if spec.kind in _LATER:
-        raise InvalidSpecError(
-            f"{spec.kind} charts arrive in phase {_LATER[spec.kind]}; see the roadmap"
-        )
     if height is not None and (type(height) is not int or not 80 <= height <= 4000):
         raise InvalidSpecError("height must be a whole number of pixels from 80 to 4000")
 

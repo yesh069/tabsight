@@ -1,6 +1,6 @@
 """tabsight: BI-quality charts, world maps and dashboards from a pandas DataFrame.
 
-Rule-based, no LLM, one offline HTML file. See PLAN.md for the roadmap.
+Rule-based, no LLM, one offline HTML file. Docs: https://yesh069.github.io/tabsight/
 """
 
 from tabsight import analytics, geo, warnings, web

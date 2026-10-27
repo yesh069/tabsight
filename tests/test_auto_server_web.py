@@ -1,4 +1,4 @@
-"""Phase 9: ts.auto, the command line, server mode, web helpers and PNG export."""
+"""ts.auto, the command line, server mode, web helpers and PNG export."""
 
 from __future__ import annotations
 

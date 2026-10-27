@@ -82,4 +82,4 @@ $2.3M
 
 If you have five minutes, the [quickstart](getting-started/quickstart.md) walks through one file from loading to calculated fields. If you want to know why tabsight behaves the way it does, read [how tabsight thinks](getting-started/concepts.md). The [user guide](guide/loading-data.md) covers each feature in depth.
 
-tabsight is in early development. Reading, profiling, cleaning, formatting, exact aggregation and the first [charts](guide/charts.md) are done; the chart recommender is next, then world maps and dashboards. The [roadmap](project/roadmap.md) has the details.
+tabsight is not on PyPI yet; [install it from the repository](getting-started/installation.md).

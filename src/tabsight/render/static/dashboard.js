@@ -2437,7 +2437,7 @@
       var raw = clone(fig.option);
       var multi = (raw.series || []).filter(function (s) { return String(s.name || "").charAt(0) !== HELPER; }).length > 1;
       if (multi && raw.legend) {
-        // A legend click highlights its series (PLAN 5.6); that needs series to fade the others.
+        // A legend click highlights its series; that needs series to fade the others.
         raw.series.forEach(function (s) {
           if (s.type === "bar" || s.type === "line" || s.type === "scatter") s.emphasis = Object.assign({ focus: "series" }, s.emphasis || {});
         });
@@ -2596,7 +2596,7 @@
       pickMany(t, [key], add);
     }
 
-    // Click semantics (PLAN 5.6): a click filters to that value; clicking it again removes
+    // Click semantics: a click filters to that value; clicking it again removes
     // the filter; Ctrl/Shift + click adds or removes values.
     function pickMany(t, keys, add) {
       var col = flatTile(t, themeName).binding.click;

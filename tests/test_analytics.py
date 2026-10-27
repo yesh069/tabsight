@@ -1,4 +1,4 @@
-"""Phase 7: trend lines, forecasts, outliers, reference lines, period comparisons and insights."""
+"""Trend lines, forecasts, outliers, reference lines, period comparisons and insights."""
 
 from __future__ import annotations
 

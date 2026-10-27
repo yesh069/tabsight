@@ -92,7 +92,7 @@ check("large mode scatter", () => {
 });
 
 // The aria label itself is set on the page element, which does not exist in server-side
-// rendering, so it is checked in the browser tests (Phase 8). Here we check decal patterns.
+// rendering, so it is checked in the dashboard tests. Here we check decal patterns.
 check("decal pattern fills (colour is not the only cue)", () => {
   const svg = render({
     aria: { enabled: true, decal: { show: true } },

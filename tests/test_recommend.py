@@ -70,10 +70,8 @@ def test_recommendations_are_ranked_and_explained() -> None:
     scores = [r.score for r in recs]
     assert scores == sorted(scores, reverse=True)
     assert all(0 <= s <= 100 and r.reason for s, r in zip(scores, recs, strict=True))
-    assert recs.best.kind == "bar" and recs.best.available and recs.best.phase is None
-    assert all(
-        r.available and r.phase is None for r in recs
-    )  # since Phase 6 every kind can be drawn
+    assert recs.best.kind == "bar" and recs.best.available
+    assert all(r.available for r in recs)  # every kind can be drawn
     assert len({r.kind for r in recs}) == len(recs)  # each kind once
     assert recs.best.spec == ts.ChartSpec("bar", x="Region", y="Revenue")
 

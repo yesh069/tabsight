@@ -154,7 +154,7 @@ def _world(node: str, tmp: Path, features: list[dict[str, Any]], names: dict[str
         p = f["properties"]
         cid = _country_id(p)
         if cid == "ATA":
-            continue  # Antarctica: hidden by default (PLAN 7.4)
+            continue  # Antarctica: hidden by default
         if cid in names["countries"]:
             raise ValueError(f"two countries share the id {cid}")
         all_names = {lang: p.get(f"NAME_{lang.upper()}") for lang in LANGS}

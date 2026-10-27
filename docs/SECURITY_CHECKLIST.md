@@ -1,6 +1,6 @@
-# Security checklist (applied in every phase)
+# Security checklist (applied to every change)
 
-Security is built in as each piece is written, not reviewed afterwards. Most items are **enforced automatically**; the rest are ticked in the phase summary before committing.
+Security is built in as each piece is written, not reviewed afterwards. Most items are **enforced automatically**; the rest are ticked in the pull request.
 
 ## Enforced automatically (CI fails if broken)
 
@@ -19,13 +19,13 @@ Security is built in as each piece is written, not reviewed afterwards. Most ite
 ## Rules for every new piece of code
 
 1. **Validate every user-supplied string at the boundary**: colours (hex only), fonts (safe characters only), format patterns (own parser), locale and currency codes (fixed patterns), column names (must exist; "did you mean"), saved specs and schemas (strict schema, unknown keys rejected, size limits).
-2. **Never build code or markup from data.** No string formatting of user text into HTML, JS, CSS or regexes. HTML escaping happens at render time (Phase 3 onwards) and is tested with malicious values.
+2. **Never build code or markup from data.** No string formatting of user text into HTML, JS, CSS or regexes. HTML escaping happens at render time and is tested with malicious values.
 3. **Untrusted text in messages is truncated and `repr()`-quoted** (`tabsight.warnings.safe_repr`), so huge or control-character values cannot flood or spoof warnings.
 4. **No network, no clock, no randomness** in library code. "Today" comes from the data or `as_of=`.
 5. **Bounded work on user data**: sampling, caps on distinct values (hierarchies, near-duplicates), anchored linear regexes only (no nested quantifiers).
 6. **Safe file reading**: local paths only; XML formats need `defusedxml`; Parquet needs a patched `pyarrow` (>= 15, after CVE-2023-47248).
 7. **Every new input gets a malicious-input test in the same change.**
 
-## Phase sign-off
+## Pull request sign-off
 
-Each phase summary states: new inputs added, how each is validated, and which security tests cover them.
+Each pull request states: new inputs added, how each is validated, and which security tests cover them.

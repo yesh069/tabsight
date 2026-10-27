@@ -1,6 +1,6 @@
 """Dashboards: several tiles, filters and cross-filtering, in one offline HTML file.
 
-How the numbers stay exact after the viewer filters (PLAN sections 5.2 and 9.2):
+How the numbers stay exact after the viewer filters:
 
 - tabsight stores **one shared table**, grouped by every field the dashboard uses (tile
   dimensions, filter fields, date periods), holding the exact re-aggregation parts of

@@ -1,4 +1,4 @@
-"""Choropleth and symbol maps (Phase 5): exact numbers, honest reporting, safe pages."""
+"""Choropleth and symbol maps: exact numbers, honest reporting, safe pages."""
 
 from __future__ import annotations
 
