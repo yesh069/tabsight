@@ -231,22 +231,6 @@ tabsight serve sales.csv         # server mode on this computer: no size limit, 
 
 **Saved notebooks still show their charts.** With `pip install "tabsight[static]"`, each chart also carries a still picture of itself, drawn in Python. A notebook reopened untrusted, or viewed on GitHub, shows the picture where the interactive chart would be blank. `fig.to_svg()` saves the same picture for slides, and `fig.to_png()` (`tabsight[png]`) saves it as a PNG image.
 
-## How it compares
-
-| | tabsight | PyGWalker | Lux | Vizro | Plotly / pyecharts |
-|---|---|---|---|---|---|
-| Picks charts for you, with reasons | Yes (rule-based) | No (drag and drop) | Yes (no longer maintained) | No | No |
-| Understands units and formats them | Yes | No | No | No | Manual |
-| Exact numbers after filtering | Yes | Partly | — | Server-side | — |
-| One offline HTML file | Yes | Limited | No | No (needs a server) | Charts, not dashboards |
-| Cross-filtering dashboards | Yes, offline | In the notebook | No | Yes (server) | No |
-| Maps beyond US states and countries | Yes, offline, every country | No | No | Via Plotly | No |
-| Works as pandas' `df.plot` backend | Yes | No | No | No | Plotly: yes |
-| Plain-English insights and forecasts | Yes (rule-based) | No | No | No | No |
-| Needs an LLM | No | No | No | Optional | No |
-
-tabsight is not a drag-and-drop tool or a BI server. If you want to build charts by hand in a notebook, PyGWalker is excellent. If you need logins and a hosted dashboard, Vizro or Superset will suit you better.
-
 ## The rules it follows
 
 1. **It never changes your data.** Every function works on a copy, and a test checks this for every public function.
@@ -273,13 +257,15 @@ python -m pip install -e .                    # core: needs only pandas
 python -m pip install -e ".[excel,parquet]"   # optional readers
 ```
 
+Other extras: `static` (still SVG pictures and saved-notebook previews), `png` (PNG export), `web` (FastAPI and Flask for server mode) and `polars`. The [installation guide](docs/getting-started/installation.md) lists them all.
+
 ## Documentation
 
-The full guide lives in [`docs/`](docs/README.md) and reads directly on GitHub. Every example in it is run by the test suite, and the printed output you see is real.
+The full guide is on the **[documentation website](https://yesh069.github.io/tabsight/)**, and the same pages read directly on GitHub in [`docs/`](docs/README.md). Every example in it is run by the test suite, and the printed output you see is real.
 
 - [Quickstart](docs/getting-started/quickstart.md): one file from CSV to chart
 - [How tabsight thinks](docs/getting-started/concepts.md): the ideas behind the defaults
-- User guide: [profiling](docs/guide/profiling.md), [aggregating](docs/guide/aggregating.md), [calculated fields](docs/guide/calculated-fields.md), [charts](docs/guide/charts.md), [choosing a chart](docs/guide/choosing-charts.md), [more chart types](docs/guide/more-charts.md), [small multiples](docs/guide/small-multiples.md), [notebooks and df.plot](docs/guide/notebooks.md), [maps](docs/guide/maps.md), [formatting](docs/guide/formatting.md) and more
+- User guide: [profiling](docs/guide/profiling.md), [aggregating](docs/guide/aggregating.md), [calculated fields](docs/guide/calculated-fields.md), [charts](docs/guide/charts.md), [choosing a chart](docs/guide/choosing-charts.md), [more chart types](docs/guide/more-charts.md), [small multiples](docs/guide/small-multiples.md), [notebooks and df.plot](docs/guide/notebooks.md), [maps](docs/guide/maps.md), [trends, forecasts and insights](docs/guide/analytics.md), [dashboards](docs/guide/dashboards.md), [one-line dashboards and the CLI](docs/guide/auto-and-cli.md), [web apps and server mode](docs/guide/web-apps.md), [formatting](docs/guide/formatting.md) and more
 - Reference: [formula functions](docs/reference/formula-functions.md), [locales](docs/reference/locales.md), [chart kinds](docs/reference/chart-kinds.md), [lint rules](docs/reference/lint-rules.md), [map coverage](docs/reference/map-coverage.md)
 
 The same pages build a documentation website with search and dark mode: `python -m pip install -e ".[docs]"`, then `zensical serve`.
@@ -290,7 +276,7 @@ The same pages build a documentation website with search and dark mode: `python 
 python -m pip install -e ".[dev,docs]"
 python tools/fetch_vendor.py                   # pinned, hash-checked third-party files
 cd tools && npm install --ignore-scripts && cd ..
-python -m pytest                               # about 800 tests, including Node checks
+python -m pytest                               # about 1,000 tests, including Node checks
 python -m ruff check . && python -m mypy
 python tools/render_doc_outputs.py             # refresh the real outputs in docs and README
 python tools/make_gallery.py                   # every chart kind, into ./gallery
@@ -303,4 +289,4 @@ Contributions are welcome. [CONTRIBUTING.md](CONTRIBUTING.md) has the ground rul
 
 ## Licence and credits
 
-tabsight is MIT licensed. It bundles [Apache ECharts](https://echarts.apache.org/) (Apache 2.0) and [topojson-client](https://github.com/topojson/topojson-client) (ISC), and its maps will use [Natural Earth](https://www.naturalearthdata.com/) data (public domain). Details are in [NOTICE](NOTICE). The sample data in `examples/` is synthetic.
+tabsight is MIT licensed. It bundles [Apache ECharts](https://echarts.apache.org/) (Apache 2.0) and [topojson-client](https://github.com/topojson/topojson-client) (ISC), and its maps use [Natural Earth](https://www.naturalearthdata.com/) data (public domain). Details are in [NOTICE](NOTICE). The sample data in `examples/` is synthetic.
