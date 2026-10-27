@@ -14,3 +14,11 @@ _STATIC = "tabsight.render.static"
 def read_static(name: str) -> str:
     """Return the text of a bundled static file, for example ``"echarts.min.js"``."""
     return resources.files(_STATIC).joinpath(name).read_text(encoding="utf-8")
+
+
+def runtime_js() -> str:
+    """The tabsight browser runtime, for web pages that draw ``Figure.to_dict()`` payloads.
+
+    Load ECharts first, then this script, then call ``tabsight.render(element, payload)``.
+    """
+    return read_static("tabsight.js")

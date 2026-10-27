@@ -43,6 +43,15 @@ CALLS: dict[str, Callable[[pd.DataFrame], Any]] = {
     ),
     "table_calc": lambda d: ts.table_calc(ts.aggregate(d, "Region", "Sales"), "pct_of_total"),
     "calc row": lambda d: ts.calc("R = [Profit] / [Sales]").evaluate(d),
+    "chart bar": lambda d: ts.chart(d, "bar", x="Region", y="Sales").to_html(),
+    "chart lines": lambda d: ts.chart(
+        d, "multi_line", x="Order_Date", y="Sales", color="Segment", freq="month"
+    ),
+    "chart donut/kpi/table": lambda d: (
+        ts.chart(d, "donut", x="Sub_Category", y="Sales"),
+        ts.chart(d, "kpi", y="Profit"),
+        ts.chart(d, "table", x=["Category", "Sub_Category"], y=["Sales", "Discount"]),
+    ),
 }
 
 

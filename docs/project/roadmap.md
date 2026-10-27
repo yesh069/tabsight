@@ -7,8 +7,8 @@ tabsight is built in phases. Each phase is finished and tested before the next o
 | 0 | Project setup, pinned and hash-checked third-party files, CI | Done |
 | 1 | Foundation: loading, profiling, checking, cleaning, formatting, colours, themes, settings, chart specs | Done |
 | 2 | Aggregation and correctness: exact parts, dates, top N, table calculations, calculated fields | Done |
-| 3 | Core charts (bar, line, donut, KPI, table) as offline HTML, plus a minimal browser runtime | Next |
-| 4 | Chart recommender ("Show Me" with reasons), chart linter, `explain()` | Planned |
+| 3 | Core charts (bar, line, area, donut, KPI, table) as offline HTML, plus the browser runtime | Done |
+| 4 | Chart recommender ("Show Me" with reasons), chart linter, `explain()` | Next |
 | 5 | World maps: countries, states/provinces/counties for every country, cities | Planned |
 | 6 | Advanced charts: heatmaps, treemaps, Sankey, scatter, distributions, small multiples | Planned |
 | 7 | Analytics and insights: trend lines, forecasts, comparisons, plain-English insights | Planned |

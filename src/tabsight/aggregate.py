@@ -443,10 +443,13 @@ def aggregate(
             if grain not in GRAINS:
                 raise InvalidSpecError(f"freq for {safe_repr(d)} must be one of {GRAINS}")
             grains[d] = grain
+            dates = _time_values(col, prof, d)
             work[d] = bucket(
-                _time_values(col, prof, d), grain,
-                fiscal_start=settings.fiscal_start, week_start=settings.week_start,
-            )  # fmt: skip
+                dates, grain, fiscal_start=settings.fiscal_start, week_start=settings.week_start
+            )
+            partial = _incomplete_last_period(dates, work[d], grain)
+            if partial:
+                notes.append(partial)
         else:
             work[d] = col
 
@@ -559,6 +562,26 @@ def aggregate(
         notes=tuple(notes),
         suppressed=suppressed,
         outputs=tuple(outputs),
+    )
+
+
+_PERIOD_LENGTH = {"year": 365, "quarter": 91, "month": 30, "week": 7}
+
+
+def _incomplete_last_period(dates: pd.Series, buckets: pd.Series, grain: str) -> str | None:
+    """A note when the last period holds only part of its time span (it will look low)."""
+    if grain not in _PERIOD_LENGTH or dates.dropna().empty:
+        return None
+    last_start = buckets.max()
+    latest = dates.max()
+    covered_days = (latest.normalize() - last_start).days + 1
+    if covered_days >= 0.5 * _PERIOD_LENGTH[grain]:
+        return None
+    from tabsight.formats import format_date
+
+    return (
+        f"the last {grain} ({format_date(last_start, grain)}) only has data up to "
+        f"{format_date(latest, 'day')}, so it looks low because it is incomplete"
     )
 
 

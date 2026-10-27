@@ -342,11 +342,14 @@ def _duration(value: float, unit: str, loc: Locale) -> str:
     seconds = value * _DURATION_SECONDS[unit]
     if seconds >= 2 * 86400:
         return _fixed(seconds / 86400, 1, loc, strip=True) + " days"
+    whole = int(
+        _round(seconds, 0)
+    )  # half-up, like every other number (Python's round() is half-even)
     if seconds >= 3600:
-        h, rem = divmod(round(seconds), 3600)
+        h, rem = divmod(whole, 3600)
         return f"{h}h {rem // 60}m"
     if seconds >= 60:
-        m, s = divmod(round(seconds), 60)
+        m, s = divmod(whole, 60)
         return f"{m}m {s}s"
     return _fixed(seconds, 0 if seconds >= 10 else 1, loc, strip=True) + "s"
 
@@ -421,3 +424,64 @@ def format_date(
 def _fiscal_year(ts: pd.Timestamp, fiscal_start: int) -> int:
     """Fiscal years are named by the calendar year they end in (FY2018 = Apr 2017 - Mar 2018)."""
     return ts.year + 1 if ts.month >= fiscal_start else ts.year
+
+
+# ---------------------------------------------------------------- browser runtime support
+
+
+def locale_payload(codes: Any) -> dict[str, dict[str, Any]]:
+    """The locale data the browser runtime needs, for the given locale codes only."""
+    out: dict[str, dict[str, Any]] = {}
+    for code in sorted(set(codes)):
+        loc = get_locale(code)
+        out[loc.code] = {
+            "decimal": loc.decimal,
+            "group": loc.group,
+            "grouping": list(loc.grouping),
+            "currency_before": loc.currency_before,
+            "currency_space": loc.currency_space,
+            "percent_space": loc.percent_space,
+            "compact": [[threshold, suffix] for threshold, suffix in loc.compact],
+            "compact_space": loc.compact_space,
+        }
+    return out
+
+
+def js_spec(
+    unit: str = "number",
+    style: str = "full",
+    *,
+    locale: str | None = None,
+    currency: str | None = None,
+    decimals: int | None = None,
+    percent_scale: str = "fraction",
+    duration_unit: str = "seconds",
+    negative: str = "minus",
+    sign: bool = False,
+    pattern: str | None = None,
+) -> dict[str, Any]:
+    """A JSON-safe description of a number format, for ``tabsight.js``.
+
+    Validated here exactly like ``format_number``; the browser only receives plain data
+    (symbols resolved, patterns already parsed), never code.
+    """
+    format_number(0, unit, style, locale=locale, currency=currency, decimals=decimals,
+                  percent_scale=percent_scale, duration_unit=duration_unit,
+                  negative=negative, sign=sign, pattern=pattern)  # fmt: skip
+    loc = get_locale(locale)
+    code = currency or resolve().currency
+    spec: dict[str, Any] = {
+        "unit": unit,
+        "style": style,
+        "locale": loc.code,
+        "decimals": decimals,
+        "percent_scale": percent_scale,
+        "duration_unit": duration_unit,
+        "negative": negative,
+        "sign": sign,
+        "currency_symbol": currency_symbol(code, loc),
+        "zero_decimal": code in _ZERO_DECIMAL,
+    }
+    if pattern is not None:
+        spec["pattern"] = dataclasses.asdict(parse_pattern(pattern))
+    return spec

@@ -930,7 +930,7 @@ These go in the README to show tabsight is better, with numbers.
 
 ## 20. Build order (each phase is finished and tested before the next)
 
-**Status:** Phase 0 done (27 Oct 2026). Phase 1 done (27 Oct 2026). Phase 2 done (27 Oct 2026). Every phase follows `docs/SECURITY_CHECKLIST.md`, and its automated guards run with every test run.
+**Status:** Phase 0 done (27 Oct 2026). Phase 1 done (27 Oct 2026). Phase 2 done (27 Oct 2026). Phase 3 done (27 Oct 2026). Every phase follows `docs/SECURITY_CHECKLIST.md`, and its automated guards run with every test run.
 
 | Phase | Deliverable | Done when |
 |-------|-------------|-----------|

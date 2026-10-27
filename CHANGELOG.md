@@ -4,6 +4,21 @@ All notable changes are listed here. The project follows [Semantic Versioning](h
 
 ## Unreleased
 
+### Added (Phase 3: core charts)
+- `ts.chart`: bar, hbar, grouped, stacked and 100% stacked bars; line, multi-line, area, stacked area and sparkline; donut; KPI card; table. BI rules by default: all labels shown (switching to horizontal bars when labels are long), lines never smoothed, zero baseline for bars, one colour per series, the same colour for the same value across charts, top 7 + grey "Other" for donuts, grouped parents in tables.
+- Notes on figures, including a warning when the last period is incomplete and would look low.
+- `Figure`: `to_dict()` (plain JSON), `to_html()` (one offline file, or `cdn=True` with Subresource Integrity), `_repr_html_()` (sandboxed iframe in Jupyter), `update()` (safe deep merge).
+- `tabsight.js` browser runtime and `ts.runtime_js()`. Number formatting is a line-by-line port of Python's, checked on 54,950 cases.
+- Docs: "Making charts" guide.
+
+### Security (Phase 3)
+- HTML pages carry a Content Security Policy: only tabsight's own inline scripts may run (SHA-256 pinned), no network access at all.
+- Figure data in a non-executable JSON block with `<`, `>`, `&` and line separators escaped.
+- Tooltips built from escaped text; colours re-validated in the browser; tables and KPI cards use `textContent`.
+- `Figure.update` refuses `formatter` strings and `$` keys.
+- Tests: hostile category names and titles in every chart kind, the page parsed for unexpected tags and event handlers, CSP hashes checked against every inline script, runtime checked for eval-like constructs; verified in a real browser.
+
+
 ### Changed (documentation redesign)
 - Editorial redesign of the docs site: navy hero home page, logo colours throughout, wider reading column, code and its output shown as one unit, quieter tables (`overrides/home.html`, `docs/stylesheets/tabsight.css`).
 - Guide pages rewritten to explain the problem first, with real examples and opinions, and tables only for reference lists.

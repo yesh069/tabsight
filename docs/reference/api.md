@@ -38,6 +38,14 @@ Generated from the docstrings in the source code, so it always matches the insta
 
 ::: tabsight.tablecalc.table_calc
 
+## Charts
+
+::: tabsight.charts.chart
+
+::: tabsight.figure.Figure
+
+::: tabsight.render.assets.runtime_js
+
 ## Calculated fields
 
 ::: tabsight.formulas.calc

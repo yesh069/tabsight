@@ -94,6 +94,7 @@ ignore = ["E501"]
 "tests/test_read.py" = ["RUF001"]
 "tests/test_formats.py" = ["RUF001"]
 "tests/test_docs.py" = ["RUF001", "S102"]
+"tests/test_html_security.py" = ["RUF001"]
 # Tests may use assert and run Node/Python subprocesses with fixed arguments.
 "tests/**" = ["S101", "S603", "S607"]
 # The vendor fetcher downloads fixed, pinned https URLs (hash-checked afterwards).

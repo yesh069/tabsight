@@ -17,6 +17,7 @@ This folder is the documentation. It reads directly on GitHub, and the same file
 - [Dates and periods](guide/dates.md)
 - [Table calculations](guide/table-calculations.md)
 - [Calculated fields](guide/calculated-fields.md)
+- [Making charts](guide/charts.md)
 - [Formatting numbers and dates](guide/formatting.md)
 - [Colours and themes](guide/colors-and-themes.md)
 - [Settings](guide/settings.md)
