@@ -25,5 +25,8 @@ node_modules/
 .DS_Store
 Thumbs.db
 
+# Built documentation site (python -m mkdocs build)
+/site/
+
 # Generated output from examples
 *.out.html

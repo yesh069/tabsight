@@ -190,7 +190,7 @@ class Profile:
             why = "; ".join(f.reasons)
             lines.append(f"{name:<{width}}  {f.role:<9}  {f.unit:<9}  {f.agg:<6}  {why}")
         if self.hierarchies:
-            lines += ["", "Hierarchies:"] + ["  " + " → ".join(h) for h in self.hierarchies]
+            lines += ["", "Hierarchies:"] + ["  " + " -> ".join(h) for h in self.hierarchies]
         if self.notes:
             lines += ["", "Notes:"] + ["  " + n for n in self.notes]
         return "\n".join(lines)

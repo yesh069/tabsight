@@ -259,7 +259,7 @@ def _spelling_issues(name: str, text: pd.Series) -> list[Issue]:
                 seen.add(key)
                 rare, common = sorted((w, m), key=lambda x: counts[x])
                 if counts[rare] <= max(1, 0.05 * counts[common]):
-                    pairs.append(f"{safe_repr(rare, 30)} → {safe_repr(common, 30)}?")
+                    pairs.append(f"{safe_repr(rare, 30)} -> {safe_repr(common, 30)}?")
         if pairs:
             out.append(
                 Issue(

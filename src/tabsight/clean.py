@@ -327,7 +327,7 @@ def _plan(
         mapping = _case_mapping(text.str.strip())
         if mapping:
             sample = ", ".join(
-                f"{safe_repr(k, 20)}→{safe_repr(v, 20)}" for k, v in list(mapping.items())[:3]
+                f"{safe_repr(k, 20)} -> {safe_repr(v, 20)}" for k, v in list(mapping.items())[:3]
             )
             plan.append((False, name, "merge_case", {"mapping": mapping},
                          f"merge {len(mapping)} spelling variant(s) into the most common spelling ({sample})"))  # fmt: skip

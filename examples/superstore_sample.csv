@@ -1,0 +1,1201 @@
+Row_ID,Order_ID,Order_Date,Ship_Date,Ship_Mode,Customer_ID,Segment,Country,City,State,Postal_Code,Region,Category,Sub_Category,Sales,Quantity,Discount,Profit
+1,US-2014-100000,01/04/2014,01/05/2014,Standard Class,CU-10349,Home Office,United States,Richmond,Virginia,41487,South,Office Supplies,Binders,405.53,13,0.0,108.33
+2,US-2014-100001,01/04/2014,01/09/2014,Standard Class,CU-10144,Consumer,United States,Columbus,Ohio,99728,East,Furniture,Furnishings,286.05,6,0.1,26.66
+3,US-2014-100002,01/05/2014,01/05/2014,Same Day,CU-10702,Corporate,United States,Houston,Texas,27653,Central,Office Supplies,Storage,58.03,6,0.3,-2.46
+4,US-2014-100003,01/06/2014,01/11/2014,Second Class,CU-10149,Corporate,United States,New York City,New York,64992,East,Furniture,Tables,86.17,3,0.1,5.79
+5,US-2014-100004,01/08/2014,01/13/2014,Standard Class,CU-10117,Home Office,United States,Portland,Oregon,10818,West,Furniture,Furnishings,524.87,3,0.0,170.68
+6,US-2014-100005,01/09/2014,01/12/2014,Same Day,CU-10390,Consumer,United States,Houston,Texas,57131,Central,Office Supplies,Labels,208.07,8,0.0,31.05
+7,US-2014-100006,01/09/2014,01/11/2014,Standard Class,CU-10352,Consumer,United States,Columbus,Ohio,67780,East,Office Supplies,Storage,289.05,5,0.2,-43.89
+8,US-2014-100007,01/13/2014,01/17/2014,First Class,CU-10680,Consumer,United States,Columbus,Ohio,75248,East,Office Supplies,Paper,126.82,9,0.1,-4.43
+9,US-2014-100008,01/14/2014,01/14/2014,Standard Class,CU-10139,Consumer,United States,Portland,Oregon,46307,West,Furniture,Furnishings,202.5,4,0.0,17.73
+10,US-2014-100009,01/14/2014,01/17/2014,Second Class,CU-10717,Home Office,United States,Columbus,Ohio,67377,East,Office Supplies,Labels,102.03,9,0.0,20.49
+11,US-2014-100010,01/15/2014,01/20/2014,Same Day,CU-10657,Consumer,United States,Houston,Texas,33276,Central,Furniture,Tables,220.3,14,0.0,63.97
+12,US-2014-100011,01/16/2014,01/16/2014,Standard Class,CU-10673,Corporate,United States,Atlanta,Georgia,59311,South,Office Supplies,Labels,92.96,2,0.0,33.31
+13,US-2014-100012,01/16/2014,01/22/2014,Standard Class,CU-10646,Consumer,United States,Detroit,Michigan,98567,Central,Office Supplies,Paper,354.4,14,0.0,45.69
+14,US-2014-100013,01/17/2014,01/18/2014,Second Class,CU-10081,Consumer,United States,Atlanta,Georgia,68147,South,Office Supplies,Binders,2.89,3,0.5,-0.79
+15,US-2014-100014,01/19/2014,01/25/2014,Standard Class,CU-10622,Corporate,United States,Philadelphia,Pennsylvania,93672,East,Furniture,Furnishings,248.76,8,0.1,53.3
+16,US-2014-100015,01/21/2014,01/22/2014,Standard Class,CU-10430,Home Office,United States,Richmond,Virginia,14485,South,Office Supplies,Art,47.68,13,0.0,14.4
+17,US-2014-100016,01/22/2014,01/26/2014,Standard Class,CU-10461,Corporate,United States,New York City,New York,10208,East,Office Supplies,Binders,50.26,6,0.5,-4.39
+18,US-2014-100017,01/23/2014,01/28/2014,Standard Class,CU-10574,Consumer,United States,Philadelphia,Pennsylvania,50874,East,Technology,Machines,259.54,2,0.0,5.88
+19,US-2014-100018,01/24/2014,01/27/2014,Standard Class,CU-10218,Corporate,United States,New York City,New York,32206,East,Technology,Phones,394.22,1,0.0,112.52
+20,US-2014-100019,01/26/2014,01/31/2014,Standard Class,CU-10400,Consumer,United States,Houston,Texas,35907,Central,Technology,Copiers,158.08,9,0.0,12.35
+21,US-2014-100020,01/26/2014,01/31/2014,Standard Class,CU-10730,Consumer,United States,Columbus,Ohio,28895,East,Furniture,Furnishings,339.2,10,0.5,-103.9
+22,US-2014-100021,01/26/2014,01/29/2014,Standard Class,CU-10773,Corporate,United States,Columbus,Ohio,02765,East,Technology,Accessories,598.43,11,0.1,119.38
+23,US-2014-100022,01/27/2014,01/28/2014,Standard Class,CU-10102,Home Office,United States,New York City,New York,35338,East,Technology,Accessories,355.86,3,0.3,-37.19
+24,US-2014-100023,01/27/2014,02/01/2014,Second Class,CU-10497,Consumer,United States,Portland,Oregon,98000,West,Furniture,Bookcases,409.61,6,0.0,55.12
+25,US-2014-100024,01/30/2014,02/02/2014,Standard Class,CU-10253,Consumer,United States,Philadelphia,Pennsylvania,93521,East,Technology,Phones,504.89,4,0.1,220.96
+26,US-2014-100025,02/03/2014,02/08/2014,Standard Class,CU-10448,Corporate,United States,Chicago,Illinois,98707,Central,Technology,Copiers,659.73,5,0.3,9.88
+27,US-2014-100026,02/03/2014,02/07/2014,Standard Class,CU-10015,Corporate,United States,Atlanta,Georgia,37240,South,Office Supplies,Storage,29.47,10,0.3,-3.41
+28,US-2014-100027,02/05/2014,02/09/2014,Standard Class,CU-10683,Consumer,United States,Detroit,Michigan,48731,Central,Office Supplies,Labels,40.67,1,0.0,5.95
+29,US-2014-100028,02/05/2014,02/08/2014,Standard Class,CU-10201,Consumer,United States,Portland,Oregon,93694,West,Office Supplies,Storage,154.6,2,0.3,-24.37
+30,US-2014-100029,02/09/2014,02/11/2014,Standard Class,CU-10733,Consumer,United States,Chicago,Illinois,13506,Central,Office Supplies,Art,59.95,3,0.0,16.72
+31,US-2014-100030,02/13/2014,02/14/2014,Standard Class,CU-10494,Corporate,United States,Seattle,Washington,73895,West,Office Supplies,Storage,33.68,6,0.0,4.17
+32,US-2014-100031,02/15/2014,02/15/2014,Second Class,CU-10751,Consumer,United States,New York City,New York,35312,East,Furniture,Bookcases,22.55,6,0.0,7.74
+33,US-2014-100032,02/15/2014,02/15/2014,Second Class,CU-10699,Home Office,United States,Atlanta,Georgia,62419,South,Technology,Accessories,84.1,5,0.3,-22.41
+34,US-2014-100033,02/17/2014,02/17/2014,Standard Class,CU-10756,Home Office,United States,Philadelphia,Pennsylvania,23980,East,Technology,Accessories,474.06,1,0.1,-18.53
+35,US-2014-100034,02/19/2014,02/24/2014,Standard Class,CU-10793,Corporate,United States,Houston,Texas,63718,Central,Office Supplies,Binders,22.79,12,0.1,-0.15
+36,US-2014-100035,02/19/2014,02/22/2014,Standard Class,CU-10780,Corporate,United States,New York City,New York,27626,East,Office Supplies,Storage,84.77,4,0.0,17.56
+37,US-2014-100036,02/20/2014,02/26/2014,First Class,CU-10158,Consumer,United States,Detroit,Michigan,59875,Central,Furniture,Furnishings,532.86,3,0.5,-63.61
+38,US-2014-100037,02/21/2014,02/23/2014,Standard Class,CU-10580,Home Office,United States,Philadelphia,Pennsylvania,03510,East,Office Supplies,Art,235.89,11,0.0,52.93
+39,US-2014-100038,02/21/2014,02/22/2014,Second Class,CU-10131,Consumer,United States,Richmond,Virginia,54134,South,Office Supplies,Paper,287.86,4,0.0,109.43
+40,US-2014-100039,02/22/2014,02/22/2014,Standard Class,CU-10764,Home Office,United States,Philadelphia,Pennsylvania,04891,East,Furniture,Furnishings,121.28,1,0.0,1.81
+41,US-2014-100040,02/23/2014,02/27/2014,Standard Class,CU-10587,Home Office,United States,New York City,New York,17602,East,Office Supplies,Labels,120.94,8,0.3,-32.89
+42,US-2014-100041,02/24/2014,02/26/2014,Standard Class,CU-10240,Consumer,United States,New York City,New York,21879,East,Office Supplies,Binders,87.28,14,0.0,22.23
+43,US-2014-100042,02/26/2014,02/27/2014,First Class,CU-10017,Consumer,United States,New York City,New York,61442,East,Furniture,Bookcases,53.48,13,0.0,11.92
+44,US-2014-100043,02/26/2014,03/02/2014,Second Class,CU-10424,Consumer,United States,Columbus,Ohio,13843,East,Furniture,Bookcases,353.7,12,0.5,-171.28
+45,US-2014-100044,02/27/2014,02/27/2014,Second Class,CU-10026,Consumer,United States,Portland,Oregon,21230,West,Office Supplies,Binders,83.74,14,0.0,13.34
+46,US-2014-100045,03/01/2014,03/01/2014,Standard Class,CU-10731,Consumer,United States,Atlanta,Georgia,68560,South,Technology,Phones,168.22,10,0.2,-31.98
+47,US-2014-100046,03/04/2014,03/06/2014,Standard Class,CU-10579,Corporate,United States,Houston,Texas,73980,Central,Office Supplies,Labels,30.91,4,0.1,-1.31
+48,US-2014-100047,03/04/2014,03/07/2014,Standard Class,CU-10459,Consumer,United States,New York City,New York,93117,East,Technology,Machines,166.08,11,0.3,-28.27
+49,US-2014-100048,03/07/2014,03/13/2014,Standard Class,CU-10533,Consumer,United States,Los Angeles,California,50466,West,Office Supplies,Binders,31.98,2,0.1,7.51
+50,US-2014-100049,03/09/2014,03/13/2014,Standard Class,CU-10779,Corporate,United States,Chicago,Illinois,86259,Central,Office Supplies,Paper,112.87,6,0.0,1.53
+51,US-2014-100050,03/11/2014,03/13/2014,First Class,CU-10028,Consumer,United States,New York City,New York,71362,East,Office Supplies,Labels,118.86,3,0.2,-35.84
+52,US-2014-100051,03/13/2014,03/14/2014,First Class,CU-10273,Corporate,United States,Columbus,Ohio,56207,East,Office Supplies,Binders,150.96,11,0.2,-5.41
+53,US-2014-100052,03/13/2014,03/19/2014,Same Day,CU-10055,Consumer,United States,Seattle,Washington,48589,West,Office Supplies,Art,84.6,12,0.1,4.57
+54,US-2014-100053,03/14/2014,03/14/2014,Standard Class,CU-10648,Consumer,United States,New York City,New York,22948,East,Office Supplies,Labels,160.9,6,0.3,-3.75
+55,US-2014-100054,03/15/2014,03/18/2014,Second Class,CU-10539,Corporate,United States,Columbus,Ohio,11704,East,Furniture,Furnishings,21.01,5,0.0,-0.21
+56,US-2014-100055,03/17/2014,03/18/2014,Same Day,CU-10123,Consumer,United States,Detroit,Michigan,10466,Central,Furniture,Tables,438.96,11,0.1,3.46
+57,US-2014-100056,03/19/2014,03/24/2014,Standard Class,CU-10734,Corporate,United States,Los Angeles,California,14819,West,Furniture,Furnishings,39.08,14,0.3,1.01
+58,US-2014-100057,03/19/2014,03/22/2014,First Class,CU-10213,Home Office,United States,Philadelphia,Pennsylvania,63012,East,Office Supplies,Labels,75.32,12,0.5,-32.61
+59,US-2014-100058,03/22/2014,03/28/2014,Same Day,CU-10331,Home Office,United States,Seattle,Washington,08684,West,Furniture,Bookcases,242.06,11,0.0,98.78
+60,US-2014-100059,03/25/2014,03/31/2014,Standard Class,CU-10569,Consumer,United States,Los Angeles,California,97015,West,Office Supplies,Labels,107.55,1,0.5,-8.43
+61,US-2014-100060,03/25/2014,03/31/2014,Standard Class,CU-10053,Home Office,United States,New York City,New York,64286,East,Office Supplies,Art,78.98,8,0.0,37.07
+62,US-2014-100061,03/27/2014,04/02/2014,Standard Class,CU-10313,Corporate,United States,Los Angeles,California,47889,West,Technology,Accessories,140.68,10,0.3,-21.63
+63,US-2014-100062,03/30/2014,03/30/2014,Standard Class,CU-10388,Consumer,United States,Portland,Oregon,44908,West,Furniture,Furnishings,258.28,12,0.2,59.65
+64,US-2014-100063,03/31/2014,04/01/2014,First Class,CU-10362,Home Office,United States,Chicago,Illinois,89076,Central,Furniture,Furnishings,55.43,13,0.3,-1.13
+65,US-2014-100064,03/31/2014,04/01/2014,Second Class,CU-10560,Consumer,United States,Detroit,Michigan,50784,Central,Office Supplies,Storage,28.4,3,0.0,3.79
+66,US-2014-100065,03/31/2014,04/05/2014,Standard Class,CU-10231,Consumer,United States,Los Angeles,California,12600,West,Furniture,Chairs,528.59,12,0.1,-58.07
+67,US-2014-100066,04/01/2014,04/04/2014,Standard Class,CU-10630,Consumer,United States,Portland,Oregon,55794,West,Office Supplies,Binders,23.89,14,0.0,2.16
+68,US-2014-100067,04/02/2014,04/05/2014,Same Day,CU-10023,Corporate,United States,New York City,New York,12233,East,Office Supplies,Binders,212.51,6,0.5,-70.92
+69,US-2014-100068,04/02/2014,04/02/2014,Standard Class,CU-10662,Consumer,United States,Seattle,Washington,71981,West,Office Supplies,Paper,198.57,14,0.0,38.45
+70,US-2014-100069,04/02/2014,04/06/2014,Standard Class,CU-10048,Consumer,United States,Detroit,Michigan,85049,Central,Office Supplies,Paper,73.74,5,0.5,-41.41
+71,US-2014-100070,04/03/2014,04/03/2014,Standard Class,CU-10559,Corporate,United States,New York City,New York,58283,East,Office Supplies,Storage,437.51,7,0.0,2.85
+72,US-2014-100071,04/05/2014,04/08/2014,First Class,CU-10698,Corporate,United States,Portland,Oregon,73315,West,Office Supplies,Binders,79.0,14,0.0,24.84
+73,US-2014-100072,04/07/2014,04/08/2014,Standard Class,CU-10222,Consumer,United States,Philadelphia,Pennsylvania,60582,East,Office Supplies,Binders,108.76,9,0.0,14.64
+74,US-2014-100073,04/08/2014,04/12/2014,Second Class,CU-10376,Corporate,United States,Miami,Florida,84615,South,Office Supplies,Labels,92.06,9,0.0,11.16
+75,US-2014-100074,04/08/2014,04/08/2014,First Class,CU-10653,Consumer,United States,Chicago,Illinois,25221,Central,Furniture,Tables,204.34,4,0.5,-47.21
+76,US-2014-100075,04/11/2014,04/16/2014,Standard Class,CU-10667,Home Office,United States,Philadelphia,Pennsylvania,92033,East,Furniture,Furnishings,289.95,10,0.3,-31.88
+77,US-2014-100076,04/12/2014,04/16/2014,Second Class,CU-10256,Consumer,United States,Seattle,Washington,30973,West,Technology,Phones,877.42,14,0.0,201.12
+78,US-2014-100077,04/14/2014,04/16/2014,Same Day,CU-10184,Consumer,United States,Houston,Texas,84002,Central,Office Supplies,Binders,43.91,14,0.0,-10.97
+79,US-2014-100078,04/14/2014,04/17/2014,Standard Class,CU-10459,Consumer,United States,Seattle,Washington,50102,West,Office Supplies,Art,33.86,3,0.0,4.17
+80,US-2014-100079,04/14/2014,04/17/2014,Standard Class,CU-10523,Corporate,United States,Detroit,Michigan,85540,Central,Office Supplies,Storage,67.63,6,0.3,-10.74
+81,US-2014-100080,04/15/2014,04/18/2014,Same Day,CU-10236,Consumer,United States,Chicago,Illinois,44501,Central,Office Supplies,Binders,125.04,10,0.0,35.66
+82,US-2014-100081,04/18/2014,04/22/2014,Standard Class,CU-10437,Consumer,United States,Richmond,Virginia,68745,South,Technology,Copiers,488.16,7,0.1,144.23
+83,US-2014-100082,04/19/2014,04/24/2014,Same Day,CU-10608,Consumer,United States,Philadelphia,Pennsylvania,40287,East,Technology,Machines,470.29,13,0.1,40.73
+84,US-2014-100083,04/20/2014,04/22/2014,Second Class,CU-10425,Home Office,United States,Chicago,Illinois,72302,Central,Office Supplies,Art,244.61,5,0.1,61.84
+85,US-2014-100084,04/23/2014,04/27/2014,Second Class,CU-10097,Consumer,United States,Chicago,Illinois,15689,Central,Technology,Copiers,623.16,6,0.1,94.41
+86,US-2014-100085,04/23/2014,04/29/2014,Standard Class,CU-10492,Consumer,United States,Chicago,Illinois,51449,Central,Office Supplies,Storage,43.54,12,0.1,5.51
+87,US-2014-100086,04/24/2014,04/25/2014,Standard Class,CU-10122,Consumer,United States,Columbus,Ohio,40349,East,Office Supplies,Storage,329.98,14,0.0,60.44
+88,US-2014-100087,04/27/2014,05/01/2014,Standard Class,CU-10059,Consumer,United States,Seattle,Washington,38253,West,Office Supplies,Art,387.54,14,0.3,4.21
+89,US-2014-100088,04/28/2014,04/29/2014,Standard Class,CU-10446,Corporate,United States,Philadelphia,Pennsylvania,52427,East,Office Supplies,Storage,106.49,4,0.3,-15.76
+90,US-2014-100089,04/28/2014,04/30/2014,Standard Class,CU-10118,Corporate,United States,Atlanta,Georgia,52987,South,Office Supplies,Binders,47.56,14,0.5,-14.2
+91,US-2014-100090,04/29/2014,04/29/2014,Standard Class,CU-10596,Consumer,United States,Miami,Florida,77669,South,Technology,Phones,402.58,7,0.3,-8.74
+92,US-2014-100091,04/30/2014,05/04/2014,Standard Class,CU-10687,Corporate,United States,Seattle,Washington,36442,West,Office Supplies,Art,126.01,4,0.0,17.26
+93,US-2014-100092,05/01/2014,05/05/2014,Standard Class,CU-10569,Consumer,United States,New York City,New York,41565,East,Office Supplies,Storage,129.3,6,0.1,0.69
+94,US-2014-100093,05/01/2014,05/06/2014,Second Class,CU-10084,Corporate,United States,Philadelphia,Pennsylvania,80047,East,Office Supplies,Storage,90.78,3,0.1,-4.38
+95,US-2014-100094,05/04/2014,05/07/2014,Standard Class,CU-10455,Consumer,United States,Richmond,Virginia,73832,South,Technology,Machines,280.89,8,0.0,88.39
+96,US-2014-100095,05/05/2014,05/07/2014,Same Day,CU-10687,Consumer,United States,New York City,New York,72475,East,Office Supplies,Paper,281.74,3,0.0,40.39
+97,US-2014-100096,05/07/2014,05/13/2014,Standard Class,CU-10558,Consumer,United States,Seattle,Washington,08479,West,Office Supplies,Storage,211.11,11,0.1,-4.5
+98,US-2014-100097,05/08/2014,05/09/2014,Standard Class,CU-10362,Home Office,United States,Columbus,Ohio,83557,East,Technology,Copiers,906.72,5,0.3,-63.64
+99,US-2014-100098,05/09/2014,05/15/2014,Standard Class,CU-10556,Consumer,United States,Columbus,Ohio,41137,East,Office Supplies,Binders,77.34,10,0.5,-14.02
+100,US-2014-100099,05/09/2014,05/13/2014,Standard Class,CU-10707,Corporate,United States,Columbus,Ohio,95264,East,Technology,Copiers,1076.63,11,0.0,61.43
+101,US-2014-100100,05/10/2014,05/11/2014,Same Day,CU-10320,Home Office,United States,Seattle,Washington,10156,West,Office Supplies,Art,20.65,13,0.3,2.2
+102,US-2014-100101,05/11/2014,05/17/2014,Standard Class,CU-10126,Corporate,United States,Seattle,Washington,03743,West,Office Supplies,Storage,122.9,14,0.1,20.97
+103,US-2014-100102,05/12/2014,05/12/2014,Standard Class,CU-10733,Corporate,United States,New York City,New York,44601,East,Furniture,Tables,324.02,3,0.3,-42.95
+104,US-2014-100103,05/13/2014,05/18/2014,Standard Class,CU-10474,Home Office,United States,Chicago,Illinois,68460,Central,Technology,Phones,444.8,10,0.5,-100.69
+105,US-2014-100104,05/13/2014,05/17/2014,First Class,CU-10633,Consumer,United States,Los Angeles,California,19119,West,Technology,Machines,583.81,1,0.5,-213.57
+106,US-2014-100105,05/14/2014,05/14/2014,First Class,CU-10492,Home Office,United States,Houston,Texas,60145,Central,Furniture,Bookcases,118.6,11,0.0,3.21
+107,US-2014-100106,05/14/2014,05/14/2014,Standard Class,CU-10489,Consumer,United States,Seattle,Washington,62999,West,Furniture,Tables,444.29,10,0.0,151.73
+108,US-2014-100107,05/19/2014,05/23/2014,Standard Class,CU-10272,Consumer,United States,Chicago,Illinois,40282,Central,Office Supplies,Labels,225.13,1,0.0,50.72
+109,US-2014-100108,05/20/2014,05/21/2014,First Class,CU-10559,Consumer,United States,Philadelphia,Pennsylvania,59170,East,Technology,Accessories,1474.54,2,0.0,247.99
+110,US-2014-100109,05/23/2014,05/27/2014,First Class,CU-10795,Consumer,United States,Philadelphia,Pennsylvania,39783,East,Office Supplies,Art,8.83,3,0.2,-0.11
+111,US-2014-100110,05/23/2014,05/23/2014,Standard Class,CU-10080,Consumer,United States,Portland,Oregon,65467,West,Technology,Accessories,238.43,6,0.5,-55.69
+112,US-2014-100111,05/24/2014,05/28/2014,Standard Class,CU-10289,Consumer,United States,Portland,Oregon,93403,West,Furniture,Furnishings,791.39,5,0.1,53.75
+113,US-2014-100112,05/24/2014,05/26/2014,Standard Class,CU-10574,Home Office,United States,Columbus,Ohio,57706,East,Office Supplies,Labels,132.78,8,0.5,-22.33
+114,US-2014-100113,05/24/2014,05/30/2014,Standard Class,CU-10783,Home Office,United States,Philadelphia,Pennsylvania,68650,East,Furniture,Bookcases,101.18,3,0.1,8.87
+115,US-2014-100114,05/29/2014,06/01/2014,Standard Class,CU-10191,Corporate,United States,Portland,Oregon,05948,West,Office Supplies,Art,14.75,4,0.0,0.67
+116,US-2014-100115,05/31/2014,05/31/2014,Second Class,CU-10588,Consumer,United States,Los Angeles,California,43969,West,Office Supplies,Storage,5.39,10,0.2,0.49
+117,US-2014-100116,06/02/2014,06/02/2014,Second Class,CU-10777,Home Office,United States,Richmond,Virginia,95532,South,Office Supplies,Storage,326.73,5,0.0,81.91
+118,US-2014-100117,06/02/2014,06/07/2014,Standard Class,CU-10273,Consumer,United States,New York City,New York,55864,East,Office Supplies,Paper,179.11,4,0.0,44.99
+119,US-2014-100118,06/03/2014,06/05/2014,Second Class,CU-10499,Consumer,United States,Columbus,Ohio,97353,East,Office Supplies,Labels,44.37,9,0.0,7.31
+120,US-2014-100119,06/03/2014,06/04/2014,First Class,CU-10389,Corporate,United States,Atlanta,Georgia,69174,South,Office Supplies,Paper,132.57,3,0.5,-37.03
+121,US-2014-100120,06/04/2014,06/10/2014,Standard Class,CU-10128,Home Office,United States,Columbus,Ohio,57369,East,Office Supplies,Binders,63.34,8,0.1,0.48
+122,US-2014-100121,06/04/2014,06/10/2014,Standard Class,CU-10072,Home Office,United States,Portland,Oregon,56958,West,Furniture,Furnishings,99.19,6,0.0,21.15
+123,US-2014-100122,06/06/2014,06/11/2014,Standard Class,CU-10359,Consumer,United States,Miami,Florida,61852,South,Office Supplies,Labels,26.54,5,0.0,0.3
+124,US-2014-100123,06/06/2014,06/10/2014,Second Class,CU-10723,Corporate,United States,Philadelphia,Pennsylvania,66643,East,Office Supplies,Art,75.98,13,0.1,5.28
+125,US-2014-100124,06/07/2014,06/07/2014,Standard Class,CU-10712,Home Office,United States,Los Angeles,California,11179,West,Technology,Accessories,365.94,5,0.5,-117.53
+126,US-2014-100125,06/09/2014,06/12/2014,First Class,CU-10239,Home Office,United States,Atlanta,Georgia,24347,South,Office Supplies,Binders,189.43,10,0.0,2.77
+127,US-2014-100126,06/10/2014,06/12/2014,Standard Class,CU-10210,Consumer,United States,Los Angeles,California,25026,West,Office Supplies,Labels,43.27,14,0.1,4.52
+128,US-2014-100127,06/10/2014,06/13/2014,Standard Class,CU-10097,Consumer,United States,Houston,Texas,59817,Central,Office Supplies,Labels,80.79,12,0.5,-28.28
+129,US-2014-100128,06/12/2014,06/12/2014,Standard Class,CU-10795,Consumer,United States,Portland,Oregon,30394,West,Technology,Copiers,210.78,1,0.0,64.06
+130,US-2014-100129,06/15/2014,06/19/2014,Same Day,CU-10001,Corporate,United States,Seattle,Washington,54417,West,Technology,Machines,1312.4,9,0.0,349.45
+131,US-2014-100130,06/15/2014,06/18/2014,Standard Class,CU-10645,Consumer,United States,New York City,New York,43213,East,Office Supplies,Binders,96.13,7,0.3,7.99
+132,US-2014-100131,06/16/2014,06/19/2014,First Class,CU-10672,Corporate,United States,Los Angeles,California,11349,West,Office Supplies,Paper,360.2,12,0.2,-57.9
+133,US-2014-100132,06/17/2014,06/17/2014,Second Class,CU-10224,Home Office,United States,New York City,New York,28139,East,Technology,Accessories,251.57,8,0.2,11.23
+134,US-2014-100133,06/18/2014,06/23/2014,Standard Class,CU-10510,Consumer,United States,Houston,Texas,39602,Central,Office Supplies,Labels,159.78,14,0.0,54.5
+135,US-2014-100134,06/19/2014,06/22/2014,Standard Class,CU-10612,Corporate,United States,Columbus,Ohio,19213,East,Office Supplies,Paper,17.33,2,0.0,3.21
+136,US-2014-100135,06/19/2014,06/24/2014,Standard Class,CU-10240,Consumer,United States,Detroit,Michigan,25596,Central,Furniture,Bookcases,73.67,6,0.3,-11.48
+137,US-2014-100136,06/21/2014,06/26/2014,Standard Class,CU-10334,Corporate,United States,Los Angeles,California,03173,West,Office Supplies,Paper,133.04,9,0.5,-39.76
+138,US-2014-100137,06/22/2014,06/28/2014,First Class,CU-10698,Consumer,United States,Portland,Oregon,51497,West,Technology,Phones,1412.76,13,0.0,226.69
+139,US-2014-100138,06/22/2014,06/25/2014,Standard Class,CU-10724,Home Office,United States,Miami,Florida,11509,South,Office Supplies,Labels,134.15,13,0.2,-13.2
+140,US-2014-100139,06/24/2014,06/26/2014,Standard Class,CU-10299,Corporate,United States,Los Angeles,California,90270,West,Technology,Phones,181.86,12,0.0,49.96
+141,US-2014-100140,06/25/2014,07/01/2014,Same Day,CU-10334,Consumer,United States,Richmond,Virginia,34297,South,Office Supplies,Storage,76.42,2,0.0,6.71
+142,US-2014-100141,06/25/2014,06/27/2014,First Class,CU-10394,Consumer,United States,Detroit,Michigan,13779,Central,Office Supplies,Labels,98.14,12,0.0,12.78
+143,US-2014-100142,06/26/2014,06/28/2014,First Class,CU-10057,Corporate,United States,Columbus,Ohio,27530,East,Technology,Machines,153.43,7,0.5,-70.17
+144,US-2014-100143,06/27/2014,06/28/2014,Standard Class,CU-10159,Consumer,United States,Seattle,Washington,37299,West,Technology,Accessories,386.43,3,0.0,20.18
+145,US-2014-100144,06/28/2014,06/30/2014,Second Class,CU-10516,Consumer,United States,Atlanta,Georgia,29855,South,Technology,Accessories,789.03,6,0.0,148.28
+146,US-2014-100145,06/28/2014,07/02/2014,Standard Class,CU-10656,Corporate,United States,Columbus,Ohio,14656,East,Furniture,Furnishings,149.35,13,0.1,6.87
+147,US-2014-100146,06/30/2014,07/04/2014,Second Class,CU-10474,Consumer,United States,Miami,Florida,18027,South,Office Supplies,Storage,149.46,9,0.0,30.11
+148,US-2014-100147,07/01/2014,07/06/2014,Standard Class,CU-10129,Consumer,United States,Portland,Oregon,18824,West,Office Supplies,Art,122.76,8,0.2,-4.36
+149,US-2014-100148,07/01/2014,07/01/2014,Same Day,CU-10002,Home Office,United States,Los Angeles,California,60965,West,Technology,Phones,659.68,9,0.0,69.15
+150,US-2014-100149,07/02/2014,07/03/2014,First Class,CU-10310,Consumer,United States,Los Angeles,California,94732,West,Office Supplies,Binders,82.17,6,0.1,4.86
+151,US-2014-100150,07/03/2014,07/05/2014,First Class,CU-10356,Consumer,United States,Detroit,Michigan,55363,Central,Office Supplies,Binders,51.79,3,0.0,4.49
+152,US-2014-100151,07/05/2014,07/05/2014,Standard Class,CU-10217,Consumer,United States,Miami,Florida,08455,South,Technology,Accessories,654.85,13,0.0,119.14
+153,US-2014-100152,07/06/2014,07/12/2014,Second Class,CU-10163,Corporate,United States,Philadelphia,Pennsylvania,54141,East,Office Supplies,Labels,151.94,13,0.5,-33.18
+154,US-2014-100153,07/06/2014,07/12/2014,Standard Class,CU-10516,Consumer,United States,Los Angeles,California,47387,West,Technology,Machines,233.84,10,0.0,104.12
+155,US-2014-100154,07/07/2014,07/11/2014,Standard Class,CU-10760,Home Office,United States,Richmond,Virginia,97841,South,Office Supplies,Labels,161.13,10,0.0,0.43
+156,US-2014-100155,07/07/2014,07/08/2014,Standard Class,CU-10261,Consumer,United States,Philadelphia,Pennsylvania,36436,East,Office Supplies,Paper,101.26,5,0.3,-13.24
+157,US-2014-100156,07/09/2014,07/09/2014,Standard Class,CU-10371,Consumer,United States,Los Angeles,California,09153,West,Office Supplies,Paper,367.89,12,0.5,-140.62
+158,US-2014-100157,07/09/2014,07/10/2014,Standard Class,CU-10657,Corporate,United States,New York City,New York,65493,East,Office Supplies,Labels,51.6,11,0.5,-12.69
+159,US-2014-100158,07/10/2014,07/11/2014,Standard Class,CU-10256,Consumer,United States,New York City,New York,48940,East,Office Supplies,Paper,69.49,7,0.3,3.21
+160,US-2014-100159,07/11/2014,07/14/2014,Second Class,CU-10443,Consumer,United States,New York City,New York,84234,East,Technology,Machines,307.43,12,0.5,-72.07
+161,US-2014-100160,07/12/2014,07/18/2014,Standard Class,CU-10047,Corporate,United States,Los Angeles,California,08468,West,Office Supplies,Storage,81.11,2,0.0,7.52
+162,US-2014-100161,07/13/2014,07/16/2014,Standard Class,CU-10354,Consumer,United States,Seattle,Washington,99427,West,Office Supplies,Art,174.78,7,0.0,14.08
+163,US-2014-100162,07/14/2014,07/17/2014,Second Class,CU-10576,Consumer,United States,Miami,Florida,73524,South,Office Supplies,Paper,201.8,8,0.2,-21.77
+164,US-2014-100163,07/14/2014,07/16/2014,Standard Class,CU-10074,Consumer,United States,New York City,New York,02724,East,Office Supplies,Labels,70.14,14,0.5,-25.05
+165,US-2014-100164,07/16/2014,07/21/2014,Standard Class,CU-10431,Corporate,United States,Houston,Texas,30132,Central,Office Supplies,Binders,99.53,2,0.5,-31.72
+166,US-2014-100165,07/16/2014,07/19/2014,First Class,CU-10411,Consumer,United States,Richmond,Virginia,22406,South,Technology,Accessories,120.01,5,0.5,-15.25
+167,US-2014-100166,07/17/2014,07/18/2014,Standard Class,CU-10710,Home Office,United States,Philadelphia,Pennsylvania,62648,East,Office Supplies,Paper,92.72,1,0.3,-8.15
+168,US-2014-100167,07/20/2014,07/25/2014,Standard Class,CU-10406,Corporate,United States,Miami,Florida,86217,South,Office Supplies,Binders,80.04,1,0.2,-19.59
+169,US-2014-100168,07/20/2014,07/23/2014,Standard Class,CU-10570,Consumer,United States,Philadelphia,Pennsylvania,65618,East,Technology,Machines,379.75,11,0.0,24.94
+170,US-2014-100169,07/21/2014,07/27/2014,Standard Class,CU-10507,Consumer,United States,Portland,Oregon,42714,West,Technology,Copiers,609.07,13,0.3,-44.39
+171,US-2014-100170,07/23/2014,07/23/2014,Second Class,CU-10359,Corporate,United States,Chicago,Illinois,95148,Central,Technology,Copiers,507.02,8,0.2,-88.57
+172,US-2014-100171,07/24/2014,07/25/2014,Second Class,CU-10249,Consumer,United States,Los Angeles,California,06369,West,Office Supplies,Art,139.01,3,0.0,37.56
+173,US-2014-100172,07/24/2014,07/25/2014,Standard Class,CU-10522,Consumer,United States,Philadelphia,Pennsylvania,48753,East,Furniture,Tables,213.15,5,0.2,-5.7
+174,US-2014-100173,07/25/2014,07/28/2014,Standard Class,CU-10198,Home Office,United States,Columbus,Ohio,71897,East,Technology,Copiers,527.03,2,0.1,-51.72
+175,US-2014-100174,07/25/2014,07/29/2014,Second Class,CU-10403,Home Office,United States,Seattle,Washington,24952,West,Office Supplies,Storage,102.4,14,0.5,-25.55
+176,US-2014-100175,07/26/2014,08/01/2014,Standard Class,CU-10641,Home Office,United States,Chicago,Illinois,94373,Central,Furniture,Furnishings,568.01,13,0.5,-248.73
+177,US-2014-100176,07/26/2014,07/31/2014,Standard Class,CU-10627,Consumer,United States,Philadelphia,Pennsylvania,42875,East,Office Supplies,Storage,205.48,11,0.2,36.18
+178,US-2014-100177,07/26/2014,07/27/2014,Standard Class,CU-10466,Corporate,United States,Richmond,Virginia,18544,South,Technology,Machines,904.68,5,0.5,-274.1
+179,US-2014-100178,07/27/2014,07/29/2014,Standard Class,CU-10399,Corporate,United States,Portland,Oregon,93891,West,Furniture,Bookcases,415.62,6,0.1,62.67
+180,US-2014-100179,07/29/2014,08/02/2014,Standard Class,CU-10637,Corporate,United States,New York City,New York,61626,East,Technology,Accessories,160.67,7,0.0,33.11
+181,US-2014-100180,07/29/2014,08/02/2014,Standard Class,CU-10680,Corporate,United States,Miami,Florida,37173,South,Office Supplies,Binders,80.14,4,0.0,18.97
+182,US-2014-100181,07/30/2014,08/04/2014,Standard Class,CU-10364,Corporate,United States,Chicago,Illinois,64198,Central,Office Supplies,Art,119.95,8,0.0,0.78
+183,US-2014-100182,07/30/2014,08/05/2014,Standard Class,CU-10010,Consumer,United States,Houston,Texas,10008,Central,Furniture,Bookcases,466.5,6,0.1,130.75
+184,US-2014-100183,08/01/2014,08/06/2014,Second Class,CU-10165,Consumer,United States,Seattle,Washington,10137,West,Technology,Machines,342.33,10,0.0,44.29
+185,US-2014-100184,08/01/2014,08/02/2014,Second Class,CU-10086,Home Office,United States,Los Angeles,California,66202,West,Office Supplies,Binders,207.78,1,0.5,-76.15
+186,US-2014-100185,08/02/2014,08/08/2014,Standard Class,CU-10079,Corporate,United States,Portland,Oregon,43433,West,Office Supplies,Paper,104.82,12,0.3,-1.23
+187,US-2014-100186,08/02/2014,08/07/2014,Standard Class,CU-10311,Home Office,United States,Philadelphia,Pennsylvania,02640,East,Office Supplies,Labels,75.63,5,0.0,13.44
+188,US-2014-100187,08/03/2014,08/06/2014,Standard Class,CU-10227,Consumer,United States,Detroit,Michigan,38452,Central,Furniture,Furnishings,201.75,5,0.3,-4.74
+189,US-2014-100188,08/04/2014,08/07/2014,Standard Class,CU-10186,Corporate,United States,Philadelphia,Pennsylvania,01143,East,Technology,Copiers,114.29,10,0.0,32.31
+190,US-2014-100189,08/05/2014,08/07/2014,Second Class,CU-10453,Consumer,United States,Portland,Oregon,30877,West,Office Supplies,Storage,120.89,6,0.5,-17.22
+191,US-2014-100190,08/06/2014,08/12/2014,Standard Class,CU-10183,Consumer,United States,New York City,New York,45435,East,Office Supplies,Storage,343.73,4,0.0,30.93
+192,US-2014-100191,08/07/2014,08/10/2014,Standard Class,CU-10344,Consumer,United States,New York City,New York,25216,East,Technology,Accessories,951.26,4,0.0,328.72
+193,US-2014-100192,08/08/2014,08/10/2014,Standard Class,CU-10670,Consumer,United States,Houston,Texas,73678,Central,Office Supplies,Binders,213.03,7,0.0,74.63
+194,US-2014-100193,08/14/2014,08/17/2014,Standard Class,CU-10210,Home Office,United States,Chicago,Illinois,33412,Central,Office Supplies,Paper,172.45,11,0.0,20.18
+195,US-2014-100194,08/14/2014,08/16/2014,Standard Class,CU-10690,Consumer,United States,New York City,New York,55402,East,Office Supplies,Binders,20.06,1,0.3,-6.87
+196,US-2014-100195,08/15/2014,08/17/2014,Standard Class,CU-10560,Corporate,United States,Portland,Oregon,18952,West,Office Supplies,Labels,108.45,10,0.0,29.18
+197,US-2014-100196,08/15/2014,08/16/2014,Standard Class,CU-10018,Corporate,United States,Richmond,Virginia,71570,South,Office Supplies,Paper,165.49,7,0.1,38.01
+198,US-2014-100197,08/15/2014,08/16/2014,Standard Class,CU-10397,Consumer,United States,Los Angeles,California,40468,West,Office Supplies,Binders,41.07,8,0.0,10.58
+199,US-2014-100198,08/15/2014,08/19/2014,Standard Class,CU-10071,Corporate,United States,Columbus,Ohio,54320,East,Office Supplies,Paper,416.85,7,0.0,98.26
+200,US-2014-100199,08/21/2014,08/22/2014,First Class,CU-10570,Corporate,United States,Chicago,Illinois,11317,Central,Office Supplies,Art,440.47,7,0.3,-65.3
+201,US-2014-100200,08/22/2014,08/24/2014,Standard Class,CU-10563,Consumer,United States,Philadelphia,Pennsylvania,52719,East,Office Supplies,Storage,140.03,14,0.1,8.05
+202,US-2014-100201,08/22/2014,08/24/2014,First Class,CU-10698,Consumer,United States,New York City,New York,47076,East,Furniture,Tables,338.13,11,0.0,-3.97
+203,US-2014-100202,08/28/2014,09/02/2014,Standard Class,CU-10149,Consumer,United States,Los Angeles,California,76647,West,Office Supplies,Binders,81.01,8,0.3,0.92
+204,US-2014-100203,09/02/2014,09/08/2014,Second Class,CU-10722,Corporate,United States,New York City,New York,42265,East,Furniture,Tables,319.69,11,0.0,21.15
+205,US-2014-100204,09/04/2014,09/04/2014,Standard Class,CU-10137,Consumer,United States,Atlanta,Georgia,18819,South,Furniture,Chairs,390.37,14,0.0,49.73
+206,US-2014-100205,09/05/2014,09/05/2014,Standard Class,CU-10481,Corporate,United States,Los Angeles,California,77951,West,Furniture,Furnishings,256.34,5,0.0,81.92
+207,US-2014-100206,09/07/2014,09/13/2014,Standard Class,CU-10516,Consumer,United States,Chicago,Illinois,69454,Central,Office Supplies,Paper,182.25,8,0.3,-39.58
+208,US-2014-100207,09/07/2014,09/12/2014,Standard Class,CU-10411,Consumer,United States,New York City,New York,46745,East,Office Supplies,Storage,374.26,12,0.1,-23.11
+209,US-2014-100208,09/08/2014,09/10/2014,Standard Class,CU-10767,Corporate,United States,Miami,Florida,47644,South,Office Supplies,Binders,230.86,3,0.3,21.64
+210,US-2014-100209,09/08/2014,09/08/2014,Standard Class,CU-10362,Home Office,United States,New York City,New York,29156,East,Office Supplies,Binders,90.64,1,0.1,22.23
+211,US-2014-100210,09/10/2014,09/11/2014,First Class,CU-10132,Home Office,United States,Richmond,Virginia,36858,South,Office Supplies,Labels,104.57,8,0.3,-21.56
+212,US-2014-100211,09/10/2014,09/14/2014,Standard Class,CU-10384,Home Office,United States,Los Angeles,California,75536,West,Office Supplies,Storage,99.64,7,0.0,24.11
+213,US-2014-100212,09/10/2014,09/13/2014,Second Class,CU-10321,Corporate,United States,Detroit,Michigan,35081,Central,Office Supplies,Art,58.11,12,0.0,13.85
+214,US-2014-100213,09/11/2014,09/14/2014,Standard Class,CU-10397,Corporate,United States,Detroit,Michigan,33037,Central,Office Supplies,Art,34.23,1,0.3,-4.62
+215,US-2014-100214,09/15/2014,09/18/2014,Standard Class,CU-10639,Consumer,United States,Detroit,Michigan,58276,Central,Technology,Phones,603.32,5,0.0,103.64
+216,US-2014-100215,09/15/2014,09/15/2014,Standard Class,CU-10686,Consumer,United States,Portland,Oregon,81930,West,Furniture,Chairs,104.26,6,0.0,29.17
+217,US-2014-100216,09/16/2014,09/19/2014,Second Class,CU-10040,Consumer,United States,Los Angeles,California,81822,West,Office Supplies,Art,54.34,7,0.3,-12.4
+218,US-2014-100217,09/17/2014,09/23/2014,First Class,CU-10125,Consumer,United States,Seattle,Washington,29742,West,Office Supplies,Binders,328.81,12,0.2,-21.39
+219,US-2014-100218,09/18/2014,09/24/2014,Standard Class,CU-10124,Corporate,United States,Portland,Oregon,43907,West,Office Supplies,Storage,221.99,5,0.0,17.85
+220,US-2014-100219,09/18/2014,09/18/2014,First Class,CU-10662,Consumer,United States,Chicago,Illinois,40060,Central,Furniture,Chairs,328.86,12,0.2,-21.96
+221,US-2014-100220,09/22/2014,09/27/2014,Second Class,CU-10545,Corporate,United States,Columbus,Ohio,88527,East,Furniture,Tables,70.37,3,0.0,26.2
+222,US-2014-100221,09/23/2014,09/26/2014,Standard Class,CU-10512,Consumer,United States,Portland,Oregon,03324,West,Office Supplies,Labels,60.14,6,0.0,13.52
+223,US-2014-100222,09/24/2014,09/29/2014,Standard Class,CU-10728,Corporate,United States,Richmond,Virginia,22596,South,Furniture,Bookcases,336.05,2,0.0,30.81
+224,US-2014-100223,09/24/2014,09/27/2014,Standard Class,CU-10163,Corporate,United States,New York City,New York,95503,East,Furniture,Bookcases,25.39,14,0.0,-0.1
+225,US-2014-100224,09/25/2014,09/30/2014,First Class,CU-10512,Consumer,United States,Los Angeles,California,07913,West,Office Supplies,Paper,195.51,12,0.0,15.69
+226,US-2014-100225,09/25/2014,09/26/2014,Second Class,CU-10651,Consumer,United States,Atlanta,Georgia,12248,South,Furniture,Chairs,471.88,8,0.5,-199.26
+227,US-2014-100226,09/25/2014,09/25/2014,Standard Class,CU-10377,Corporate,United States,Seattle,Washington,64644,West,Office Supplies,Art,262.31,14,0.3,-9.87
+228,US-2014-100227,09/26/2014,09/27/2014,Second Class,CU-10787,Consumer,United States,Portland,Oregon,90603,West,Office Supplies,Binders,120.44,1,0.0,-1.2
+229,US-2014-100228,09/27/2014,09/28/2014,Standard Class,CU-10639,Corporate,United States,New York City,New York,70230,East,Furniture,Bookcases,649.45,2,0.2,242.59
+230,US-2014-100229,09/29/2014,10/04/2014,Second Class,CU-10125,Consumer,United States,Columbus,Ohio,50609,East,Office Supplies,Paper,60.97,8,0.0,4.57
+231,US-2014-100230,10/01/2014,10/04/2014,Standard Class,CU-10642,Consumer,United States,Columbus,Ohio,03257,East,Furniture,Furnishings,666.1,12,0.0,50.01
+232,US-2014-100231,10/02/2014,10/06/2014,Second Class,CU-10284,Consumer,United States,Chicago,Illinois,40680,Central,Technology,Accessories,1103.23,12,0.0,339.74
+233,US-2014-100232,10/09/2014,10/15/2014,Second Class,CU-10446,Consumer,United States,Columbus,Ohio,76907,East,Office Supplies,Storage,99.32,13,0.5,-20.63
+234,US-2014-100233,10/11/2014,10/14/2014,Second Class,CU-10640,Corporate,United States,New York City,New York,84476,East,Technology,Phones,576.67,4,0.0,92.02
+235,US-2014-100234,10/12/2014,10/16/2014,Standard Class,CU-10788,Consumer,United States,Philadelphia,Pennsylvania,45925,East,Technology,Machines,100.99,14,0.3,0.77
+236,US-2014-100235,10/12/2014,10/13/2014,Standard Class,CU-10226,Consumer,United States,Detroit,Michigan,47770,Central,Furniture,Bookcases,337.71,10,0.0,43.19
+237,US-2014-100236,10/14/2014,10/19/2014,Second Class,CU-10500,Consumer,United States,Houston,Texas,36253,Central,Office Supplies,Paper,67.56,3,0.2,0.65
+238,US-2014-100237,10/15/2014,10/18/2014,Second Class,CU-10087,Corporate,United States,Columbus,Ohio,95808,East,Office Supplies,Storage,69.68,10,0.1,-5.89
+239,US-2014-100238,10/19/2014,10/20/2014,Standard Class,CU-10648,Home Office,United States,Miami,Florida,45728,South,Office Supplies,Storage,106.54,8,0.1,16.02
+240,US-2014-100239,10/21/2014,10/24/2014,Standard Class,CU-10503,Consumer,United States,Portland,Oregon,19499,West,Office Supplies,Storage,6.46,10,0.0,0.93
+241,US-2014-100240,10/22/2014,10/24/2014,Standard Class,CU-10182,Consumer,United States,Columbus,Ohio,27318,East,Technology,Copiers,65.66,8,0.2,-6.84
+242,US-2014-100241,10/22/2014,10/27/2014,Standard Class,CU-10278,Home Office,United States,Seattle,Washington,88810,West,Office Supplies,Binders,72.78,7,0.0,18.01
+243,US-2014-100242,10/22/2014,10/24/2014,First Class,CU-10257,Consumer,United States,Atlanta,Georgia,74660,South,Office Supplies,Labels,92.56,3,0.3,-29.08
+244,US-2014-100243,10/23/2014,10/24/2014,Standard Class,CU-10030,Home Office,United States,Los Angeles,California,81899,West,Furniture,Tables,494.2,3,0.5,-165.82
+245,US-2014-100244,10/24/2014,10/27/2014,Standard Class,CU-10201,Consumer,United States,Richmond,Virginia,24506,South,Technology,Machines,497.52,2,0.0,111.15
+246,US-2014-100245,10/25/2014,10/27/2014,Standard Class,CU-10349,Consumer,United States,Atlanta,Georgia,49494,South,Technology,Accessories,534.49,3,0.5,-194.39
+247,US-2014-100246,10/25/2014,10/28/2014,Standard Class,CU-10115,Corporate,United States,Houston,Texas,64741,Central,Technology,Machines,416.65,9,0.1,21.76
+248,US-2014-100247,10/26/2014,11/01/2014,Standard Class,CU-10223,Consumer,United States,Houston,Texas,15519,Central,Office Supplies,Binders,211.23,13,0.1,-10.67
+249,US-2014-100248,10/27/2014,10/27/2014,Standard Class,CU-10072,Home Office,United States,Philadelphia,Pennsylvania,40533,East,Furniture,Furnishings,325.0,2,0.1,12.41
+250,US-2014-100249,10/27/2014,11/02/2014,Same Day,CU-10453,Consumer,United States,Los Angeles,California,70127,West,Technology,Accessories,272.36,11,0.1,-36.72
+251,US-2014-100250,10/28/2014,10/31/2014,Standard Class,CU-10115,Consumer,United States,Richmond,Virginia,52360,South,Office Supplies,Art,315.18,8,0.0,118.81
+252,US-2014-100251,10/28/2014,10/31/2014,Standard Class,CU-10262,Corporate,United States,Richmond,Virginia,87985,South,Office Supplies,Paper,89.29,11,0.1,1.13
+253,US-2014-100252,10/31/2014,11/04/2014,Second Class,CU-10167,Home Office,United States,Detroit,Michigan,87161,Central,Furniture,Chairs,230.77,3,0.2,38.8
+254,US-2014-100253,11/01/2014,11/02/2014,First Class,CU-10066,Consumer,United States,Miami,Florida,33166,South,Office Supplies,Binders,101.4,12,0.1,35.87
+255,US-2014-100254,11/04/2014,11/09/2014,Standard Class,CU-10415,Consumer,United States,Richmond,Virginia,34039,South,Office Supplies,Art,115.45,8,0.0,3.75
+256,US-2014-100255,11/05/2014,11/06/2014,Second Class,CU-10709,Consumer,United States,Atlanta,Georgia,07188,South,Office Supplies,Labels,151.71,10,0.0,17.08
+257,US-2014-100256,11/05/2014,11/10/2014,Second Class,CU-10159,Consumer,United States,New York City,New York,66012,East,Office Supplies,Binders,97.26,13,0.5,-24.1
+258,US-2014-100257,11/06/2014,11/08/2014,Second Class,CU-10417,Home Office,United States,Los Angeles,California,83151,West,Office Supplies,Paper,161.81,9,0.1,15.14
+259,US-2014-100258,11/06/2014,11/11/2014,Standard Class,CU-10396,Corporate,United States,Richmond,Virginia,52493,South,Technology,Machines,463.48,7,0.2,-108.43
+260,US-2014-100259,11/09/2014,11/11/2014,Standard Class,CU-10401,Home Office,United States,Columbus,Ohio,72545,East,Office Supplies,Storage,255.64,3,0.5,-12.69
+261,US-2014-100260,11/12/2014,11/15/2014,Second Class,CU-10711,Corporate,United States,New York City,New York,26802,East,Technology,Machines,399.62,2,0.0,33.9
+262,US-2014-100261,11/12/2014,11/12/2014,First Class,CU-10255,Home Office,United States,New York City,New York,41566,East,Office Supplies,Storage,23.89,11,0.0,5.13
+263,US-2014-100262,11/15/2014,11/15/2014,Standard Class,CU-10314,Consumer,United States,Miami,Florida,25074,South,Office Supplies,Labels,250.07,7,0.0,28.32
+264,US-2014-100263,11/15/2014,11/15/2014,Standard Class,CU-10149,Consumer,United States,Detroit,Michigan,49840,Central,Office Supplies,Storage,34.08,2,0.0,7.06
+265,US-2014-100264,11/21/2014,11/23/2014,Standard Class,CU-10259,Consumer,United States,Houston,Texas,92448,Central,Office Supplies,Art,77.07,13,0.1,-1.54
+266,US-2014-100265,11/22/2014,11/28/2014,Second Class,CU-10771,Home Office,United States,Seattle,Washington,03192,West,Office Supplies,Binders,103.89,3,0.3,-8.99
+267,US-2014-100266,11/23/2014,11/25/2014,First Class,CU-10543,Corporate,United States,Los Angeles,California,89701,West,Office Supplies,Binders,205.84,9,0.0,50.06
+268,US-2014-100267,11/23/2014,11/29/2014,Standard Class,CU-10115,Corporate,United States,New York City,New York,63565,East,Technology,Copiers,927.16,12,0.0,88.81
+269,US-2014-100268,11/25/2014,12/01/2014,Standard Class,CU-10410,Home Office,United States,Portland,Oregon,22671,West,Office Supplies,Labels,181.14,5,0.0,71.74
+270,US-2014-100269,11/26/2014,11/30/2014,Standard Class,CU-10030,Consumer,United States,Philadelphia,Pennsylvania,48946,East,Office Supplies,Art,106.33,5,0.0,5.21
+271,US-2014-100270,11/26/2014,11/28/2014,First Class,CU-10415,Corporate,United States,Los Angeles,California,51292,West,Technology,Machines,118.82,10,0.2,-0.38
+272,US-2014-100271,11/28/2014,12/01/2014,Standard Class,CU-10798,Consumer,United States,Columbus,Ohio,60237,East,Technology,Phones,348.81,13,0.0,-27.62
+273,US-2014-100272,11/28/2014,11/28/2014,Standard Class,CU-10183,Consumer,United States,Richmond,Virginia,83950,South,Office Supplies,Art,97.83,4,0.0,10.82
+274,US-2014-100273,12/02/2014,12/07/2014,Second Class,CU-10631,Corporate,United States,Seattle,Washington,85994,West,Technology,Machines,166.52,12,0.0,51.0
+275,US-2014-100274,12/03/2014,12/07/2014,Second Class,CU-10098,Consumer,United States,Columbus,Ohio,29459,East,Furniture,Bookcases,443.2,10,0.5,-61.28
+276,US-2014-100275,12/05/2014,12/08/2014,Standard Class,CU-10750,Corporate,United States,New York City,New York,77094,East,Technology,Phones,265.4,5,0.3,-11.54
+277,US-2014-100276,12/08/2014,12/09/2014,Standard Class,CU-10644,Corporate,United States,Portland,Oregon,03027,West,Office Supplies,Art,90.11,2,0.0,-0.03
+278,US-2014-100277,12/10/2014,12/13/2014,Standard Class,CU-10177,Home Office,United States,Richmond,Virginia,69907,South,Furniture,Bookcases,105.3,7,0.0,18.36
+279,US-2014-100278,12/10/2014,12/15/2014,Second Class,CU-10303,Consumer,United States,Chicago,Illinois,01588,Central,Furniture,Chairs,902.92,14,0.5,-145.49
+280,US-2014-100279,12/12/2014,12/14/2014,First Class,CU-10083,Consumer,United States,Houston,Texas,70206,Central,Technology,Accessories,1111.03,10,0.5,-377.94
+281,US-2014-100280,12/12/2014,12/14/2014,First Class,CU-10476,Corporate,United States,Columbus,Ohio,47048,East,Office Supplies,Paper,156.22,12,0.0,36.8
+282,US-2014-100281,12/15/2014,12/18/2014,Second Class,CU-10321,Corporate,United States,Richmond,Virginia,85797,South,Furniture,Tables,382.58,1,0.1,60.33
+283,US-2014-100282,12/22/2014,12/25/2014,Standard Class,CU-10163,Home Office,United States,Seattle,Washington,25967,West,Furniture,Chairs,74.61,10,0.1,1.18
+284,US-2014-100283,12/22/2014,12/27/2014,First Class,CU-10038,Consumer,United States,Chicago,Illinois,95406,Central,Office Supplies,Binders,50.17,12,0.0,4.81
+285,US-2014-100284,12/23/2014,12/23/2014,Standard Class,CU-10135,Corporate,United States,Chicago,Illinois,30321,Central,Technology,Phones,2076.52,12,0.0,472.04
+286,US-2014-100285,12/23/2014,12/29/2014,Standard Class,CU-10506,Consumer,United States,Richmond,Virginia,45987,South,Office Supplies,Paper,30.13,11,0.3,-5.22
+287,US-2014-100286,12/24/2014,12/24/2014,Second Class,CU-10228,Consumer,United States,Los Angeles,California,50405,West,Office Supplies,Art,186.41,7,0.0,-7.42
+288,US-2014-100287,12/25/2014,12/31/2014,Second Class,CU-10145,Corporate,United States,Los Angeles,California,52551,West,Office Supplies,Art,117.18,2,0.0,4.27
+289,US-2014-100288,12/26/2014,12/31/2014,Standard Class,CU-10546,Consumer,United States,Portland,Oregon,20636,West,Technology,Accessories,543.46,3,0.0,109.36
+290,US-2014-100289,12/26/2014,01/01/2015,First Class,CU-10582,Consumer,United States,Los Angeles,California,64312,West,Technology,Accessories,405.23,6,0.0,37.59
+291,US-2014-100290,12/27/2014,12/31/2014,Standard Class,CU-10405,Consumer,United States,Houston,Texas,92071,Central,Office Supplies,Paper,113.51,5,0.1,12.67
+292,US-2014-100291,12/30/2014,01/02/2015,Standard Class,CU-10453,Consumer,United States,New York City,New York,71136,East,Technology,Accessories,95.6,7,0.0,0.09
+293,US-2014-100292,12/31/2014,01/06/2015,Same Day,CU-10564,Consumer,United States,Detroit,Michigan,10174,Central,Office Supplies,Art,136.78,5,0.0,20.44
+294,US-2015-100293,01/01/2015,01/04/2015,Standard Class,CU-10309,Corporate,United States,Columbus,Ohio,21824,East,Office Supplies,Labels,44.51,1,0.0,1.82
+295,US-2015-100294,01/02/2015,01/04/2015,First Class,CU-10730,Corporate,United States,Columbus,Ohio,27055,East,Office Supplies,Binders,147.93,3,0.1,19.23
+296,US-2015-100295,01/07/2015,01/10/2015,Second Class,CU-10092,Consumer,United States,Philadelphia,Pennsylvania,70882,East,Office Supplies,Paper,21.87,14,0.0,5.06
+297,US-2015-100296,01/08/2015,01/14/2015,Standard Class,CU-10489,Corporate,United States,New York City,New York,35646,East,Office Supplies,Storage,109.56,5,0.1,11.82
+298,US-2015-100297,01/10/2015,01/11/2015,First Class,CU-10673,Corporate,United States,New York City,New York,30027,East,Office Supplies,Binders,151.93,12,0.1,-1.1
+299,US-2015-100298,01/14/2015,01/16/2015,First Class,CU-10527,Consumer,United States,Atlanta,Georgia,14115,South,Technology,Copiers,1371.33,7,0.5,-232.6
+300,US-2015-100299,01/14/2015,01/17/2015,First Class,CU-10451,Corporate,United States,New York City,New York,63427,East,Office Supplies,Paper,83.41,13,0.2,-4.16
+301,US-2015-100300,01/14/2015,01/19/2015,Same Day,CU-10692,Home Office,United States,Houston,Texas,47549,Central,Office Supplies,Paper,212.88,4,0.0,29.34
+302,US-2015-100301,01/15/2015,01/15/2015,Second Class,CU-10199,Consumer,United States,Columbus,Ohio,09179,East,Office Supplies,Labels,100.47,3,0.0,21.28
+303,US-2015-100302,01/15/2015,01/19/2015,Second Class,CU-10032,Corporate,United States,Atlanta,Georgia,27487,South,Office Supplies,Binders,171.64,7,0.1,-10.7
+304,US-2015-100303,01/15/2015,01/20/2015,Second Class,CU-10063,Consumer,United States,Portland,Oregon,67890,West,Technology,Copiers,436.47,10,0.0,13.3
+305,US-2015-100304,01/16/2015,01/19/2015,First Class,CU-10353,Corporate,United States,New York City,New York,72973,East,Office Supplies,Binders,16.63,13,0.1,-1.77
+306,US-2015-100305,01/18/2015,01/24/2015,Standard Class,CU-10365,Consumer,United States,Columbus,Ohio,41249,East,Office Supplies,Labels,249.86,11,0.3,-59.51
+307,US-2015-100306,01/18/2015,01/24/2015,Standard Class,CU-10019,Home Office,United States,Seattle,Washington,16300,West,Furniture,Furnishings,34.63,14,0.0,-4.14
+308,US-2015-100307,01/19/2015,01/20/2015,Standard Class,CU-10664,Home Office,United States,Portland,Oregon,34707,West,Office Supplies,Art,14.33,9,0.0,3.79
+309,US-2015-100308,01/20/2015,01/22/2015,Second Class,CU-10626,Consumer,United States,Atlanta,Georgia,88142,South,Office Supplies,Storage,117.32,11,0.2,11.84
+310,US-2015-100309,01/21/2015,01/25/2015,Standard Class,CU-10272,Consumer,United States,Chicago,Illinois,56417,Central,Office Supplies,Binders,49.54,1,0.0,10.39
+311,US-2015-100310,01/21/2015,01/26/2015,Standard Class,CU-10718,Home Office,United States,Atlanta,Georgia,33911,South,Office Supplies,Art,143.04,6,0.1,23.18
+312,US-2015-100311,01/24/2015,01/26/2015,Standard Class,CU-10469,Home Office,United States,Richmond,Virginia,78735,South,Technology,Accessories,127.12,12,0.2,4.8
+313,US-2015-100312,01/25/2015,01/25/2015,Second Class,CU-10571,Home Office,United States,New York City,New York,52708,East,Technology,Phones,233.0,10,0.5,-111.55
+314,US-2015-100313,01/26/2015,01/31/2015,Standard Class,CU-10243,Corporate,United States,Atlanta,Georgia,54276,South,Technology,Machines,455.29,11,0.0,-33.7
+315,US-2015-100314,01/26/2015,02/01/2015,Standard Class,CU-10646,Corporate,United States,New York City,New York,65107,East,Office Supplies,Art,43.36,9,0.1,-10.29
+316,US-2015-100315,01/28/2015,01/28/2015,Standard Class,CU-10264,Home Office,United States,New York City,New York,61317,East,Office Supplies,Binders,117.69,12,0.5,14.18
+317,US-2015-100316,01/29/2015,01/30/2015,Standard Class,CU-10381,Home Office,United States,Philadelphia,Pennsylvania,68708,East,Technology,Accessories,247.96,14,0.5,-116.47
+318,US-2015-100317,01/30/2015,02/03/2015,Standard Class,CU-10226,Consumer,United States,Miami,Florida,01901,South,Office Supplies,Binders,60.65,7,0.2,-11.42
+319,US-2015-100318,01/30/2015,01/30/2015,First Class,CU-10296,Corporate,United States,Philadelphia,Pennsylvania,50201,East,Technology,Phones,783.82,8,0.3,-128.68
+320,US-2015-100319,02/05/2015,02/06/2015,Standard Class,CU-10408,Consumer,United States,Columbus,Ohio,76917,East,Furniture,Tables,710.25,1,0.2,-120.96
+321,US-2015-100320,02/07/2015,02/09/2015,Standard Class,CU-10128,Consumer,United States,Seattle,Washington,05057,West,Office Supplies,Binders,29.99,4,0.5,-6.3
+322,US-2015-100321,02/08/2015,02/13/2015,Second Class,CU-10267,Corporate,United States,Seattle,Washington,14065,West,Furniture,Tables,208.68,1,0.5,-64.99
+323,US-2015-100322,02/08/2015,02/11/2015,First Class,CU-10394,Consumer,United States,Miami,Florida,88627,South,Office Supplies,Storage,352.86,3,0.0,14.36
+324,US-2015-100323,02/10/2015,02/11/2015,Standard Class,CU-10315,Consumer,United States,Los Angeles,California,77258,West,Office Supplies,Art,20.43,9,0.0,4.48
+325,US-2015-100324,02/11/2015,02/11/2015,Standard Class,CU-10733,Consumer,United States,Los Angeles,California,55336,West,Office Supplies,Paper,122.16,12,0.0,31.44
+326,US-2015-100325,02/12/2015,02/17/2015,Standard Class,CU-10400,Consumer,United States,Detroit,Michigan,06281,Central,Technology,Copiers,465.47,14,0.1,76.75
+327,US-2015-100326,02/15/2015,02/17/2015,Standard Class,CU-10732,Corporate,United States,Detroit,Michigan,15428,Central,Technology,Copiers,622.82,9,0.5,-166.4
+328,US-2015-100327,02/15/2015,02/20/2015,First Class,CU-10794,Consumer,United States,Richmond,Virginia,33284,South,Office Supplies,Paper,68.41,7,0.2,-21.9
+329,US-2015-100328,02/17/2015,02/22/2015,Standard Class,CU-10049,Consumer,United States,Detroit,Michigan,47035,Central,Technology,Machines,415.87,14,0.2,53.85
+330,US-2015-100329,02/18/2015,02/24/2015,Standard Class,CU-10052,Consumer,United States,Portland,Oregon,37688,West,Office Supplies,Binders,128.4,4,0.3,12.39
+331,US-2015-100330,02/18/2015,02/24/2015,Standard Class,CU-10352,Consumer,United States,Los Angeles,California,15486,West,Technology,Accessories,339.9,14,0.1,14.72
+332,US-2015-100331,02/20/2015,02/23/2015,Standard Class,CU-10452,Corporate,United States,Miami,Florida,71710,South,Technology,Machines,1131.8,1,0.2,-79.33
+333,US-2015-100332,02/21/2015,02/22/2015,Second Class,CU-10276,Corporate,United States,Chicago,Illinois,63244,Central,Technology,Phones,70.26,11,0.1,-0.15
+334,US-2015-100333,02/21/2015,02/24/2015,Second Class,CU-10421,Consumer,United States,New York City,New York,52336,East,Furniture,Tables,168.78,2,0.0,41.44
+335,US-2015-100334,02/22/2015,02/27/2015,Standard Class,CU-10374,Corporate,United States,New York City,New York,63293,East,Technology,Accessories,118.22,4,0.3,25.4
+336,US-2015-100335,02/23/2015,02/25/2015,Standard Class,CU-10183,Consumer,United States,New York City,New York,85784,East,Furniture,Furnishings,361.05,3,0.2,26.68
+337,US-2015-100336,02/26/2015,02/27/2015,Standard Class,CU-10744,Home Office,United States,Miami,Florida,48318,South,Office Supplies,Labels,102.05,10,0.0,15.29
+338,US-2015-100337,02/26/2015,02/26/2015,First Class,CU-10534,Consumer,United States,Miami,Florida,25067,South,Office Supplies,Paper,94.06,13,0.3,-18.4
+339,US-2015-100338,02/27/2015,03/04/2015,Standard Class,CU-10635,Consumer,United States,Seattle,Washington,04022,West,Office Supplies,Art,123.23,10,0.1,6.3
+340,US-2015-100339,02/27/2015,03/05/2015,Second Class,CU-10746,Corporate,United States,Richmond,Virginia,91561,South,Office Supplies,Labels,201.64,13,0.3,-27.32
+341,US-2015-100340,02/27/2015,03/04/2015,Standard Class,CU-10252,Corporate,United States,Miami,Florida,46189,South,Office Supplies,Binders,13.19,2,0.0,3.45
+342,US-2015-100341,02/28/2015,03/04/2015,Standard Class,CU-10426,Consumer,United States,Atlanta,Georgia,53294,South,Technology,Copiers,178.96,6,0.5,-15.7
+343,US-2015-100342,02/28/2015,03/03/2015,Standard Class,CU-10512,Corporate,United States,Columbus,Ohio,61425,East,Office Supplies,Storage,192.68,8,0.5,-49.53
+344,US-2015-100343,02/28/2015,03/03/2015,Standard Class,CU-10694,Consumer,United States,New York City,New York,11928,East,Office Supplies,Paper,285.54,13,0.2,37.23
+345,US-2015-100344,03/01/2015,03/02/2015,Standard Class,CU-10583,Consumer,United States,Columbus,Ohio,54980,East,Office Supplies,Labels,46.73,8,0.3,-6.33
+346,US-2015-100345,03/01/2015,03/07/2015,Standard Class,CU-10372,Consumer,United States,Detroit,Michigan,72087,Central,Office Supplies,Labels,153.47,2,0.0,-1.2
+347,US-2015-100346,03/02/2015,03/07/2015,Standard Class,CU-10709,Corporate,United States,Atlanta,Georgia,14294,South,Office Supplies,Storage,30.64,14,0.0,4.07
+348,US-2015-100347,03/03/2015,03/03/2015,Standard Class,CU-10259,Consumer,United States,Chicago,Illinois,80123,Central,Technology,Accessories,401.17,11,0.3,35.95
+349,US-2015-100348,03/04/2015,03/09/2015,Standard Class,CU-10219,Consumer,United States,Seattle,Washington,16763,West,Technology,Copiers,367.01,12,0.0,69.13
+350,US-2015-100349,03/06/2015,03/09/2015,Standard Class,CU-10205,Corporate,United States,Detroit,Michigan,67055,Central,Office Supplies,Storage,132.19,12,0.0,25.84
+351,US-2015-100350,03/10/2015,03/16/2015,Standard Class,CU-10550,Consumer,United States,Miami,Florida,73251,South,Office Supplies,Art,276.19,1,0.0,69.77
+352,US-2015-100351,03/12/2015,03/12/2015,Same Day,CU-10083,Consumer,United States,Portland,Oregon,47193,West,Office Supplies,Storage,52.71,9,0.5,-6.19
+353,US-2015-100352,03/12/2015,03/12/2015,Second Class,CU-10012,Consumer,United States,New York City,New York,57586,East,Office Supplies,Paper,79.57,2,0.5,-22.0
+354,US-2015-100353,03/12/2015,03/13/2015,Standard Class,CU-10686,Corporate,United States,Columbus,Ohio,17193,East,Office Supplies,Storage,76.96,10,0.0,6.41
+355,US-2015-100354,03/14/2015,03/14/2015,Standard Class,CU-10381,Consumer,United States,Portland,Oregon,30371,West,Office Supplies,Labels,32.65,3,0.3,-2.41
+356,US-2015-100355,03/15/2015,03/19/2015,Second Class,CU-10481,Consumer,United States,New York City,New York,43373,East,Office Supplies,Paper,179.64,10,0.5,-67.03
+357,US-2015-100356,03/17/2015,03/23/2015,Standard Class,CU-10533,Corporate,United States,Houston,Texas,89985,Central,Office Supplies,Paper,180.72,5,0.1,25.19
+358,US-2015-100357,03/19/2015,03/21/2015,Standard Class,CU-10067,Consumer,United States,Portland,Oregon,25767,West,Technology,Phones,696.82,9,0.2,19.53
+359,US-2015-100358,03/21/2015,03/23/2015,Standard Class,CU-10293,Corporate,United States,Columbus,Ohio,09405,East,Technology,Phones,575.19,7,0.0,44.02
+360,US-2015-100359,03/21/2015,03/25/2015,Standard Class,CU-10379,Corporate,United States,Columbus,Ohio,10109,East,Office Supplies,Art,153.76,6,0.3,-41.81
+361,US-2015-100360,03/22/2015,03/26/2015,Standard Class,CU-10453,Consumer,United States,Los Angeles,California,82098,West,Technology,Copiers,614.43,2,0.0,230.84
+362,US-2015-100361,03/22/2015,03/23/2015,Standard Class,CU-10796,Home Office,United States,Houston,Texas,67269,Central,Office Supplies,Labels,200.66,10,0.0,25.59
+363,US-2015-100362,03/25/2015,03/26/2015,First Class,CU-10336,Home Office,United States,Chicago,Illinois,21590,Central,Technology,Machines,444.29,14,0.3,-76.89
+364,US-2015-100363,03/26/2015,03/28/2015,Standard Class,CU-10683,Corporate,United States,Columbus,Ohio,54825,East,Office Supplies,Art,52.14,6,0.1,5.48
+365,US-2015-100364,03/26/2015,03/26/2015,Standard Class,CU-10051,Corporate,United States,Seattle,Washington,42684,West,Office Supplies,Storage,106.25,9,0.0,16.84
+366,US-2015-100365,03/26/2015,03/27/2015,Standard Class,CU-10766,Home Office,United States,Richmond,Virginia,94885,South,Technology,Accessories,825.79,11,0.2,154.85
+367,US-2015-100366,03/27/2015,03/30/2015,First Class,CU-10421,Consumer,United States,Columbus,Ohio,49232,East,Furniture,Bookcases,224.14,2,0.5,-53.75
+368,US-2015-100367,03/27/2015,04/02/2015,First Class,CU-10745,Home Office,United States,Los Angeles,California,19056,West,Office Supplies,Storage,105.12,14,0.0,-0.91
+369,US-2015-100368,03/30/2015,04/04/2015,Standard Class,CU-10073,Corporate,United States,Portland,Oregon,57056,West,Office Supplies,Storage,229.63,5,0.1,2.27
+370,US-2015-100369,04/01/2015,04/01/2015,Second Class,CU-10376,Corporate,United States,Miami,Florida,99791,South,Office Supplies,Binders,25.38,9,0.0,3.86
+371,US-2015-100370,04/01/2015,04/03/2015,Second Class,CU-10213,Corporate,United States,New York City,New York,09943,East,Office Supplies,Labels,25.63,5,0.1,1.3
+372,US-2015-100371,04/05/2015,04/11/2015,Same Day,CU-10506,Consumer,United States,Portland,Oregon,34383,West,Office Supplies,Storage,116.23,5,0.0,22.68
+373,US-2015-100372,04/06/2015,04/08/2015,First Class,CU-10325,Home Office,United States,Detroit,Michigan,88590,Central,Office Supplies,Art,162.95,2,0.1,2.09
+374,US-2015-100373,04/07/2015,04/13/2015,Standard Class,CU-10504,Corporate,United States,Miami,Florida,10698,South,Office Supplies,Labels,128.5,10,0.0,26.45
+375,US-2015-100374,04/08/2015,04/10/2015,Second Class,CU-10485,Consumer,United States,Philadelphia,Pennsylvania,22372,East,Office Supplies,Labels,76.82,6,0.1,-7.41
+376,US-2015-100375,04/09/2015,04/13/2015,Second Class,CU-10492,Home Office,United States,New York City,New York,31805,East,Furniture,Chairs,71.25,11,0.5,-21.45
+377,US-2015-100376,04/09/2015,04/14/2015,Standard Class,CU-10692,Home Office,United States,Atlanta,Georgia,23002,South,Furniture,Chairs,174.7,2,0.2,35.81
+378,US-2015-100377,04/11/2015,04/17/2015,Standard Class,CU-10174,Home Office,United States,Chicago,Illinois,39544,Central,Furniture,Tables,215.25,3,0.3,-26.56
+379,US-2015-100378,04/11/2015,04/13/2015,Standard Class,CU-10475,Corporate,United States,Los Angeles,California,93626,West,Office Supplies,Binders,110.24,2,0.2,26.96
+380,US-2015-100379,04/12/2015,04/12/2015,Standard Class,CU-10699,Home Office,United States,Seattle,Washington,33342,West,Furniture,Bookcases,547.35,2,0.3,3.71
+381,US-2015-100380,04/15/2015,04/20/2015,Standard Class,CU-10782,Corporate,United States,Columbus,Ohio,49481,East,Office Supplies,Binders,32.89,9,0.3,-0.87
+382,US-2015-100381,04/15/2015,04/20/2015,Standard Class,CU-10587,Consumer,United States,Detroit,Michigan,67492,Central,Technology,Copiers,634.08,7,0.0,108.09
+383,US-2015-100382,04/16/2015,04/16/2015,Standard Class,CU-10627,Home Office,United States,Seattle,Washington,17667,West,Technology,Accessories,953.58,8,0.2,-58.84
+384,US-2015-100383,04/16/2015,04/18/2015,Standard Class,CU-10196,Consumer,United States,Columbus,Ohio,85639,East,Furniture,Furnishings,147.95,14,0.3,7.54
+385,US-2015-100384,04/18/2015,04/24/2015,Second Class,CU-10786,Consumer,United States,Chicago,Illinois,15050,Central,Technology,Accessories,108.45,4,0.0,30.02
+386,US-2015-100385,04/18/2015,04/19/2015,Second Class,CU-10721,Corporate,United States,New York City,New York,53160,East,Office Supplies,Storage,121.73,7,0.1,-0.44
+387,US-2015-100386,04/20/2015,04/20/2015,Standard Class,CU-10217,Consumer,United States,Richmond,Virginia,32160,South,Furniture,Bookcases,475.76,2,0.2,-7.06
+388,US-2015-100387,04/20/2015,04/21/2015,Standard Class,CU-10348,Consumer,United States,Atlanta,Georgia,29352,South,Office Supplies,Binders,111.72,8,0.5,-23.07
+389,US-2015-100388,04/22/2015,04/23/2015,First Class,CU-10425,Consumer,United States,Philadelphia,Pennsylvania,57867,East,Office Supplies,Storage,274.29,3,0.0,61.75
+390,US-2015-100389,04/23/2015,04/26/2015,Second Class,CU-10496,Corporate,United States,Philadelphia,Pennsylvania,51111,East,Furniture,Bookcases,417.52,11,0.5,-96.83
+391,US-2015-100390,04/25/2015,04/27/2015,Second Class,CU-10438,Consumer,United States,Detroit,Michigan,10876,Central,Office Supplies,Paper,16.22,11,0.0,4.15
+392,US-2015-100391,04/26/2015,04/28/2015,Standard Class,CU-10650,Consumer,United States,Seattle,Washington,31694,West,Furniture,Furnishings,145.58,10,0.2,-2.36
+393,US-2015-100392,05/01/2015,05/06/2015,Standard Class,CU-10697,Consumer,United States,Portland,Oregon,68102,West,Office Supplies,Paper,189.86,1,0.2,18.3
+394,US-2015-100393,05/04/2015,05/06/2015,Standard Class,CU-10334,Consumer,United States,Seattle,Washington,30430,West,Office Supplies,Paper,275.21,14,0.5,-62.05
+395,US-2015-100394,05/05/2015,05/05/2015,Second Class,CU-10389,Consumer,United States,Houston,Texas,24175,Central,Office Supplies,Art,82.29,5,0.0,5.56
+396,US-2015-100395,05/06/2015,05/09/2015,Standard Class,CU-10093,Home Office,United States,Miami,Florida,66996,South,Furniture,Chairs,640.83,6,0.0,186.38
+397,US-2015-100396,05/07/2015,05/10/2015,Second Class,CU-10548,Consumer,United States,Atlanta,Georgia,07646,South,Technology,Accessories,336.14,3,0.0,56.18
+398,US-2015-100397,05/07/2015,05/12/2015,Second Class,CU-10193,Corporate,United States,Portland,Oregon,32509,West,Office Supplies,Paper,73.11,4,0.5,-12.53
+399,US-2015-100398,05/09/2015,05/14/2015,Standard Class,CU-10409,Consumer,United States,Seattle,Washington,84804,West,Furniture,Tables,34.68,10,0.0,8.17
+400,US-2015-100399,05/16/2015,05/16/2015,Standard Class,CU-10598,Home Office,United States,Detroit,Michigan,84552,Central,Office Supplies,Paper,10.33,4,0.0,1.08
+401,US-2015-100400,05/19/2015,05/24/2015,Standard Class,CU-10789,Consumer,United States,New York City,New York,80987,East,Furniture,Tables,528.41,1,0.3,-70.91
+402,US-2015-100401,05/19/2015,05/22/2015,First Class,CU-10499,Consumer,United States,Portland,Oregon,78596,West,Office Supplies,Art,30.05,2,0.1,8.03
+403,US-2015-100402,05/21/2015,05/27/2015,Second Class,CU-10615,Corporate,United States,Philadelphia,Pennsylvania,96965,East,Office Supplies,Art,60.43,8,0.2,-4.81
+404,US-2015-100403,05/22/2015,05/25/2015,Second Class,CU-10271,Corporate,United States,Philadelphia,Pennsylvania,24998,East,Technology,Copiers,645.78,2,0.5,-123.8
+405,US-2015-100404,05/23/2015,05/29/2015,Standard Class,CU-10095,Home Office,United States,Philadelphia,Pennsylvania,44326,East,Furniture,Tables,467.38,11,0.1,-15.43
+406,US-2015-100405,05/24/2015,05/27/2015,Standard Class,CU-10645,Corporate,United States,Houston,Texas,55596,Central,Office Supplies,Binders,37.4,13,0.0,2.6
+407,US-2015-100406,05/24/2015,05/28/2015,Second Class,CU-10652,Corporate,United States,Philadelphia,Pennsylvania,45483,East,Office Supplies,Storage,52.07,12,0.2,-0.92
+408,US-2015-100407,05/27/2015,05/28/2015,Second Class,CU-10094,Corporate,United States,Philadelphia,Pennsylvania,67696,East,Office Supplies,Paper,275.35,5,0.2,-63.68
+409,US-2015-100408,05/28/2015,05/29/2015,Second Class,CU-10577,Consumer,United States,Columbus,Ohio,46351,East,Office Supplies,Binders,199.1,8,0.1,-6.06
+410,US-2015-100409,05/31/2015,06/02/2015,Standard Class,CU-10099,Corporate,United States,New York City,New York,15807,East,Technology,Phones,1061.49,7,0.0,125.67
+411,US-2015-100410,05/31/2015,06/01/2015,Standard Class,CU-10309,Consumer,United States,Columbus,Ohio,25128,East,Office Supplies,Binders,119.94,7,0.0,16.18
+412,US-2015-100411,06/01/2015,06/04/2015,Standard Class,CU-10408,Consumer,United States,Houston,Texas,28774,Central,Furniture,Chairs,588.81,11,0.5,-85.86
+413,US-2015-100412,06/01/2015,06/05/2015,Standard Class,CU-10115,Consumer,United States,New York City,New York,92320,East,Technology,Machines,993.2,14,0.1,-93.78
+414,US-2015-100413,06/01/2015,06/04/2015,Standard Class,CU-10192,Corporate,United States,Philadelphia,Pennsylvania,30703,East,Furniture,Furnishings,249.72,5,0.5,-78.77
+415,US-2015-100414,06/03/2015,06/08/2015,Standard Class,CU-10244,Consumer,United States,Columbus,Ohio,45894,East,Office Supplies,Binders,79.59,12,0.0,27.35
+416,US-2015-100415,06/03/2015,06/06/2015,Standard Class,CU-10618,Corporate,United States,Seattle,Washington,16080,West,Office Supplies,Binders,105.02,13,0.1,32.12
+417,US-2015-100416,06/04/2015,06/07/2015,First Class,CU-10717,Corporate,United States,Portland,Oregon,82753,West,Office Supplies,Labels,83.89,14,0.2,12.33
+418,US-2015-100417,06/05/2015,06/07/2015,Standard Class,CU-10503,Home Office,United States,Seattle,Washington,33784,West,Office Supplies,Paper,22.82,10,0.2,0.56
+419,US-2015-100418,06/07/2015,06/08/2015,Standard Class,CU-10672,Corporate,United States,New York City,New York,14590,East,Office Supplies,Paper,159.58,8,0.0,2.44
+420,US-2015-100419,06/07/2015,06/10/2015,Standard Class,CU-10477,Consumer,United States,Philadelphia,Pennsylvania,36330,East,Office Supplies,Labels,12.57,1,0.2,1.39
+421,US-2015-100420,06/09/2015,06/13/2015,Standard Class,CU-10662,Corporate,United States,Chicago,Illinois,35410,Central,Office Supplies,Binders,153.16,4,0.0,44.89
+422,US-2015-100421,06/11/2015,06/14/2015,Standard Class,CU-10552,Consumer,United States,Columbus,Ohio,58739,East,Office Supplies,Binders,81.36,5,0.3,-13.87
+423,US-2015-100422,06/11/2015,06/16/2015,Standard Class,CU-10153,Corporate,United States,Los Angeles,California,46735,West,Office Supplies,Labels,119.31,7,0.1,27.73
+424,US-2015-100423,06/12/2015,06/15/2015,Standard Class,CU-10050,Home Office,United States,Columbus,Ohio,17630,East,Office Supplies,Paper,173.34,13,0.1,46.29
+425,US-2015-100424,06/12/2015,06/15/2015,Standard Class,CU-10509,Home Office,United States,Houston,Texas,90194,Central,Office Supplies,Labels,177.89,3,0.2,5.27
+426,US-2015-100425,06/13/2015,06/19/2015,Standard Class,CU-10131,Home Office,United States,Houston,Texas,01202,Central,Office Supplies,Labels,93.72,7,0.0,40.2
+427,US-2015-100426,06/17/2015,06/23/2015,Standard Class,CU-10636,Consumer,United States,New York City,New York,88040,East,Furniture,Chairs,117.33,3,0.0,19.36
+428,US-2015-100427,06/18/2015,06/20/2015,Standard Class,CU-10466,Consumer,United States,New York City,New York,85424,East,Office Supplies,Binders,152.6,3,0.1,23.88
+429,US-2015-100428,06/18/2015,06/18/2015,Standard Class,CU-10675,Consumer,United States,Philadelphia,Pennsylvania,87261,East,Office Supplies,Binders,162.56,10,0.0,52.55
+430,US-2015-100429,06/19/2015,06/21/2015,Standard Class,CU-10341,Home Office,United States,Detroit,Michigan,53256,Central,Office Supplies,Storage,125.32,11,0.3,-13.24
+431,US-2015-100430,06/24/2015,06/30/2015,Standard Class,CU-10395,Consumer,United States,Philadelphia,Pennsylvania,38981,East,Office Supplies,Art,48.72,5,0.0,10.21
+432,US-2015-100431,06/28/2015,07/03/2015,Same Day,CU-10609,Consumer,United States,Miami,Florida,52335,South,Office Supplies,Paper,53.48,3,0.0,5.64
+433,US-2015-100432,06/29/2015,07/01/2015,Standard Class,CU-10397,Corporate,United States,Richmond,Virginia,89733,South,Office Supplies,Storage,67.47,6,0.1,14.81
+434,US-2015-100433,06/30/2015,07/02/2015,Standard Class,CU-10625,Consumer,United States,Columbus,Ohio,61382,East,Office Supplies,Paper,97.53,11,0.3,-4.13
+435,US-2015-100434,07/01/2015,07/04/2015,Standard Class,CU-10395,Consumer,United States,Seattle,Washington,15947,West,Furniture,Bookcases,359.24,7,0.2,-15.48
+436,US-2015-100435,07/02/2015,07/06/2015,Second Class,CU-10478,Corporate,United States,Seattle,Washington,42559,West,Furniture,Bookcases,246.81,1,0.5,-52.78
+437,US-2015-100436,07/03/2015,07/08/2015,Standard Class,CU-10396,Consumer,United States,New York City,New York,17944,East,Furniture,Furnishings,123.53,3,0.2,-4.44
+438,US-2015-100437,07/05/2015,07/05/2015,First Class,CU-10095,Corporate,United States,Detroit,Michigan,34594,Central,Office Supplies,Binders,45.33,12,0.2,9.85
+439,US-2015-100438,07/05/2015,07/05/2015,Standard Class,CU-10003,Home Office,United States,Portland,Oregon,67953,West,Office Supplies,Art,35.71,4,0.0,5.01
+440,US-2015-100439,07/06/2015,07/06/2015,First Class,CU-10391,Consumer,United States,Seattle,Washington,87991,West,Office Supplies,Paper,4.07,14,0.0,0.53
+441,US-2015-100440,07/06/2015,07/11/2015,Standard Class,CU-10551,Consumer,United States,Houston,Texas,84360,Central,Technology,Accessories,680.09,12,0.0,81.92
+442,US-2015-100441,07/07/2015,07/13/2015,Standard Class,CU-10096,Consumer,United States,Chicago,Illinois,55350,Central,Technology,Accessories,437.76,9,0.1,6.42
+443,US-2015-100442,07/08/2015,07/14/2015,Standard Class,CU-10268,Consumer,United States,Houston,Texas,04354,Central,Office Supplies,Binders,77.4,2,0.2,2.56
+444,US-2015-100443,07/08/2015,07/11/2015,Second Class,CU-10211,Home Office,United States,New York City,New York,58944,East,Office Supplies,Art,99.88,7,0.3,-14.76
+445,US-2015-100444,07/09/2015,07/12/2015,Second Class,CU-10685,Consumer,United States,Columbus,Ohio,10740,East,Technology,Phones,388.9,7,0.0,38.15
+446,US-2015-100445,07/11/2015,07/13/2015,Second Class,CU-10567,Consumer,United States,Portland,Oregon,77588,West,Office Supplies,Storage,35.51,14,0.0,8.92
+447,US-2015-100446,07/11/2015,07/12/2015,First Class,CU-10346,Consumer,United States,Portland,Oregon,76267,West,Office Supplies,Binders,63.08,3,0.0,-0.08
+448,US-2015-100447,07/15/2015,07/17/2015,Standard Class,CU-10324,Corporate,United States,Seattle,Washington,41372,West,Furniture,Bookcases,147.63,7,0.3,-18.0
+449,US-2015-100448,07/16/2015,07/21/2015,Standard Class,CU-10126,Consumer,United States,Detroit,Michigan,27746,Central,Office Supplies,Storage,66.65,12,0.3,-6.79
+450,US-2015-100449,07/16/2015,07/17/2015,Standard Class,CU-10503,Consumer,United States,New York City,New York,60226,East,Furniture,Furnishings,524.9,9,0.0,63.17
+451,US-2015-100450,07/17/2015,07/18/2015,Second Class,CU-10483,Home Office,United States,Houston,Texas,28142,Central,Office Supplies,Storage,45.71,6,0.2,1.15
+452,US-2015-100451,07/21/2015,07/24/2015,Standard Class,CU-10776,Home Office,United States,Philadelphia,Pennsylvania,82014,East,Furniture,Furnishings,1429.31,8,0.0,196.98
+453,US-2015-100452,07/24/2015,07/29/2015,Second Class,CU-10220,Consumer,United States,Los Angeles,California,39179,West,Furniture,Bookcases,302.45,3,0.0,-1.04
+454,US-2015-100453,07/25/2015,07/31/2015,Standard Class,CU-10784,Corporate,United States,Chicago,Illinois,23003,Central,Furniture,Chairs,745.98,6,0.0,103.96
+455,US-2015-100454,07/25/2015,07/25/2015,Standard Class,CU-10568,Consumer,United States,Detroit,Michigan,12922,Central,Office Supplies,Labels,49.94,3,0.0,10.56
+456,US-2015-100455,07/26/2015,07/30/2015,First Class,CU-10732,Consumer,United States,Richmond,Virginia,42511,South,Office Supplies,Art,64.06,7,0.0,14.75
+457,US-2015-100456,07/28/2015,07/30/2015,Second Class,CU-10592,Consumer,United States,Chicago,Illinois,91795,Central,Office Supplies,Art,255.3,14,0.0,72.25
+458,US-2015-100457,08/01/2015,08/07/2015,First Class,CU-10668,Consumer,United States,New York City,New York,97707,East,Office Supplies,Art,97.99,13,0.3,-15.49
+459,US-2015-100458,08/02/2015,08/05/2015,Standard Class,CU-10719,Home Office,United States,Detroit,Michigan,82693,Central,Furniture,Furnishings,391.67,8,0.1,78.51
+460,US-2015-100459,08/03/2015,08/08/2015,Second Class,CU-10248,Consumer,United States,Richmond,Virginia,76471,South,Office Supplies,Paper,221.47,9,0.5,-35.59
+461,US-2015-100460,08/04/2015,08/04/2015,First Class,CU-10460,Consumer,United States,Seattle,Washington,87326,West,Furniture,Tables,49.02,12,0.0,-3.43
+462,US-2015-100461,08/04/2015,08/05/2015,Second Class,CU-10606,Consumer,United States,Columbus,Ohio,78437,East,Furniture,Tables,762.13,14,0.2,138.05
+463,US-2015-100462,08/07/2015,08/11/2015,Standard Class,CU-10066,Consumer,United States,Seattle,Washington,69040,West,Technology,Copiers,323.61,3,0.0,137.33
+464,US-2015-100463,08/08/2015,08/09/2015,Standard Class,CU-10714,Consumer,United States,Columbus,Ohio,81510,East,Furniture,Bookcases,442.91,10,0.2,34.45
+465,US-2015-100464,08/08/2015,08/09/2015,Standard Class,CU-10577,Corporate,United States,Portland,Oregon,47634,West,Office Supplies,Paper,123.44,4,0.2,-11.71
+466,US-2015-100465,08/08/2015,08/11/2015,First Class,CU-10397,Home Office,United States,Richmond,Virginia,01130,South,Furniture,Tables,785.19,14,0.0,158.92
+467,US-2015-100466,08/10/2015,08/10/2015,Standard Class,CU-10733,Consumer,United States,Detroit,Michigan,02925,Central,Office Supplies,Labels,251.47,10,0.1,92.53
+468,US-2015-100467,08/13/2015,08/17/2015,Standard Class,CU-10154,Corporate,United States,Detroit,Michigan,75175,Central,Office Supplies,Storage,295.39,8,0.5,-114.04
+469,US-2015-100468,08/15/2015,08/16/2015,Standard Class,CU-10461,Consumer,United States,Atlanta,Georgia,10339,South,Office Supplies,Paper,89.01,1,0.5,-22.1
+470,US-2015-100469,08/16/2015,08/21/2015,Standard Class,CU-10464,Corporate,United States,Richmond,Virginia,26937,South,Furniture,Chairs,454.11,12,0.2,-131.42
+471,US-2015-100470,08/17/2015,08/22/2015,Standard Class,CU-10505,Corporate,United States,New York City,New York,75245,East,Office Supplies,Storage,51.79,5,0.2,2.07
+472,US-2015-100471,08/18/2015,08/19/2015,Standard Class,CU-10600,Consumer,United States,Atlanta,Georgia,48875,South,Furniture,Chairs,112.1,7,0.0,-10.06
+473,US-2015-100472,08/18/2015,08/19/2015,Second Class,CU-10198,Corporate,United States,Philadelphia,Pennsylvania,10041,East,Technology,Phones,142.86,7,0.5,-29.32
+474,US-2015-100473,08/18/2015,08/23/2015,Standard Class,CU-10509,Home Office,United States,Miami,Florida,90827,South,Office Supplies,Art,22.06,5,0.0,6.7
+475,US-2015-100474,08/19/2015,08/20/2015,Standard Class,CU-10572,Consumer,United States,Chicago,Illinois,28873,Central,Technology,Accessories,317.93,4,0.5,-133.7
+476,US-2015-100475,08/20/2015,08/24/2015,Standard Class,CU-10727,Corporate,United States,Richmond,Virginia,74264,South,Office Supplies,Storage,56.13,11,0.2,10.46
+477,US-2015-100476,08/22/2015,08/22/2015,Second Class,CU-10511,Corporate,United States,Los Angeles,California,19825,West,Office Supplies,Labels,121.9,4,0.2,10.87
+478,US-2015-100477,08/22/2015,08/25/2015,Standard Class,CU-10018,Corporate,United States,Philadelphia,Pennsylvania,95821,East,Office Supplies,Binders,61.81,6,0.3,-5.46
+479,US-2015-100478,08/25/2015,08/26/2015,Standard Class,CU-10533,Corporate,United States,Chicago,Illinois,62442,Central,Office Supplies,Paper,18.95,6,0.1,0.69
+480,US-2015-100479,08/26/2015,08/26/2015,Standard Class,CU-10516,Consumer,United States,Detroit,Michigan,58522,Central,Furniture,Bookcases,789.23,5,0.0,120.39
+481,US-2015-100480,08/29/2015,09/03/2015,Second Class,CU-10465,Consumer,United States,Philadelphia,Pennsylvania,24113,East,Office Supplies,Paper,102.51,3,0.0,33.71
+482,US-2015-100481,08/30/2015,09/02/2015,Standard Class,CU-10312,Corporate,United States,Portland,Oregon,73549,West,Furniture,Tables,306.67,6,0.5,-43.06
+483,US-2015-100482,08/30/2015,09/03/2015,Standard Class,CU-10376,Home Office,United States,Atlanta,Georgia,89080,South,Furniture,Bookcases,735.02,2,0.2,15.37
+484,US-2015-100483,08/31/2015,09/03/2015,Standard Class,CU-10585,Corporate,United States,Houston,Texas,08018,Central,Furniture,Furnishings,457.27,14,0.1,79.56
+485,US-2015-100484,09/03/2015,09/08/2015,Standard Class,CU-10740,Consumer,United States,Portland,Oregon,84046,West,Office Supplies,Storage,50.01,9,0.0,11.65
+486,US-2015-100485,09/05/2015,09/10/2015,First Class,CU-10666,Corporate,United States,Seattle,Washington,32760,West,Office Supplies,Labels,224.49,8,0.0,46.22
+487,US-2015-100486,09/07/2015,09/12/2015,Standard Class,CU-10066,Corporate,United States,Philadelphia,Pennsylvania,57624,East,Furniture,Bookcases,199.63,3,0.3,-12.51
+488,US-2015-100487,09/08/2015,09/12/2015,First Class,CU-10381,Consumer,United States,Chicago,Illinois,47830,Central,Office Supplies,Art,8.79,1,0.3,0.48
+489,US-2015-100488,09/08/2015,09/11/2015,Second Class,CU-10609,Consumer,United States,New York City,New York,90081,East,Office Supplies,Labels,99.66,11,0.2,9.76
+490,US-2015-100489,09/09/2015,09/10/2015,Standard Class,CU-10470,Home Office,United States,Houston,Texas,03133,Central,Furniture,Furnishings,245.7,2,0.0,1.54
+491,US-2015-100490,09/09/2015,09/09/2015,Standard Class,CU-10723,Consumer,United States,Portland,Oregon,26964,West,Technology,Accessories,139.98,2,0.0,41.01
+492,US-2015-100491,09/11/2015,09/15/2015,First Class,CU-10467,Consumer,United States,Portland,Oregon,37454,West,Office Supplies,Art,113.71,9,0.1,-0.25
+493,US-2015-100492,09/11/2015,09/16/2015,Second Class,CU-10302,Consumer,United States,Philadelphia,Pennsylvania,34555,East,Office Supplies,Storage,236.13,13,0.2,-22.59
+494,US-2015-100493,09/15/2015,09/19/2015,Standard Class,CU-10083,Consumer,United States,Philadelphia,Pennsylvania,79558,East,Office Supplies,Paper,249.45,13,0.0,0.67
+495,US-2015-100494,09/16/2015,09/19/2015,Standard Class,CU-10131,Home Office,United States,Seattle,Washington,22541,West,Office Supplies,Art,122.36,6,0.0,28.97
+496,US-2015-100495,09/16/2015,09/18/2015,Standard Class,CU-10698,Corporate,United States,Chicago,Illinois,21932,Central,Office Supplies,Art,174.59,8,0.0,4.79
+497,US-2015-100496,09/17/2015,09/18/2015,Standard Class,CU-10606,Consumer,United States,Atlanta,Georgia,29931,South,Furniture,Furnishings,394.88,12,0.1,101.1
+498,US-2015-100497,09/18/2015,09/21/2015,Standard Class,CU-10243,Consumer,United States,Los Angeles,California,32318,West,Technology,Copiers,27.79,9,0.0,2.79
+499,US-2015-100498,09/20/2015,09/22/2015,Standard Class,CU-10785,Consumer,United States,Los Angeles,California,54131,West,Technology,Copiers,505.48,8,0.3,-74.76
+500,US-2015-100499,09/21/2015,09/26/2015,Standard Class,CU-10318,Corporate,United States,Los Angeles,California,30675,West,Office Supplies,Paper,45.93,7,0.5,-10.63
+501,US-2015-100500,09/23/2015,09/27/2015,Standard Class,CU-10441,Consumer,United States,Atlanta,Georgia,48432,South,Office Supplies,Paper,206.62,8,0.0,-4.72
+502,US-2015-100501,09/24/2015,09/27/2015,Standard Class,CU-10662,Consumer,United States,Chicago,Illinois,39554,Central,Office Supplies,Binders,108.9,1,0.5,-15.31
+503,US-2015-100502,09/25/2015,09/30/2015,Standard Class,CU-10737,Consumer,United States,New York City,New York,18717,East,Office Supplies,Art,184.78,8,0.0,25.82
+504,US-2015-100503,09/25/2015,09/29/2015,Standard Class,CU-10377,Consumer,United States,Chicago,Illinois,01260,Central,Office Supplies,Art,78.61,2,0.0,11.27
+505,US-2015-100504,09/28/2015,10/02/2015,Standard Class,CU-10139,Consumer,United States,Atlanta,Georgia,07495,South,Technology,Accessories,404.26,8,0.0,91.43
+506,US-2015-100505,09/28/2015,10/01/2015,First Class,CU-10268,Consumer,United States,Philadelphia,Pennsylvania,43653,East,Office Supplies,Binders,238.83,13,0.0,120.29
+507,US-2015-100506,09/28/2015,09/29/2015,Second Class,CU-10209,Consumer,United States,Portland,Oregon,92002,West,Office Supplies,Binders,120.82,7,0.0,13.68
+508,US-2015-100507,09/29/2015,10/04/2015,Second Class,CU-10403,Consumer,United States,Los Angeles,California,98121,West,Furniture,Chairs,694.87,8,0.2,10.52
+509,US-2015-100508,09/30/2015,10/06/2015,Standard Class,CU-10360,Corporate,United States,Seattle,Washington,60640,West,Technology,Copiers,425.38,10,0.5,-122.01
+510,US-2015-100509,10/01/2015,10/02/2015,Standard Class,CU-10440,Consumer,United States,Richmond,Virginia,42359,South,Furniture,Bookcases,44.18,10,0.0,10.65
+511,US-2015-100510,10/04/2015,10/10/2015,Standard Class,CU-10650,Consumer,United States,Portland,Oregon,39462,West,Office Supplies,Labels,103.32,13,0.0,8.97
+512,US-2015-100511,10/04/2015,10/10/2015,Standard Class,CU-10214,Corporate,United States,Atlanta,Georgia,01287,South,Furniture,Chairs,827.16,4,0.0,61.36
+513,US-2015-100512,10/05/2015,10/05/2015,Standard Class,CU-10241,Consumer,United States,Los Angeles,California,43105,West,Office Supplies,Labels,41.68,10,0.0,-4.62
+514,US-2015-100513,10/10/2015,10/10/2015,Second Class,CU-10027,Consumer,United States,Miami,Florida,59417,South,Office Supplies,Art,21.19,2,0.3,-1.6
+515,US-2015-100514,10/12/2015,10/17/2015,Standard Class,CU-10397,Corporate,United States,Detroit,Michigan,16597,Central,Technology,Copiers,568.15,3,0.5,-173.36
+516,US-2015-100515,10/15/2015,10/19/2015,Standard Class,CU-10367,Consumer,United States,Chicago,Illinois,12940,Central,Furniture,Chairs,339.8,3,0.2,-47.8
+517,US-2015-100516,10/17/2015,10/22/2015,Standard Class,CU-10012,Consumer,United States,Houston,Texas,43093,Central,Technology,Phones,896.81,7,0.3,-52.02
+518,US-2015-100517,10/17/2015,10/21/2015,First Class,CU-10287,Corporate,United States,Miami,Florida,58742,South,Office Supplies,Binders,117.91,4,0.0,28.5
+519,US-2015-100518,10/20/2015,10/21/2015,Second Class,CU-10206,Consumer,United States,Seattle,Washington,75861,West,Furniture,Tables,949.5,1,0.0,95.74
+520,US-2015-100519,10/21/2015,10/22/2015,First Class,CU-10132,Consumer,United States,Los Angeles,California,80694,West,Office Supplies,Art,42.98,13,0.0,9.58
+521,US-2015-100520,10/22/2015,10/26/2015,Same Day,CU-10115,Consumer,United States,New York City,New York,32404,East,Office Supplies,Art,22.15,9,0.0,5.95
+522,US-2015-100521,10/22/2015,10/26/2015,Standard Class,CU-10780,Corporate,United States,Houston,Texas,98823,Central,Technology,Accessories,13.23,5,0.0,2.79
+523,US-2015-100522,10/23/2015,10/28/2015,Second Class,CU-10643,Corporate,United States,Miami,Florida,46618,South,Office Supplies,Storage,184.77,12,0.0,53.77
+524,US-2015-100523,10/27/2015,11/01/2015,First Class,CU-10326,Consumer,United States,Detroit,Michigan,54744,Central,Office Supplies,Labels,67.27,8,0.0,12.38
+525,US-2015-100524,10/27/2015,10/30/2015,Standard Class,CU-10549,Consumer,United States,New York City,New York,44619,East,Office Supplies,Paper,181.34,13,0.3,-35.05
+526,US-2015-100525,10/29/2015,10/30/2015,First Class,CU-10125,Corporate,United States,Philadelphia,Pennsylvania,42011,East,Office Supplies,Labels,91.08,6,0.3,12.72
+527,US-2015-100526,10/30/2015,11/02/2015,Standard Class,CU-10712,Consumer,United States,New York City,New York,56177,East,Office Supplies,Paper,15.34,9,0.0,-1.72
+528,US-2015-100527,10/30/2015,11/05/2015,Standard Class,CU-10163,Home Office,United States,Portland,Oregon,20081,West,Office Supplies,Storage,349.39,11,0.3,-16.83
+529,US-2015-100528,11/01/2015,11/04/2015,Standard Class,CU-10254,Consumer,United States,New York City,New York,49277,East,Office Supplies,Labels,86.97,13,0.0,21.72
+530,US-2015-100529,11/02/2015,11/08/2015,Standard Class,CU-10445,Consumer,United States,Portland,Oregon,50693,West,Office Supplies,Storage,127.82,10,0.0,41.62
+531,US-2015-100530,11/02/2015,11/04/2015,Second Class,CU-10351,Consumer,United States,Seattle,Washington,85472,West,Technology,Accessories,888.52,4,0.0,-1.78
+532,US-2015-100531,11/02/2015,11/08/2015,Standard Class,CU-10566,Consumer,United States,Houston,Texas,79000,Central,Technology,Machines,352.34,3,0.0,122.02
+533,US-2015-100532,11/02/2015,11/03/2015,Standard Class,CU-10785,Corporate,United States,Philadelphia,Pennsylvania,52536,East,Office Supplies,Storage,56.47,13,0.1,7.4
+534,US-2015-100533,11/03/2015,11/04/2015,Standard Class,CU-10447,Corporate,United States,Richmond,Virginia,04335,South,Technology,Copiers,856.6,5,0.1,88.02
+535,US-2015-100534,11/06/2015,11/06/2015,Standard Class,CU-10698,Corporate,United States,Miami,Florida,95548,South,Office Supplies,Paper,179.14,8,0.0,44.76
+536,US-2015-100535,11/06/2015,11/10/2015,Standard Class,CU-10365,Consumer,United States,Houston,Texas,88569,Central,Office Supplies,Labels,257.87,4,0.0,42.29
+537,US-2015-100536,11/06/2015,11/06/2015,First Class,CU-10097,Home Office,United States,New York City,New York,09241,East,Technology,Machines,509.26,10,0.5,-201.58
+538,US-2015-100537,11/07/2015,11/07/2015,Standard Class,CU-10029,Consumer,United States,Philadelphia,Pennsylvania,05889,East,Office Supplies,Paper,122.3,3,0.0,10.69
+539,US-2015-100538,11/08/2015,11/09/2015,Same Day,CU-10001,Home Office,United States,Los Angeles,California,21729,West,Office Supplies,Paper,92.51,10,0.0,0.17
+540,US-2015-100539,11/08/2015,11/10/2015,Standard Class,CU-10449,Consumer,United States,Houston,Texas,50164,Central,Office Supplies,Labels,539.62,6,0.2,-6.73
+541,US-2015-100540,11/09/2015,11/15/2015,Standard Class,CU-10217,Consumer,United States,Portland,Oregon,58154,West,Office Supplies,Labels,73.65,10,0.5,-13.25
+542,US-2015-100541,11/10/2015,11/16/2015,First Class,CU-10466,Corporate,United States,Atlanta,Georgia,29556,South,Office Supplies,Paper,56.99,1,0.1,-0.2
+543,US-2015-100542,11/16/2015,11/21/2015,Standard Class,CU-10135,Consumer,United States,Columbus,Ohio,56981,East,Technology,Machines,811.3,10,0.0,22.82
+544,US-2015-100543,11/16/2015,11/22/2015,Standard Class,CU-10531,Corporate,United States,Miami,Florida,51820,South,Office Supplies,Paper,83.97,5,0.2,1.48
+545,US-2015-100544,11/16/2015,11/19/2015,Standard Class,CU-10257,Home Office,United States,Detroit,Michigan,92721,Central,Furniture,Tables,311.43,12,0.2,2.35
+546,US-2015-100545,11/18/2015,11/23/2015,Standard Class,CU-10097,Consumer,United States,Portland,Oregon,66465,West,Technology,Phones,1730.36,6,0.0,49.54
+547,US-2015-100546,11/18/2015,11/24/2015,Standard Class,CU-10543,Home Office,United States,Houston,Texas,52094,Central,Technology,Accessories,256.21,8,0.5,-69.19
+548,US-2015-100547,11/20/2015,11/22/2015,Standard Class,CU-10574,Corporate,United States,Portland,Oregon,69058,West,Furniture,Furnishings,462.59,10,0.0,117.41
+549,US-2015-100548,11/22/2015,11/24/2015,Standard Class,CU-10687,Consumer,United States,Detroit,Michigan,22219,Central,Office Supplies,Labels,106.34,5,0.3,-17.12
+550,US-2015-100549,11/23/2015,11/28/2015,Standard Class,CU-10199,Corporate,United States,Chicago,Illinois,95126,Central,Furniture,Chairs,136.67,3,0.3,0.9
+551,US-2015-100550,11/26/2015,11/30/2015,Standard Class,CU-10118,Consumer,United States,Seattle,Washington,02318,West,Technology,Copiers,394.35,6,0.0,99.81
+552,US-2015-100551,11/28/2015,12/02/2015,Standard Class,CU-10453,Consumer,United States,Detroit,Michigan,15567,Central,Office Supplies,Binders,129.12,2,0.3,-2.45
+553,US-2015-100552,11/28/2015,11/28/2015,Standard Class,CU-10596,Corporate,United States,Houston,Texas,85469,Central,Office Supplies,Paper,60.09,14,0.2,-14.31
+554,US-2015-100553,11/29/2015,12/05/2015,Standard Class,CU-10025,Consumer,United States,Los Angeles,California,79937,West,Technology,Copiers,161.88,14,0.0,25.72
+555,US-2015-100554,11/30/2015,12/01/2015,Second Class,CU-10451,Corporate,United States,Columbus,Ohio,24280,East,Office Supplies,Paper,34.96,9,0.0,1.78
+556,US-2015-100555,12/02/2015,12/04/2015,Standard Class,CU-10639,Consumer,United States,Richmond,Virginia,19373,South,Office Supplies,Storage,90.78,2,0.0,20.57
+557,US-2015-100556,12/02/2015,12/05/2015,Second Class,CU-10511,Consumer,United States,Philadelphia,Pennsylvania,37408,East,Office Supplies,Labels,91.35,2,0.1,-9.34
+558,US-2015-100557,12/02/2015,12/06/2015,Second Class,CU-10360,Consumer,United States,Philadelphia,Pennsylvania,98073,East,Technology,Machines,583.56,14,0.0,81.95
+559,US-2015-100558,12/03/2015,12/09/2015,Second Class,CU-10123,Home Office,United States,Atlanta,Georgia,59774,South,Technology,Phones,82.7,1,0.0,11.53
+560,US-2015-100559,12/04/2015,12/10/2015,Standard Class,CU-10138,Consumer,United States,Atlanta,Georgia,65399,South,Office Supplies,Paper,159.17,12,0.0,40.42
+561,US-2015-100560,12/05/2015,12/09/2015,Same Day,CU-10142,Consumer,United States,Columbus,Ohio,92596,East,Office Supplies,Labels,65.0,14,0.5,-12.26
+562,US-2015-100561,12/07/2015,12/07/2015,Second Class,CU-10191,Consumer,United States,Portland,Oregon,27558,West,Technology,Copiers,2019.26,13,0.0,477.88
+563,US-2015-100562,12/07/2015,12/09/2015,Standard Class,CU-10159,Corporate,United States,Seattle,Washington,46012,West,Technology,Phones,60.9,1,0.0,5.77
+564,US-2015-100563,12/12/2015,12/13/2015,Second Class,CU-10466,Consumer,United States,Houston,Texas,53885,Central,Office Supplies,Paper,73.52,14,0.5,-14.7
+565,US-2015-100564,12/13/2015,12/17/2015,Standard Class,CU-10327,Home Office,United States,Houston,Texas,33750,Central,Technology,Accessories,531.43,1,0.2,-8.33
+566,US-2015-100565,12/13/2015,12/13/2015,Standard Class,CU-10691,Corporate,United States,Miami,Florida,02937,South,Office Supplies,Art,68.02,8,0.3,-2.67
+567,US-2015-100566,12/14/2015,12/16/2015,Second Class,CU-10357,Consumer,United States,Chicago,Illinois,08519,Central,Furniture,Furnishings,75.21,8,0.3,-22.08
+568,US-2015-100567,12/15/2015,12/16/2015,Second Class,CU-10456,Consumer,United States,Miami,Florida,22653,South,Office Supplies,Art,50.62,13,0.3,0.27
+569,US-2015-100568,12/16/2015,12/17/2015,Standard Class,CU-10267,Home Office,United States,Columbus,Ohio,21257,East,Technology,Machines,84.97,10,0.2,-7.89
+570,US-2015-100569,12/16/2015,12/21/2015,First Class,CU-10011,Corporate,United States,Columbus,Ohio,22198,East,Office Supplies,Storage,133.84,6,0.0,23.48
+571,US-2015-100570,12/17/2015,12/20/2015,Same Day,CU-10222,Home Office,United States,Columbus,Ohio,27294,East,Office Supplies,Binders,53.94,6,0.3,-13.2
+572,US-2015-100571,12/19/2015,12/23/2015,First Class,CU-10076,Home Office,United States,Seattle,Washington,66656,West,Office Supplies,Labels,49.85,1,0.0,15.65
+573,US-2015-100572,12/25/2015,12/28/2015,Second Class,CU-10078,Consumer,United States,Seattle,Washington,19068,West,Office Supplies,Labels,150.63,7,0.0,14.97
+574,US-2015-100573,12/25/2015,12/30/2015,Standard Class,CU-10251,Consumer,United States,Detroit,Michigan,52106,Central,Technology,Machines,191.0,3,0.3,-4.89
+575,US-2015-100574,12/25/2015,12/28/2015,Second Class,CU-10799,Corporate,United States,Richmond,Virginia,62087,South,Office Supplies,Art,414.88,3,0.3,-76.02
+576,US-2015-100575,12/26/2015,12/26/2015,Second Class,CU-10641,Consumer,United States,Columbus,Ohio,68522,East,Office Supplies,Paper,99.14,12,0.2,-12.51
+577,US-2015-100576,12/30/2015,01/05/2016,Standard Class,CU-10428,Corporate,United States,New York City,New York,22045,East,Furniture,Chairs,167.21,3,0.3,-24.39
+578,US-2015-100577,12/30/2015,01/02/2016,Standard Class,CU-10738,Consumer,United States,Detroit,Michigan,96196,Central,Office Supplies,Art,98.92,12,0.1,28.09
+579,US-2015-100578,12/30/2015,01/02/2016,Second Class,CU-10255,Consumer,United States,Detroit,Michigan,84664,Central,Office Supplies,Binders,294.9,1,0.2,81.84
+580,US-2016-100579,01/01/2016,01/03/2016,Standard Class,CU-10625,Consumer,United States,Seattle,Washington,73990,West,Furniture,Bookcases,607.82,2,0.0,73.49
+581,US-2016-100580,01/03/2016,01/06/2016,Standard Class,CU-10038,Corporate,United States,Miami,Florida,30006,South,Office Supplies,Storage,164.09,9,0.2,14.6
+582,US-2016-100581,01/06/2016,01/07/2016,Standard Class,CU-10217,Consumer,United States,Detroit,Michigan,83650,Central,Office Supplies,Storage,298.24,7,0.0,12.6
+583,US-2016-100582,01/06/2016,01/08/2016,Standard Class,CU-10673,Consumer,United States,New York City,New York,40259,East,Technology,Machines,171.92,12,0.3,-24.44
+584,US-2016-100583,01/07/2016,01/10/2016,Second Class,CU-10700,Corporate,United States,Detroit,Michigan,99209,Central,Technology,Machines,582.46,11,0.3,-46.12
+585,US-2016-100584,01/08/2016,01/08/2016,Same Day,CU-10288,Home Office,United States,Houston,Texas,34481,Central,Office Supplies,Binders,226.11,11,0.1,7.27
+586,US-2016-100585,01/08/2016,01/13/2016,Standard Class,CU-10029,Consumer,United States,Los Angeles,California,26693,West,Furniture,Bookcases,750.93,6,0.5,-252.21
+587,US-2016-100586,01/08/2016,01/08/2016,First Class,CU-10199,Corporate,United States,Columbus,Ohio,76870,East,Office Supplies,Art,138.75,14,0.5,-35.5
+588,US-2016-100587,01/09/2016,01/12/2016,Same Day,CU-10203,Consumer,United States,Seattle,Washington,87686,West,Office Supplies,Art,101.55,8,0.1,26.94
+589,US-2016-100588,01/09/2016,01/12/2016,Second Class,CU-10083,Consumer,United States,Philadelphia,Pennsylvania,13562,East,Office Supplies,Art,157.51,10,0.2,-17.53
+590,US-2016-100589,01/09/2016,01/13/2016,Second Class,CU-10607,Consumer,United States,Los Angeles,California,54793,West,Technology,Copiers,37.58,1,0.3,-6.66
+591,US-2016-100590,01/09/2016,01/15/2016,Standard Class,CU-10058,Consumer,United States,Columbus,Ohio,20754,East,Office Supplies,Art,226.0,9,0.2,-22.5
+592,US-2016-100591,01/11/2016,01/15/2016,Standard Class,CU-10244,Corporate,United States,New York City,New York,47902,East,Furniture,Chairs,450.37,10,0.5,-172.85
+593,US-2016-100592,01/12/2016,01/12/2016,Same Day,CU-10595,Consumer,United States,Philadelphia,Pennsylvania,67798,East,Office Supplies,Binders,107.25,13,0.5,-10.94
+594,US-2016-100593,01/12/2016,01/14/2016,Standard Class,CU-10207,Home Office,United States,Detroit,Michigan,49440,Central,Furniture,Bookcases,119.3,2,0.0,9.53
+595,US-2016-100594,01/14/2016,01/19/2016,Standard Class,CU-10031,Home Office,United States,Los Angeles,California,49169,West,Office Supplies,Storage,224.66,2,0.2,42.42
+596,US-2016-100595,01/16/2016,01/16/2016,Second Class,CU-10681,Home Office,United States,New York City,New York,91483,East,Office Supplies,Binders,72.15,1,0.0,16.02
+597,US-2016-100596,01/18/2016,01/19/2016,First Class,CU-10444,Consumer,United States,Seattle,Washington,79608,West,Office Supplies,Paper,71.77,11,0.5,-24.29
+598,US-2016-100597,01/19/2016,01/23/2016,Second Class,CU-10646,Home Office,United States,Atlanta,Georgia,10942,South,Office Supplies,Storage,205.11,9,0.0,43.45
+599,US-2016-100598,01/21/2016,01/21/2016,Standard Class,CU-10798,Consumer,United States,New York City,New York,59911,East,Furniture,Chairs,1556.33,8,0.5,-514.51
+600,US-2016-100599,01/23/2016,01/23/2016,Standard Class,CU-10538,Consumer,United States,Portland,Oregon,96082,West,Office Supplies,Art,94.94,8,0.0,6.41
+601,US-2016-100600,01/23/2016,01/27/2016,Standard Class,CU-10591,Consumer,United States,Seattle,Washington,47179,West,Office Supplies,Storage,316.24,11,0.2,82.94
+602,US-2016-100601,01/24/2016,01/25/2016,Standard Class,CU-10714,Corporate,United States,Houston,Texas,06702,Central,Furniture,Tables,26.38,6,0.3,-5.96
+603,US-2016-100602,01/25/2016,01/26/2016,First Class,CU-10114,Corporate,United States,Richmond,Virginia,66037,South,Technology,Accessories,412.86,12,0.0,-29.25
+604,US-2016-100603,01/27/2016,01/29/2016,Second Class,CU-10250,Consumer,United States,Chicago,Illinois,26814,Central,Technology,Machines,548.7,1,0.0,-0.72
+605,US-2016-100604,01/28/2016,01/29/2016,First Class,CU-10308,Consumer,United States,Richmond,Virginia,19813,South,Office Supplies,Paper,59.63,2,0.1,7.0
+606,US-2016-100605,01/28/2016,01/30/2016,Standard Class,CU-10192,Consumer,United States,Seattle,Washington,90269,West,Office Supplies,Binders,33.36,13,0.0,2.42
+607,US-2016-100606,01/29/2016,01/31/2016,Standard Class,CU-10764,Corporate,United States,New York City,New York,55598,East,Technology,Accessories,210.78,4,0.3,-11.28
+608,US-2016-100607,01/29/2016,02/01/2016,Standard Class,CU-10537,Corporate,United States,Los Angeles,California,65706,West,Office Supplies,Labels,26.36,1,0.1,2.45
+609,US-2016-100608,01/29/2016,02/03/2016,First Class,CU-10466,Corporate,United States,Los Angeles,California,94175,West,Office Supplies,Binders,70.16,10,0.3,-13.29
+610,US-2016-100609,01/29/2016,01/29/2016,Standard Class,CU-10794,Consumer,United States,Houston,Texas,99522,Central,Office Supplies,Storage,242.0,14,0.1,31.83
+611,US-2016-100610,01/30/2016,02/01/2016,First Class,CU-10160,Corporate,United States,Seattle,Washington,17570,West,Office Supplies,Binders,84.99,6,0.1,6.47
+612,US-2016-100611,01/31/2016,02/01/2016,Standard Class,CU-10267,Consumer,United States,Columbus,Ohio,14920,East,Office Supplies,Art,97.02,6,0.3,-21.32
+613,US-2016-100612,01/31/2016,02/05/2016,Second Class,CU-10489,Consumer,United States,Los Angeles,California,12422,West,Office Supplies,Labels,41.03,2,0.3,-5.34
+614,US-2016-100613,02/01/2016,02/06/2016,Standard Class,CU-10603,Corporate,United States,Portland,Oregon,17372,West,Technology,Copiers,281.43,5,0.1,-11.15
+615,US-2016-100614,02/01/2016,02/02/2016,Standard Class,CU-10115,Consumer,United States,Miami,Florida,58996,South,Office Supplies,Paper,94.89,5,0.2,17.97
+616,US-2016-100615,02/02/2016,02/08/2016,Standard Class,CU-10363,Consumer,United States,Los Angeles,California,69600,West,Office Supplies,Binders,108.46,3,0.5,-50.41
+617,US-2016-100616,02/03/2016,02/07/2016,Second Class,CU-10568,Home Office,United States,Los Angeles,California,93248,West,Technology,Machines,587.81,1,0.5,-157.97
+618,US-2016-100617,02/05/2016,02/10/2016,First Class,CU-10795,Home Office,United States,Portland,Oregon,80514,West,Furniture,Tables,98.13,2,0.5,-14.28
+619,US-2016-100618,02/05/2016,02/07/2016,First Class,CU-10339,Corporate,United States,Houston,Texas,50783,Central,Office Supplies,Labels,70.1,7,0.0,19.33
+620,US-2016-100619,02/05/2016,02/10/2016,Standard Class,CU-10579,Corporate,United States,Portland,Oregon,17725,West,Office Supplies,Labels,184.58,9,0.1,9.84
+621,US-2016-100620,02/05/2016,02/06/2016,First Class,CU-10046,Consumer,United States,New York City,New York,74751,East,Furniture,Tables,203.36,6,0.3,7.43
+622,US-2016-100621,02/05/2016,02/07/2016,Second Class,CU-10128,Consumer,United States,Chicago,Illinois,70811,Central,Office Supplies,Storage,179.13,2,0.0,24.67
+623,US-2016-100622,02/09/2016,02/12/2016,Standard Class,CU-10580,Consumer,United States,Columbus,Ohio,35672,East,Technology,Accessories,398.56,2,0.3,29.52
+624,US-2016-100623,02/09/2016,02/14/2016,Standard Class,CU-10574,Corporate,United States,Philadelphia,Pennsylvania,27962,East,Office Supplies,Art,125.59,4,0.2,6.5
+625,US-2016-100624,02/10/2016,02/16/2016,First Class,CU-10018,Home Office,United States,New York City,New York,12866,East,Furniture,Bookcases,128.49,9,0.1,-1.69
+626,US-2016-100625,02/12/2016,02/15/2016,Standard Class,CU-10309,Consumer,United States,Atlanta,Georgia,74408,South,Office Supplies,Storage,69.72,8,0.0,10.89
+627,US-2016-100626,02/19/2016,02/22/2016,First Class,CU-10494,Corporate,United States,Columbus,Ohio,64681,East,Office Supplies,Binders,287.66,1,0.0,43.72
+628,US-2016-100627,02/19/2016,02/24/2016,Standard Class,CU-10167,Consumer,United States,Chicago,Illinois,81654,Central,Furniture,Chairs,64.0,7,0.1,3.86
+629,US-2016-100628,02/19/2016,02/21/2016,Standard Class,CU-10180,Consumer,United States,Houston,Texas,88699,Central,Office Supplies,Paper,157.46,5,0.0,14.32
+630,US-2016-100629,02/20/2016,02/25/2016,Standard Class,CU-10119,Consumer,United States,Los Angeles,California,30915,West,Furniture,Chairs,526.09,4,0.1,40.49
+631,US-2016-100630,02/24/2016,02/27/2016,Standard Class,CU-10551,Consumer,United States,Atlanta,Georgia,04630,South,Technology,Phones,149.64,6,0.3,-8.07
+632,US-2016-100631,02/25/2016,02/28/2016,Standard Class,CU-10484,Corporate,United States,New York City,New York,11459,East,Furniture,Bookcases,239.82,10,0.2,-3.94
+633,US-2016-100632,02/27/2016,03/04/2016,Standard Class,CU-10602,Corporate,United States,Atlanta,Georgia,68820,South,Office Supplies,Labels,62.88,14,0.0,5.16
+634,US-2016-100633,02/27/2016,03/04/2016,Standard Class,CU-10210,Corporate,United States,New York City,New York,38704,East,Office Supplies,Storage,105.36,1,0.1,-6.57
+635,US-2016-100634,02/28/2016,02/28/2016,Standard Class,CU-10421,Home Office,United States,Chicago,Illinois,80285,Central,Technology,Machines,128.76,2,0.1,-10.2
+636,US-2016-100635,03/02/2016,03/05/2016,Standard Class,CU-10735,Consumer,United States,Richmond,Virginia,39373,South,Technology,Accessories,126.5,14,0.3,5.09
+637,US-2016-100636,03/03/2016,03/09/2016,Standard Class,CU-10483,Home Office,United States,Columbus,Ohio,92540,East,Technology,Machines,742.01,7,0.0,-29.41
+638,US-2016-100637,03/04/2016,03/07/2016,Second Class,CU-10042,Consumer,United States,Columbus,Ohio,55909,East,Office Supplies,Binders,98.44,14,0.1,5.64
+639,US-2016-100638,03/04/2016,03/04/2016,First Class,CU-10727,Corporate,United States,Atlanta,Georgia,80537,South,Technology,Phones,189.73,6,0.0,50.04
+640,US-2016-100639,03/05/2016,03/11/2016,Standard Class,CU-10376,Home Office,United States,New York City,New York,44946,East,Technology,Phones,207.87,12,0.1,54.31
+641,US-2016-100640,03/06/2016,03/11/2016,Standard Class,CU-10692,Consumer,United States,Detroit,Michigan,56028,Central,Furniture,Chairs,245.93,14,0.1,-4.74
+642,US-2016-100641,03/07/2016,03/08/2016,Standard Class,CU-10127,Consumer,United States,New York City,New York,21530,East,Office Supplies,Paper,455.71,6,0.0,5.41
+643,US-2016-100642,03/09/2016,03/12/2016,Standard Class,CU-10645,Consumer,United States,Miami,Florida,39896,South,Office Supplies,Art,127.59,11,0.5,-37.2
+644,US-2016-100643,03/12/2016,03/13/2016,Standard Class,CU-10293,Corporate,United States,Chicago,Illinois,80870,Central,Office Supplies,Binders,54.48,2,0.1,-1.86
+645,US-2016-100644,03/12/2016,03/16/2016,Standard Class,CU-10461,Home Office,United States,Miami,Florida,81320,South,Technology,Phones,331.81,11,0.2,-10.01
+646,US-2016-100645,03/12/2016,03/17/2016,Standard Class,CU-10792,Consumer,United States,Philadelphia,Pennsylvania,28521,East,Office Supplies,Labels,79.78,10,0.0,16.1
+647,US-2016-100646,03/14/2016,03/16/2016,Standard Class,CU-10275,Consumer,United States,Detroit,Michigan,13238,Central,Office Supplies,Art,18.8,14,0.0,0.36
+648,US-2016-100647,03/15/2016,03/21/2016,Standard Class,CU-10312,Corporate,United States,New York City,New York,28022,East,Office Supplies,Binders,27.66,3,0.0,7.29
+649,US-2016-100648,03/15/2016,03/15/2016,Second Class,CU-10242,Consumer,United States,New York City,New York,40459,East,Office Supplies,Art,44.32,14,0.2,-5.16
+650,US-2016-100649,03/16/2016,03/18/2016,Standard Class,CU-10043,Consumer,United States,Seattle,Washington,84256,West,Technology,Accessories,157.0,12,0.3,3.14
+651,US-2016-100650,03/16/2016,03/22/2016,Second Class,CU-10621,Consumer,United States,Philadelphia,Pennsylvania,66323,East,Office Supplies,Labels,54.71,1,0.0,12.94
+652,US-2016-100651,03/17/2016,03/20/2016,Standard Class,CU-10159,Home Office,United States,New York City,New York,54008,East,Office Supplies,Art,22.7,4,0.1,1.05
+653,US-2016-100652,03/17/2016,03/17/2016,Standard Class,CU-10604,Consumer,United States,New York City,New York,32710,East,Technology,Phones,118.89,8,0.5,-33.46
+654,US-2016-100653,03/21/2016,03/26/2016,First Class,CU-10092,Consumer,United States,Columbus,Ohio,39652,East,Furniture,Chairs,220.12,7,0.0,6.54
+655,US-2016-100654,03/23/2016,03/28/2016,Standard Class,CU-10162,Consumer,United States,Atlanta,Georgia,96630,South,Office Supplies,Binders,313.64,5,0.2,-48.26
+656,US-2016-100655,03/24/2016,03/27/2016,Second Class,CU-10643,Consumer,United States,Los Angeles,California,38819,West,Office Supplies,Art,30.1,6,0.0,9.51
+657,US-2016-100656,03/26/2016,03/31/2016,Standard Class,CU-10472,Corporate,United States,Los Angeles,California,95906,West,Office Supplies,Art,158.99,8,0.0,20.86
+658,US-2016-100657,03/27/2016,03/27/2016,Second Class,CU-10436,Consumer,United States,Portland,Oregon,91151,West,Furniture,Furnishings,369.53,7,0.5,-106.4
+659,US-2016-100658,03/27/2016,03/28/2016,Standard Class,CU-10548,Corporate,United States,Philadelphia,Pennsylvania,34488,East,Furniture,Furnishings,358.59,2,0.0,84.49
+660,US-2016-100659,03/29/2016,03/30/2016,First Class,CU-10182,Corporate,United States,Detroit,Michigan,18859,Central,Office Supplies,Paper,236.14,1,0.2,32.95
+661,US-2016-100660,04/02/2016,04/08/2016,Standard Class,CU-10322,Home Office,United States,Portland,Oregon,09329,West,Office Supplies,Art,192.35,6,0.0,27.01
+662,US-2016-100661,04/02/2016,04/07/2016,Standard Class,CU-10209,Consumer,United States,Seattle,Washington,47790,West,Furniture,Bookcases,503.36,6,0.1,60.05
+663,US-2016-100662,04/03/2016,04/09/2016,Standard Class,CU-10051,Consumer,United States,Detroit,Michigan,24533,Central,Office Supplies,Paper,269.32,12,0.0,37.73
+664,US-2016-100663,04/05/2016,04/08/2016,Second Class,CU-10198,Corporate,United States,Richmond,Virginia,67142,South,Office Supplies,Art,52.87,2,0.3,-9.31
+665,US-2016-100664,04/05/2016,04/10/2016,Standard Class,CU-10033,Consumer,United States,Los Angeles,California,18116,West,Furniture,Tables,244.3,13,0.2,-18.8
+666,US-2016-100665,04/05/2016,04/09/2016,Standard Class,CU-10318,Corporate,United States,Atlanta,Georgia,53385,South,Office Supplies,Paper,20.4,9,0.0,2.68
+667,US-2016-100666,04/07/2016,04/12/2016,Second Class,CU-10331,Consumer,United States,Chicago,Illinois,91032,Central,Technology,Copiers,1301.08,1,0.5,-161.36
+668,US-2016-100667,04/09/2016,04/09/2016,Standard Class,CU-10426,Consumer,United States,Portland,Oregon,50853,West,Office Supplies,Art,31.6,10,0.0,5.38
+669,US-2016-100668,04/09/2016,04/09/2016,Standard Class,CU-10492,Home Office,United States,Columbus,Ohio,10454,East,Office Supplies,Labels,28.89,9,0.3,-2.44
+670,US-2016-100669,04/12/2016,04/18/2016,Standard Class,CU-10286,Consumer,United States,Richmond,Virginia,67516,South,Technology,Copiers,348.4,7,0.0,75.14
+671,US-2016-100670,04/12/2016,04/12/2016,First Class,CU-10180,Consumer,United States,Chicago,Illinois,13336,Central,Technology,Accessories,141.08,4,0.3,-16.11
+672,US-2016-100671,04/14/2016,04/14/2016,Same Day,CU-10562,Consumer,United States,Seattle,Washington,45005,West,Technology,Machines,283.87,1,0.3,-14.01
+673,US-2016-100672,04/14/2016,04/18/2016,Standard Class,CU-10100,Consumer,United States,Houston,Texas,83370,Central,Furniture,Furnishings,286.44,3,0.0,-5.74
+674,US-2016-100673,04/15/2016,04/18/2016,Second Class,CU-10524,Home Office,United States,Portland,Oregon,16773,West,Office Supplies,Paper,17.32,12,0.3,-1.8
+675,US-2016-100674,04/16/2016,04/20/2016,First Class,CU-10420,Consumer,United States,Miami,Florida,34124,South,Office Supplies,Storage,98.02,7,0.2,-20.01
+676,US-2016-100675,04/16/2016,04/16/2016,Standard Class,CU-10012,Consumer,United States,Los Angeles,California,68847,West,Technology,Machines,515.24,3,0.5,-211.39
+677,US-2016-100676,04/16/2016,04/18/2016,Standard Class,CU-10359,Home Office,United States,Chicago,Illinois,55753,Central,Office Supplies,Art,255.99,5,0.3,-24.49
+678,US-2016-100677,04/16/2016,04/21/2016,Standard Class,CU-10269,Consumer,United States,Chicago,Illinois,55945,Central,Furniture,Bookcases,664.56,1,0.5,-123.68
+679,US-2016-100678,04/17/2016,04/19/2016,Standard Class,CU-10302,Home Office,United States,Houston,Texas,33845,Central,Office Supplies,Storage,318.74,5,0.5,-69.05
+680,US-2016-100679,04/17/2016,04/22/2016,Standard Class,CU-10592,Consumer,United States,Chicago,Illinois,14565,Central,Office Supplies,Labels,119.26,4,0.1,18.92
+681,US-2016-100680,04/18/2016,04/23/2016,Standard Class,CU-10257,Consumer,United States,Chicago,Illinois,23496,Central,Technology,Accessories,780.89,7,0.0,17.79
+682,US-2016-100681,04/18/2016,04/18/2016,Standard Class,CU-10705,Consumer,United States,New York City,New York,16136,East,Office Supplies,Paper,48.76,8,0.0,10.62
+683,US-2016-100682,04/19/2016,04/25/2016,Standard Class,CU-10088,Consumer,United States,Columbus,Ohio,20160,East,Technology,Phones,303.41,8,0.0,58.6
+684,US-2016-100683,04/23/2016,04/23/2016,First Class,CU-10294,Consumer,United States,Columbus,Ohio,94004,East,Furniture,Tables,614.36,12,0.0,164.01
+685,US-2016-100684,04/24/2016,04/29/2016,First Class,CU-10738,Consumer,United States,Los Angeles,California,71090,West,Office Supplies,Art,66.24,2,0.3,-7.57
+686,US-2016-100685,04/24/2016,04/29/2016,Same Day,CU-10799,Consumer,United States,Seattle,Washington,35632,West,Office Supplies,Binders,294.06,14,0.2,28.56
+687,US-2016-100686,04/26/2016,04/28/2016,Second Class,CU-10363,Corporate,United States,New York City,New York,49518,East,Office Supplies,Paper,313.72,2,0.2,-60.47
+688,US-2016-100687,04/27/2016,05/03/2016,Standard Class,CU-10022,Corporate,United States,Detroit,Michigan,82796,Central,Office Supplies,Binders,159.8,11,0.2,-6.7
+689,US-2016-100688,04/29/2016,05/02/2016,Standard Class,CU-10666,Home Office,United States,Columbus,Ohio,61275,East,Office Supplies,Labels,34.16,10,0.0,5.95
+690,US-2016-100689,04/30/2016,04/30/2016,Standard Class,CU-10123,Corporate,United States,Portland,Oregon,05805,West,Technology,Copiers,712.27,14,0.1,180.75
+691,US-2016-100690,05/01/2016,05/04/2016,Standard Class,CU-10355,Consumer,United States,Atlanta,Georgia,74971,South,Office Supplies,Paper,96.47,6,0.0,14.14
+692,US-2016-100691,05/01/2016,05/03/2016,Standard Class,CU-10403,Consumer,United States,Richmond,Virginia,63315,South,Office Supplies,Binders,229.52,9,0.3,-68.12
+693,US-2016-100692,05/01/2016,05/01/2016,Second Class,CU-10580,Consumer,United States,Columbus,Ohio,05109,East,Office Supplies,Labels,222.51,9,0.3,-27.02
+694,US-2016-100693,05/02/2016,05/04/2016,Standard Class,CU-10169,Consumer,United States,Detroit,Michigan,92919,Central,Office Supplies,Binders,19.65,11,0.5,-4.26
+695,US-2016-100694,05/03/2016,05/06/2016,Second Class,CU-10169,Consumer,United States,Portland,Oregon,32828,West,Office Supplies,Storage,45.95,13,0.0,8.62
+696,US-2016-100695,05/04/2016,05/06/2016,Standard Class,CU-10296,Consumer,United States,Detroit,Michigan,85602,Central,Furniture,Chairs,183.56,10,0.2,-40.75
+697,US-2016-100696,05/05/2016,05/05/2016,Standard Class,CU-10610,Consumer,United States,Detroit,Michigan,99521,Central,Office Supplies,Binders,260.54,9,0.5,-101.06
+698,US-2016-100697,05/05/2016,05/05/2016,First Class,CU-10341,Consumer,United States,Chicago,Illinois,98272,Central,Furniture,Bookcases,74.62,10,0.0,24.93
+699,US-2016-100698,05/06/2016,05/09/2016,Standard Class,CU-10733,Consumer,United States,Detroit,Michigan,46680,Central,Office Supplies,Art,7.55,5,0.5,-3.36
+700,US-2016-100699,05/07/2016,05/09/2016,Second Class,CU-10621,Consumer,United States,Columbus,Ohio,10706,East,Office Supplies,Paper,32.21,13,0.2,1.71
+701,US-2016-100700,05/08/2016,05/08/2016,Standard Class,CU-10448,Home Office,United States,Portland,Oregon,50941,West,Office Supplies,Art,183.88,12,0.3,7.18
+702,US-2016-100701,05/08/2016,05/09/2016,Standard Class,CU-10595,Home Office,United States,Portland,Oregon,49995,West,Furniture,Furnishings,397.05,6,0.0,82.38
+703,US-2016-100702,05/12/2016,05/16/2016,First Class,CU-10575,Consumer,United States,Chicago,Illinois,87790,Central,Technology,Machines,739.32,9,0.1,-12.6
+704,US-2016-100703,05/15/2016,05/20/2016,Second Class,CU-10734,Home Office,United States,Los Angeles,California,77656,West,Office Supplies,Binders,175.52,2,0.0,55.88
+705,US-2016-100704,05/17/2016,05/20/2016,Standard Class,CU-10404,Corporate,United States,Portland,Oregon,04310,West,Furniture,Chairs,533.33,4,0.2,44.33
+706,US-2016-100705,05/17/2016,05/19/2016,First Class,CU-10318,Consumer,United States,Miami,Florida,70612,South,Office Supplies,Binders,112.13,14,0.2,-10.93
+707,US-2016-100706,05/18/2016,05/23/2016,Same Day,CU-10646,Consumer,United States,Portland,Oregon,38717,West,Office Supplies,Binders,92.06,8,0.3,-12.97
+708,US-2016-100707,05/22/2016,05/23/2016,Second Class,CU-10150,Consumer,United States,Atlanta,Georgia,47808,South,Office Supplies,Labels,25.16,9,0.2,-0.11
+709,US-2016-100708,05/24/2016,05/27/2016,Standard Class,CU-10036,Corporate,United States,Chicago,Illinois,60272,Central,Office Supplies,Binders,29.62,6,0.1,2.28
+710,US-2016-100709,05/24/2016,05/27/2016,Second Class,CU-10754,Consumer,United States,Portland,Oregon,26714,West,Technology,Machines,237.54,6,0.0,46.35
+711,US-2016-100710,05/24/2016,05/27/2016,Second Class,CU-10020,Home Office,United States,Philadelphia,Pennsylvania,65181,East,Office Supplies,Art,38.07,6,0.1,-1.0
+712,US-2016-100711,05/25/2016,05/28/2016,Standard Class,CU-10493,Corporate,United States,Portland,Oregon,89474,West,Technology,Copiers,498.53,2,0.0,82.09
+713,US-2016-100712,05/26/2016,05/31/2016,Standard Class,CU-10392,Consumer,United States,Miami,Florida,84001,South,Furniture,Furnishings,118.48,7,0.2,-2.82
+714,US-2016-100713,05/29/2016,05/29/2016,Second Class,CU-10406,Home Office,United States,New York City,New York,50566,East,Office Supplies,Paper,14.48,2,0.1,1.68
+715,US-2016-100714,05/30/2016,06/02/2016,Standard Class,CU-10698,Consumer,United States,Portland,Oregon,79709,West,Office Supplies,Binders,3.4,10,0.1,-0.02
+716,US-2016-100715,05/31/2016,06/04/2016,Standard Class,CU-10475,Consumer,United States,Seattle,Washington,76709,West,Technology,Machines,383.85,3,0.1,37.41
+717,US-2016-100716,05/31/2016,06/02/2016,Standard Class,CU-10517,Corporate,United States,Philadelphia,Pennsylvania,02743,East,Furniture,Furnishings,638.95,12,0.0,172.98
+718,US-2016-100717,06/03/2016,06/06/2016,Standard Class,CU-10675,Consumer,United States,Houston,Texas,19868,Central,Furniture,Tables,303.34,2,0.0,96.61
+719,US-2016-100718,06/03/2016,06/04/2016,Standard Class,CU-10320,Consumer,United States,Portland,Oregon,44914,West,Furniture,Bookcases,61.28,8,0.1,4.71
+720,US-2016-100719,06/04/2016,06/06/2016,Standard Class,CU-10289,Corporate,United States,Portland,Oregon,90115,West,Office Supplies,Art,139.04,6,0.1,29.11
+721,US-2016-100720,06/05/2016,06/06/2016,Standard Class,CU-10331,Corporate,United States,New York City,New York,39528,East,Technology,Accessories,174.69,13,0.1,-9.66
+722,US-2016-100721,06/06/2016,06/06/2016,Standard Class,CU-10457,Home Office,United States,Los Angeles,California,67486,West,Office Supplies,Art,110.36,2,0.0,30.05
+723,US-2016-100722,06/06/2016,06/10/2016,Standard Class,CU-10749,Consumer,United States,Detroit,Michigan,95733,Central,Technology,Copiers,958.73,11,0.5,-515.99
+724,US-2016-100723,06/08/2016,06/10/2016,Standard Class,CU-10348,Home Office,United States,Columbus,Ohio,44691,East,Furniture,Tables,164.87,7,0.0,61.53
+725,US-2016-100724,06/09/2016,06/15/2016,First Class,CU-10127,Consumer,United States,Portland,Oregon,21118,West,Furniture,Tables,179.51,3,0.0,47.26
+726,US-2016-100725,06/10/2016,06/12/2016,Second Class,CU-10734,Consumer,United States,Los Angeles,California,06496,West,Technology,Accessories,384.59,4,0.5,-59.17
+727,US-2016-100726,06/11/2016,06/11/2016,Standard Class,CU-10305,Consumer,United States,Detroit,Michigan,36480,Central,Furniture,Chairs,371.51,4,0.0,60.45
+728,US-2016-100727,06/16/2016,06/18/2016,Standard Class,CU-10731,Corporate,United States,Columbus,Ohio,17770,East,Furniture,Bookcases,760.95,14,0.0,235.86
+729,US-2016-100728,06/17/2016,06/18/2016,Second Class,CU-10503,Consumer,United States,Philadelphia,Pennsylvania,68488,East,Office Supplies,Labels,195.69,14,0.0,22.76
+730,US-2016-100729,06/18/2016,06/23/2016,Standard Class,CU-10472,Home Office,United States,Houston,Texas,05669,Central,Office Supplies,Labels,257.49,12,0.1,14.3
+731,US-2016-100730,06/19/2016,06/23/2016,Standard Class,CU-10790,Home Office,United States,New York City,New York,49104,East,Furniture,Tables,78.61,10,0.3,11.47
+732,US-2016-100731,06/20/2016,06/25/2016,Standard Class,CU-10209,Consumer,United States,Houston,Texas,99612,Central,Technology,Machines,491.72,13,0.1,30.64
+733,US-2016-100732,06/21/2016,06/25/2016,Second Class,CU-10345,Consumer,United States,Philadelphia,Pennsylvania,32194,East,Furniture,Furnishings,142.57,10,0.2,18.84
+734,US-2016-100733,06/23/2016,06/23/2016,Second Class,CU-10054,Consumer,United States,Chicago,Illinois,39756,Central,Technology,Accessories,826.05,6,0.0,183.58
+735,US-2016-100734,06/25/2016,06/30/2016,Standard Class,CU-10010,Corporate,United States,Richmond,Virginia,23848,South,Office Supplies,Paper,47.62,1,0.0,11.21
+736,US-2016-100735,06/26/2016,06/27/2016,Standard Class,CU-10327,Consumer,United States,Columbus,Ohio,68012,East,Office Supplies,Labels,67.1,9,0.2,-4.11
+737,US-2016-100736,06/27/2016,06/28/2016,Second Class,CU-10118,Home Office,United States,Seattle,Washington,09967,West,Office Supplies,Paper,117.53,10,0.0,19.4
+738,US-2016-100737,06/29/2016,07/02/2016,Standard Class,CU-10598,Consumer,United States,Los Angeles,California,09202,West,Office Supplies,Labels,101.46,6,0.0,29.71
+739,US-2016-100738,06/30/2016,07/01/2016,Standard Class,CU-10720,Consumer,United States,Richmond,Virginia,48087,South,Office Supplies,Storage,120.47,3,0.2,8.35
+740,US-2016-100739,07/02/2016,07/07/2016,Standard Class,CU-10237,Home Office,United States,New York City,New York,47294,East,Technology,Phones,344.88,8,0.0,159.96
+741,US-2016-100740,07/05/2016,07/11/2016,Standard Class,CU-10654,Corporate,United States,Atlanta,Georgia,54340,South,Office Supplies,Paper,47.99,12,0.0,6.0
+742,US-2016-100741,07/05/2016,07/09/2016,First Class,CU-10305,Home Office,United States,Houston,Texas,66145,Central,Office Supplies,Storage,107.0,10,0.0,-3.41
+743,US-2016-100742,07/06/2016,07/09/2016,Second Class,CU-10776,Corporate,United States,Detroit,Michigan,42587,Central,Furniture,Furnishings,177.15,3,0.2,-17.66
+744,US-2016-100743,07/06/2016,07/08/2016,Standard Class,CU-10233,Home Office,United States,Los Angeles,California,17738,West,Office Supplies,Binders,49.77,8,0.3,-9.92
+745,US-2016-100744,07/08/2016,07/09/2016,Second Class,CU-10129,Consumer,United States,Detroit,Michigan,37803,Central,Office Supplies,Labels,91.8,12,0.0,10.33
+746,US-2016-100745,07/09/2016,07/14/2016,Standard Class,CU-10345,Consumer,United States,Seattle,Washington,41597,West,Office Supplies,Storage,189.57,6,0.0,31.62
+747,US-2016-100746,07/09/2016,07/12/2016,Standard Class,CU-10276,Consumer,United States,Columbus,Ohio,88086,East,Office Supplies,Labels,155.99,8,0.1,-25.48
+748,US-2016-100747,07/10/2016,07/16/2016,Standard Class,CU-10031,Corporate,United States,Atlanta,Georgia,06743,South,Office Supplies,Binders,67.79,2,0.5,-7.42
+749,US-2016-100748,07/10/2016,07/10/2016,Standard Class,CU-10422,Corporate,United States,Atlanta,Georgia,78406,South,Office Supplies,Art,19.94,2,0.5,-7.78
+750,US-2016-100749,07/11/2016,07/13/2016,First Class,CU-10265,Corporate,United States,Portland,Oregon,84126,West,Office Supplies,Storage,72.63,6,0.0,7.58
+751,US-2016-100750,07/13/2016,07/19/2016,Standard Class,CU-10505,Consumer,United States,Richmond,Virginia,81881,South,Office Supplies,Storage,377.47,3,0.3,-43.7
+752,US-2016-100751,07/14/2016,07/15/2016,Standard Class,CU-10598,Corporate,United States,Seattle,Washington,76226,West,Office Supplies,Paper,43.74,14,0.2,-6.64
+753,US-2016-100752,07/16/2016,07/19/2016,Standard Class,CU-10778,Consumer,United States,Los Angeles,California,17768,West,Office Supplies,Art,181.71,12,0.3,-4.33
+754,US-2016-100753,07/17/2016,07/18/2016,Standard Class,CU-10710,Consumer,United States,Columbus,Ohio,46408,East,Technology,Copiers,487.01,1,0.0,3.12
+755,US-2016-100754,07/18/2016,07/23/2016,First Class,CU-10796,Consumer,United States,Philadelphia,Pennsylvania,25448,East,Office Supplies,Binders,150.71,4,0.1,22.64
+756,US-2016-100755,07/18/2016,07/18/2016,Second Class,CU-10011,Consumer,United States,Chicago,Illinois,73318,Central,Technology,Machines,202.48,9,0.0,27.82
+757,US-2016-100756,07/18/2016,07/21/2016,Standard Class,CU-10147,Corporate,United States,Columbus,Ohio,45038,East,Furniture,Chairs,146.6,8,0.0,15.6
+758,US-2016-100757,07/19/2016,07/25/2016,Standard Class,CU-10122,Home Office,United States,Columbus,Ohio,60330,East,Office Supplies,Labels,168.83,7,0.0,44.15
+759,US-2016-100758,07/19/2016,07/22/2016,Standard Class,CU-10772,Consumer,United States,Seattle,Washington,42633,West,Office Supplies,Storage,52.49,7,0.0,8.59
+760,US-2016-100759,07/20/2016,07/23/2016,First Class,CU-10084,Consumer,United States,Los Angeles,California,78851,West,Furniture,Furnishings,48.23,11,0.1,5.88
+761,US-2016-100760,07/20/2016,07/22/2016,Second Class,CU-10691,Consumer,United States,Columbus,Ohio,13698,East,Technology,Machines,276.55,4,0.0,53.16
+762,US-2016-100761,07/21/2016,07/22/2016,Second Class,CU-10737,Home Office,United States,Seattle,Washington,85444,West,Office Supplies,Storage,83.66,3,0.0,15.09
+763,US-2016-100762,07/23/2016,07/23/2016,First Class,CU-10321,Corporate,United States,New York City,New York,53000,East,Furniture,Tables,558.48,7,0.3,-37.56
+764,US-2016-100763,07/23/2016,07/26/2016,Standard Class,CU-10213,Home Office,United States,Seattle,Washington,12002,West,Furniture,Tables,241.7,5,0.0,38.92
+765,US-2016-100764,07/27/2016,07/31/2016,Standard Class,CU-10523,Consumer,United States,Portland,Oregon,93175,West,Office Supplies,Art,29.28,13,0.3,2.47
+766,US-2016-100765,07/27/2016,07/29/2016,First Class,CU-10372,Consumer,United States,Los Angeles,California,64282,West,Office Supplies,Binders,230.95,5,0.5,-77.91
+767,US-2016-100766,07/29/2016,07/29/2016,Standard Class,CU-10086,Consumer,United States,New York City,New York,16285,East,Office Supplies,Art,5.64,7,0.3,0.28
+768,US-2016-100767,07/29/2016,07/30/2016,Standard Class,CU-10233,Consumer,United States,New York City,New York,70792,East,Furniture,Furnishings,105.32,4,0.5,-26.33
+769,US-2016-100768,07/30/2016,08/02/2016,Standard Class,CU-10703,Consumer,United States,Columbus,Ohio,33886,East,Office Supplies,Storage,184.19,8,0.5,-50.65
+770,US-2016-100769,08/01/2016,08/01/2016,Standard Class,CU-10463,Consumer,United States,Portland,Oregon,98573,West,Office Supplies,Storage,74.81,3,0.0,-3.14
+771,US-2016-100770,08/02/2016,08/07/2016,Standard Class,CU-10379,Consumer,United States,Seattle,Washington,89881,West,Office Supplies,Storage,48.25,5,0.0,7.06
+772,US-2016-100771,08/04/2016,08/05/2016,Standard Class,CU-10775,Corporate,United States,Chicago,Illinois,49437,Central,Office Supplies,Art,30.14,7,0.1,3.59
+773,US-2016-100772,08/04/2016,08/07/2016,Second Class,CU-10116,Corporate,United States,Detroit,Michigan,27169,Central,Office Supplies,Paper,174.19,13,0.0,31.89
+774,US-2016-100773,08/06/2016,08/09/2016,Standard Class,CU-10657,Corporate,United States,Los Angeles,California,42983,West,Furniture,Chairs,134.91,4,0.0,-9.82
+775,US-2016-100774,08/10/2016,08/16/2016,Standard Class,CU-10386,Consumer,United States,Portland,Oregon,03897,West,Office Supplies,Art,45.26,11,0.5,-7.34
+776,US-2016-100775,08/12/2016,08/13/2016,Standard Class,CU-10130,Corporate,United States,Seattle,Washington,02600,West,Office Supplies,Labels,116.15,13,0.0,27.45
+777,US-2016-100776,08/13/2016,08/18/2016,Second Class,CU-10582,Consumer,United States,Houston,Texas,69847,Central,Office Supplies,Art,102.84,9,0.3,5.83
+778,US-2016-100777,08/13/2016,08/19/2016,Standard Class,CU-10363,Home Office,United States,Seattle,Washington,74628,West,Office Supplies,Labels,24.44,9,0.1,2.58
+779,US-2016-100778,08/13/2016,08/14/2016,Second Class,CU-10517,Corporate,United States,Portland,Oregon,19557,West,Office Supplies,Paper,136.69,4,0.3,-28.27
+780,US-2016-100779,08/14/2016,08/14/2016,Standard Class,CU-10253,Corporate,United States,Miami,Florida,48451,South,Furniture,Chairs,251.47,4,0.2,39.11
+781,US-2016-100780,08/14/2016,08/17/2016,Standard Class,CU-10088,Consumer,United States,Seattle,Washington,51031,West,Furniture,Bookcases,124.07,13,0.0,30.62
+782,US-2016-100781,08/16/2016,08/20/2016,Standard Class,CU-10290,Consumer,United States,Richmond,Virginia,54775,South,Office Supplies,Labels,53.01,7,0.0,6.68
+783,US-2016-100782,08/17/2016,08/17/2016,Standard Class,CU-10312,Corporate,United States,Miami,Florida,14963,South,Technology,Copiers,463.53,2,0.1,100.62
+784,US-2016-100783,08/18/2016,08/21/2016,Standard Class,CU-10196,Corporate,United States,Detroit,Michigan,61312,Central,Furniture,Bookcases,934.33,5,0.0,203.82
+785,US-2016-100784,08/22/2016,08/26/2016,Second Class,CU-10518,Consumer,United States,Atlanta,Georgia,60030,South,Technology,Machines,500.29,13,0.0,117.49
+786,US-2016-100785,08/22/2016,08/22/2016,First Class,CU-10315,Home Office,United States,Los Angeles,California,84767,West,Technology,Phones,119.28,2,0.0,45.0
+787,US-2016-100786,08/24/2016,08/24/2016,Standard Class,CU-10149,Home Office,United States,Atlanta,Georgia,82365,South,Technology,Accessories,528.71,4,0.5,-51.73
+788,US-2016-100787,08/25/2016,08/31/2016,Standard Class,CU-10794,Corporate,United States,Columbus,Ohio,64067,East,Office Supplies,Labels,28.51,8,0.2,0.31
+789,US-2016-100788,08/26/2016,08/31/2016,Second Class,CU-10386,Corporate,United States,Atlanta,Georgia,93990,South,Office Supplies,Labels,146.07,8,0.0,10.75
+790,US-2016-100789,08/27/2016,09/01/2016,Standard Class,CU-10727,Corporate,United States,Richmond,Virginia,92301,South,Office Supplies,Paper,81.78,1,0.5,-30.4
+791,US-2016-100790,08/27/2016,08/31/2016,First Class,CU-10788,Consumer,United States,Los Angeles,California,60199,West,Office Supplies,Art,162.7,11,0.3,-17.37
+792,US-2016-100791,08/28/2016,09/03/2016,Standard Class,CU-10461,Corporate,United States,Philadelphia,Pennsylvania,52363,East,Office Supplies,Paper,70.51,12,0.0,10.11
+793,US-2016-100792,08/30/2016,09/04/2016,Standard Class,CU-10282,Consumer,United States,Los Angeles,California,10989,West,Furniture,Chairs,38.05,8,0.0,9.22
+794,US-2016-100793,08/30/2016,09/01/2016,Standard Class,CU-10134,Corporate,United States,Detroit,Michigan,91295,Central,Office Supplies,Storage,158.75,8,0.5,-37.22
+795,US-2016-100794,08/30/2016,08/30/2016,Standard Class,CU-10277,Consumer,United States,Columbus,Ohio,35612,East,Office Supplies,Labels,38.21,7,0.3,-0.77
+796,US-2016-100795,09/02/2016,09/04/2016,Standard Class,CU-10529,Consumer,United States,Portland,Oregon,37211,West,Office Supplies,Art,116.81,11,0.1,21.74
+797,US-2016-100796,09/02/2016,09/04/2016,Standard Class,CU-10599,Consumer,United States,Los Angeles,California,77308,West,Furniture,Bookcases,151.44,5,0.0,0.87
+798,US-2016-100797,09/03/2016,09/03/2016,Second Class,CU-10274,Consumer,United States,Columbus,Ohio,95302,East,Office Supplies,Labels,96.13,13,0.5,-22.55
+799,US-2016-100798,09/03/2016,09/06/2016,Standard Class,CU-10523,Consumer,United States,Philadelphia,Pennsylvania,48180,East,Office Supplies,Storage,25.01,10,0.2,-4.42
+800,US-2016-100799,09/05/2016,09/07/2016,Standard Class,CU-10193,Consumer,United States,Columbus,Ohio,69634,East,Office Supplies,Labels,40.71,2,0.3,-4.45
+801,US-2016-100800,09/05/2016,09/09/2016,Second Class,CU-10282,Consumer,United States,Philadelphia,Pennsylvania,11936,East,Furniture,Chairs,176.4,5,0.0,4.71
+802,US-2016-100801,09/06/2016,09/12/2016,Standard Class,CU-10212,Consumer,United States,Seattle,Washington,39045,West,Office Supplies,Labels,339.79,10,0.0,43.74
+803,US-2016-100802,09/06/2016,09/06/2016,Standard Class,CU-10349,Corporate,United States,Portland,Oregon,01949,West,Furniture,Furnishings,457.44,7,0.1,112.27
+804,US-2016-100803,09/06/2016,09/09/2016,Standard Class,CU-10335,Consumer,United States,Chicago,Illinois,18390,Central,Office Supplies,Storage,452.05,9,0.0,128.58
+805,US-2016-100804,09/08/2016,09/11/2016,First Class,CU-10097,Corporate,United States,Seattle,Washington,41202,West,Office Supplies,Labels,195.03,5,0.0,36.4
+806,US-2016-100805,09/08/2016,09/13/2016,Standard Class,CU-10572,Corporate,United States,Los Angeles,California,37334,West,Office Supplies,Binders,105.51,1,0.3,-15.35
+807,US-2016-100806,09/10/2016,09/16/2016,Second Class,CU-10334,Corporate,United States,Miami,Florida,21816,South,Office Supplies,Storage,112.41,2,0.3,-23.21
+808,US-2016-100807,09/13/2016,09/18/2016,Second Class,CU-10409,Corporate,United States,Los Angeles,California,72293,West,Office Supplies,Art,140.74,14,0.1,29.37
+809,US-2016-100808,09/16/2016,09/17/2016,First Class,CU-10011,Consumer,United States,Columbus,Ohio,66459,East,Office Supplies,Art,13.41,14,0.0,2.02
+810,US-2016-100809,09/17/2016,09/17/2016,First Class,CU-10563,Home Office,United States,New York City,New York,44801,East,Office Supplies,Binders,284.33,5,0.3,-70.13
+811,US-2016-100810,09/19/2016,09/25/2016,Standard Class,CU-10623,Corporate,United States,Detroit,Michigan,76773,Central,Office Supplies,Paper,81.27,3,0.0,24.3
+812,US-2016-100811,09/20/2016,09/21/2016,Standard Class,CU-10007,Corporate,United States,Philadelphia,Pennsylvania,45037,East,Technology,Copiers,785.61,11,0.5,-107.39
+813,US-2016-100812,09/21/2016,09/23/2016,Same Day,CU-10422,Home Office,United States,Columbus,Ohio,77161,East,Furniture,Tables,802.22,4,0.0,229.29
+814,US-2016-100813,09/22/2016,09/23/2016,Second Class,CU-10065,Home Office,United States,Seattle,Washington,55487,West,Furniture,Furnishings,357.73,5,0.2,25.43
+815,US-2016-100814,09/25/2016,09/25/2016,Standard Class,CU-10789,Consumer,United States,Seattle,Washington,55895,West,Office Supplies,Storage,167.07,3,0.1,18.58
+816,US-2016-100815,09/27/2016,10/02/2016,Standard Class,CU-10059,Consumer,United States,New York City,New York,47181,East,Office Supplies,Binders,142.96,1,0.0,35.53
+817,US-2016-100816,09/27/2016,10/03/2016,Standard Class,CU-10161,Corporate,United States,Columbus,Ohio,31344,East,Technology,Machines,63.64,3,0.3,-2.67
+818,US-2016-100817,09/27/2016,10/01/2016,Standard Class,CU-10091,Corporate,United States,Houston,Texas,21812,Central,Technology,Phones,321.45,14,0.0,52.99
+819,US-2016-100818,09/28/2016,09/29/2016,Second Class,CU-10182,Consumer,United States,Chicago,Illinois,17854,Central,Office Supplies,Storage,108.4,12,0.0,-5.06
+820,US-2016-100819,09/30/2016,10/02/2016,Standard Class,CU-10350,Corporate,United States,Los Angeles,California,38077,West,Office Supplies,Art,118.34,5,0.5,-35.4
+821,US-2016-100820,10/04/2016,10/09/2016,Standard Class,CU-10548,Consumer,United States,Chicago,Illinois,56575,Central,Furniture,Furnishings,201.58,5,0.3,0.66
+822,US-2016-100821,10/04/2016,10/10/2016,First Class,CU-10562,Consumer,United States,Portland,Oregon,45204,West,Office Supplies,Art,108.71,13,0.1,-9.35
+823,US-2016-100822,10/07/2016,10/13/2016,Standard Class,CU-10577,Corporate,United States,Portland,Oregon,36419,West,Technology,Machines,167.33,7,0.0,36.79
+824,US-2016-100823,10/07/2016,10/08/2016,First Class,CU-10746,Corporate,United States,New York City,New York,85707,East,Furniture,Furnishings,337.14,9,0.0,71.15
+825,US-2016-100824,10/08/2016,10/09/2016,Standard Class,CU-10404,Consumer,United States,Columbus,Ohio,62151,East,Office Supplies,Binders,83.14,3,0.0,30.22
+826,US-2016-100825,10/12/2016,10/15/2016,Standard Class,CU-10474,Corporate,United States,Philadelphia,Pennsylvania,20606,East,Office Supplies,Binders,144.72,8,0.1,6.81
+827,US-2016-100826,10/15/2016,10/21/2016,Second Class,CU-10441,Corporate,United States,Portland,Oregon,73987,West,Office Supplies,Art,64.72,12,0.0,13.82
+828,US-2016-100827,10/18/2016,10/24/2016,Standard Class,CU-10199,Consumer,United States,Richmond,Virginia,22464,South,Office Supplies,Art,67.0,4,0.1,13.56
+829,US-2016-100828,10/19/2016,10/24/2016,Second Class,CU-10691,Corporate,United States,Houston,Texas,78830,Central,Office Supplies,Paper,175.03,14,0.2,5.22
+830,US-2016-100829,10/19/2016,10/23/2016,Standard Class,CU-10278,Consumer,United States,Houston,Texas,87799,Central,Office Supplies,Paper,79.67,1,0.0,-3.09
+831,US-2016-100830,10/22/2016,10/25/2016,First Class,CU-10300,Consumer,United States,Richmond,Virginia,76936,South,Technology,Machines,150.05,11,0.3,-4.74
+832,US-2016-100831,10/22/2016,10/26/2016,First Class,CU-10551,Consumer,United States,Columbus,Ohio,85175,East,Office Supplies,Art,191.83,2,0.1,6.1
+833,US-2016-100832,10/23/2016,10/28/2016,Standard Class,CU-10184,Consumer,United States,Philadelphia,Pennsylvania,02112,East,Technology,Phones,145.24,6,0.0,12.29
+834,US-2016-100833,10/25/2016,10/29/2016,First Class,CU-10718,Consumer,United States,Portland,Oregon,73284,West,Furniture,Bookcases,210.66,10,0.1,44.89
+835,US-2016-100834,10/26/2016,10/26/2016,First Class,CU-10632,Consumer,United States,New York City,New York,57397,East,Technology,Copiers,412.01,1,0.2,21.58
+836,US-2016-100835,10/26/2016,10/28/2016,Standard Class,CU-10239,Consumer,United States,Los Angeles,California,01586,West,Office Supplies,Paper,18.32,1,0.0,3.81
+837,US-2016-100836,10/27/2016,10/31/2016,Second Class,CU-10132,Consumer,United States,Portland,Oregon,35407,West,Office Supplies,Binders,38.48,3,0.2,3.52
+838,US-2016-100837,10/29/2016,11/04/2016,First Class,CU-10431,Corporate,United States,Los Angeles,California,27482,West,Technology,Copiers,630.67,10,0.2,-25.95
+839,US-2016-100838,10/31/2016,11/06/2016,Standard Class,CU-10401,Consumer,United States,Columbus,Ohio,91785,East,Office Supplies,Binders,74.5,6,0.2,4.63
+840,US-2016-100839,10/31/2016,11/04/2016,Second Class,CU-10355,Consumer,United States,New York City,New York,72612,East,Furniture,Tables,178.09,1,0.5,-50.17
+841,US-2016-100840,11/02/2016,11/03/2016,Standard Class,CU-10797,Corporate,United States,Miami,Florida,87903,South,Office Supplies,Binders,29.04,8,0.0,3.72
+842,US-2016-100841,11/03/2016,11/08/2016,Standard Class,CU-10388,Consumer,United States,Philadelphia,Pennsylvania,17105,East,Technology,Machines,175.48,7,0.0,32.98
+843,US-2016-100842,11/04/2016,11/07/2016,First Class,CU-10596,Consumer,United States,Detroit,Michigan,91544,Central,Office Supplies,Art,35.36,1,0.0,1.75
+844,US-2016-100843,11/07/2016,11/09/2016,First Class,CU-10022,Consumer,United States,Columbus,Ohio,28838,East,Furniture,Furnishings,230.61,5,0.5,-52.15
+845,US-2016-100844,11/08/2016,11/12/2016,Second Class,CU-10605,Corporate,United States,Houston,Texas,51446,Central,Furniture,Tables,405.21,14,0.0,75.1
+846,US-2016-100845,11/09/2016,11/09/2016,Second Class,CU-10575,Consumer,United States,Atlanta,Georgia,18291,South,Furniture,Bookcases,553.25,8,0.5,-167.27
+847,US-2016-100846,11/09/2016,11/14/2016,Standard Class,CU-10072,Corporate,United States,Atlanta,Georgia,85841,South,Furniture,Bookcases,521.67,10,0.2,15.9
+848,US-2016-100847,11/10/2016,11/15/2016,Standard Class,CU-10367,Consumer,United States,Columbus,Ohio,05820,East,Office Supplies,Labels,47.19,11,0.0,9.23
+849,US-2016-100848,11/12/2016,11/16/2016,Standard Class,CU-10185,Consumer,United States,Seattle,Washington,03938,West,Office Supplies,Art,293.25,6,0.5,-32.6
+850,US-2016-100849,11/13/2016,11/18/2016,First Class,CU-10110,Home Office,United States,Los Angeles,California,78103,West,Office Supplies,Art,274.39,5,0.0,29.48
+851,US-2016-100850,11/13/2016,11/13/2016,Standard Class,CU-10554,Home Office,United States,Seattle,Washington,60801,West,Office Supplies,Paper,42.88,13,0.0,5.5
+852,US-2016-100851,11/15/2016,11/15/2016,Second Class,CU-10026,Consumer,United States,New York City,New York,84853,East,Office Supplies,Art,206.81,12,0.2,-22.87
+853,US-2016-100852,11/16/2016,11/22/2016,First Class,CU-10398,Consumer,United States,Miami,Florida,57878,South,Office Supplies,Labels,128.89,13,0.1,10.9
+854,US-2016-100853,11/16/2016,11/22/2016,Second Class,CU-10399,Corporate,United States,Detroit,Michigan,76233,Central,Technology,Copiers,220.5,7,0.3,-31.86
+855,US-2016-100854,11/18/2016,11/19/2016,Standard Class,CU-10313,Corporate,United States,Miami,Florida,63752,South,Furniture,Furnishings,409.41,10,0.1,-37.56
+856,US-2016-100855,11/20/2016,11/25/2016,Standard Class,CU-10648,Consumer,United States,Los Angeles,California,82901,West,Office Supplies,Paper,38.21,5,0.0,11.16
+857,US-2016-100856,11/23/2016,11/23/2016,First Class,CU-10056,Consumer,United States,Detroit,Michigan,20450,Central,Office Supplies,Storage,176.7,8,0.0,25.91
+858,US-2016-100857,11/23/2016,11/25/2016,Standard Class,CU-10756,Home Office,United States,Los Angeles,California,82966,West,Office Supplies,Paper,183.11,3,0.2,13.95
+859,US-2016-100858,11/23/2016,11/23/2016,Second Class,CU-10180,Home Office,United States,Los Angeles,California,26042,West,Office Supplies,Storage,33.46,2,0.3,-7.63
+860,US-2016-100859,11/25/2016,11/25/2016,Same Day,CU-10288,Corporate,United States,Philadelphia,Pennsylvania,71344,East,Office Supplies,Binders,35.31,5,0.5,-10.04
+861,US-2016-100860,11/25/2016,11/27/2016,Standard Class,CU-10577,Consumer,United States,Chicago,Illinois,18203,Central,Office Supplies,Paper,59.68,7,0.0,24.09
+862,US-2016-100861,11/28/2016,11/30/2016,Second Class,CU-10331,Consumer,United States,Portland,Oregon,18427,West,Office Supplies,Storage,37.0,2,0.0,14.6
+863,US-2016-100862,11/30/2016,12/04/2016,Standard Class,CU-10656,Home Office,United States,Detroit,Michigan,77388,Central,Office Supplies,Art,57.92,13,0.2,1.9
+864,US-2016-100863,12/01/2016,12/02/2016,Standard Class,CU-10031,Consumer,United States,Seattle,Washington,72945,West,Office Supplies,Labels,17.62,4,0.2,1.17
+865,US-2016-100864,12/03/2016,12/07/2016,Standard Class,CU-10693,Home Office,United States,Los Angeles,California,71653,West,Furniture,Chairs,708.02,2,0.2,13.01
+866,US-2016-100865,12/03/2016,12/07/2016,Same Day,CU-10714,Consumer,United States,Seattle,Washington,77562,West,Office Supplies,Paper,59.2,2,0.0,25.95
+867,US-2016-100866,12/04/2016,12/04/2016,Second Class,CU-10375,Consumer,United States,New York City,New York,81382,East,Technology,Phones,679.47,4,0.3,-143.84
+868,US-2016-100867,12/05/2016,12/09/2016,Second Class,CU-10177,Consumer,United States,Philadelphia,Pennsylvania,12639,East,Furniture,Chairs,421.92,2,0.0,103.65
+869,US-2016-100868,12/05/2016,12/08/2016,Standard Class,CU-10165,Corporate,United States,Chicago,Illinois,35761,Central,Office Supplies,Labels,95.12,3,0.2,-7.59
+870,US-2016-100869,12/06/2016,12/07/2016,Standard Class,CU-10469,Corporate,United States,New York City,New York,26424,East,Office Supplies,Art,80.49,8,0.0,21.52
+871,US-2016-100870,12/06/2016,12/07/2016,First Class,CU-10461,Consumer,United States,Columbus,Ohio,50593,East,Furniture,Bookcases,212.23,14,0.2,15.5
+872,US-2016-100871,12/08/2016,12/11/2016,Standard Class,CU-10095,Consumer,United States,Chicago,Illinois,78780,Central,Office Supplies,Art,98.83,14,0.0,29.36
+873,US-2016-100872,12/10/2016,12/16/2016,Standard Class,CU-10463,Home Office,United States,Seattle,Washington,95161,West,Office Supplies,Storage,152.24,9,0.0,17.74
+874,US-2016-100873,12/11/2016,12/12/2016,Standard Class,CU-10479,Consumer,United States,Columbus,Ohio,29330,East,Technology,Copiers,611.92,4,0.0,186.19
+875,US-2016-100874,12/12/2016,12/16/2016,Second Class,CU-10456,Consumer,United States,Columbus,Ohio,60507,East,Office Supplies,Paper,15.38,1,0.0,3.57
+876,US-2016-100875,12/13/2016,12/16/2016,Standard Class,CU-10440,Corporate,United States,Seattle,Washington,49028,West,Office Supplies,Paper,37.44,10,0.1,14.4
+877,US-2016-100876,12/14/2016,12/16/2016,Standard Class,CU-10019,Corporate,United States,Columbus,Ohio,97446,East,Office Supplies,Labels,21.57,10,0.1,2.7
+878,US-2016-100877,12/15/2016,12/17/2016,Standard Class,CU-10644,Consumer,United States,New York City,New York,04550,East,Office Supplies,Storage,80.78,7,0.1,3.9
+879,US-2016-100878,12/15/2016,12/17/2016,Standard Class,CU-10772,Consumer,United States,Atlanta,Georgia,19214,South,Office Supplies,Art,158.19,6,0.1,19.3
+880,US-2016-100879,12/15/2016,12/20/2016,Second Class,CU-10543,Consumer,United States,Philadelphia,Pennsylvania,61621,East,Office Supplies,Labels,43.71,1,0.1,3.56
+881,US-2016-100880,12/16/2016,12/21/2016,Same Day,CU-10547,Consumer,United States,Portland,Oregon,01143,West,Furniture,Bookcases,128.56,13,0.3,-11.78
+882,US-2016-100881,12/16/2016,12/20/2016,First Class,CU-10170,Consumer,United States,Detroit,Michigan,09551,Central,Office Supplies,Binders,136.15,13,0.1,20.41
+883,US-2016-100882,12/20/2016,12/23/2016,Standard Class,CU-10532,Corporate,United States,Chicago,Illinois,69036,Central,Office Supplies,Art,93.15,14,0.3,2.28
+884,US-2016-100883,12/20/2016,12/25/2016,First Class,CU-10389,Consumer,United States,Portland,Oregon,79716,West,Office Supplies,Storage,70.37,12,0.0,12.99
+885,US-2016-100884,12/20/2016,12/22/2016,Second Class,CU-10533,Corporate,United States,Richmond,Virginia,39075,South,Office Supplies,Labels,60.53,9,0.0,4.62
+886,US-2016-100885,12/21/2016,12/25/2016,Standard Class,CU-10057,Corporate,United States,Richmond,Virginia,18683,South,Office Supplies,Art,149.67,1,0.1,-19.37
+887,US-2016-100886,12/23/2016,12/24/2016,Standard Class,CU-10148,Consumer,United States,Columbus,Ohio,90727,East,Office Supplies,Paper,46.25,10,0.0,7.39
+888,US-2016-100887,12/23/2016,12/26/2016,Second Class,CU-10428,Consumer,United States,New York City,New York,37941,East,Furniture,Chairs,121.22,3,0.0,33.38
+889,US-2016-100888,12/23/2016,12/29/2016,Second Class,CU-10076,Consumer,United States,Los Angeles,California,18288,West,Technology,Machines,301.45,10,0.3,13.26
+890,US-2016-100889,12/24/2016,12/29/2016,First Class,CU-10658,Consumer,United States,Seattle,Washington,26529,West,Furniture,Chairs,544.72,7,0.5,-276.8
+891,US-2016-100890,12/25/2016,12/25/2016,Standard Class,CU-10439,Corporate,United States,Portland,Oregon,33186,West,Office Supplies,Storage,33.91,7,0.5,-5.6
+892,US-2016-100891,12/25/2016,12/26/2016,Second Class,CU-10467,Consumer,United States,Chicago,Illinois,11773,Central,Furniture,Chairs,603.33,2,0.0,-68.61
+893,US-2016-100892,12/28/2016,01/01/2017,First Class,CU-10759,Corporate,United States,Philadelphia,Pennsylvania,27897,East,Furniture,Tables,277.26,10,0.2,-26.37
+894,US-2016-100893,12/30/2016,01/04/2017,Second Class,CU-10653,Consumer,United States,New York City,New York,45146,East,Technology,Phones,588.0,4,0.0,115.67
+895,US-2017-100894,01/01/2017,01/01/2017,First Class,CU-10247,Corporate,United States,Seattle,Washington,39451,West,Office Supplies,Art,177.78,13,0.1,5.22
+896,US-2017-100895,01/01/2017,01/04/2017,Standard Class,CU-10602,Corporate,United States,Atlanta,Georgia,63634,South,Technology,Copiers,65.14,12,0.5,-23.47
+897,US-2017-100896,01/02/2017,01/07/2017,Second Class,CU-10315,Corporate,United States,Portland,Oregon,06251,West,Office Supplies,Art,58.63,10,0.0,11.32
+898,US-2017-100897,01/02/2017,01/08/2017,First Class,CU-10421,Consumer,United States,Seattle,Washington,93319,West,Office Supplies,Storage,95.4,2,0.2,4.52
+899,US-2017-100898,01/03/2017,01/07/2017,Standard Class,CU-10105,Home Office,United States,Los Angeles,California,12454,West,Office Supplies,Labels,182.57,10,0.0,53.74
+900,US-2017-100899,01/03/2017,01/07/2017,First Class,CU-10438,Home Office,United States,Seattle,Washington,25295,West,Office Supplies,Storage,195.53,4,0.0,23.44
+901,US-2017-100900,01/04/2017,01/08/2017,Standard Class,CU-10778,Corporate,United States,Houston,Texas,85530,Central,Office Supplies,Labels,184.16,9,0.0,26.3
+902,US-2017-100901,01/04/2017,01/04/2017,Second Class,CU-10154,Corporate,United States,Atlanta,Georgia,30363,South,Office Supplies,Paper,43.85,7,0.3,-14.96
+903,US-2017-100902,01/04/2017,01/08/2017,First Class,CU-10034,Corporate,United States,Detroit,Michigan,79147,Central,Office Supplies,Paper,146.01,10,0.2,16.54
+904,US-2017-100903,01/05/2017,01/06/2017,Standard Class,CU-10763,Consumer,United States,Houston,Texas,26598,Central,Office Supplies,Storage,52.35,10,0.5,-18.1
+905,US-2017-100904,01/05/2017,01/09/2017,Second Class,CU-10776,Corporate,United States,Richmond,Virginia,20925,South,Office Supplies,Storage,84.69,1,0.0,6.6
+906,US-2017-100905,01/06/2017,01/12/2017,Second Class,CU-10603,Consumer,United States,Seattle,Washington,30458,West,Office Supplies,Labels,82.28,9,0.0,16.49
+907,US-2017-100906,01/06/2017,01/07/2017,Same Day,CU-10553,Home Office,United States,Columbus,Ohio,88362,East,Office Supplies,Labels,128.14,1,0.0,8.53
+908,US-2017-100907,01/06/2017,01/09/2017,Standard Class,CU-10554,Home Office,United States,Richmond,Virginia,49851,South,Office Supplies,Paper,14.53,6,0.0,3.42
+909,US-2017-100908,01/07/2017,01/12/2017,Standard Class,CU-10744,Consumer,United States,Los Angeles,California,31958,West,Furniture,Furnishings,379.83,3,0.0,48.78
+910,US-2017-100909,01/07/2017,01/10/2017,Same Day,CU-10052,Corporate,United States,Houston,Texas,08645,Central,Office Supplies,Labels,54.26,8,0.1,0.31
+911,US-2017-100910,01/08/2017,01/08/2017,First Class,CU-10605,Corporate,United States,Los Angeles,California,12136,West,Furniture,Tables,568.35,8,0.0,106.81
+912,US-2017-100911,01/08/2017,01/08/2017,First Class,CU-10375,Home Office,United States,Detroit,Michigan,67373,Central,Office Supplies,Binders,87.47,4,0.0,25.82
+913,US-2017-100912,01/09/2017,01/14/2017,Standard Class,CU-10323,Consumer,United States,Richmond,Virginia,17189,South,Office Supplies,Binders,7.83,13,0.0,1.68
+914,US-2017-100913,01/10/2017,01/14/2017,Second Class,CU-10406,Consumer,United States,Philadelphia,Pennsylvania,06332,East,Office Supplies,Paper,151.12,8,0.5,-49.46
+915,US-2017-100914,01/12/2017,01/17/2017,Standard Class,CU-10443,Consumer,United States,New York City,New York,80971,East,Office Supplies,Labels,111.52,6,0.1,18.2
+916,US-2017-100915,01/13/2017,01/18/2017,Second Class,CU-10166,Corporate,United States,Miami,Florida,93398,South,Office Supplies,Paper,250.96,3,0.2,-27.77
+917,US-2017-100916,01/14/2017,01/15/2017,Standard Class,CU-10357,Consumer,United States,New York City,New York,86949,East,Furniture,Tables,99.1,13,0.2,-3.67
+918,US-2017-100917,01/16/2017,01/16/2017,Second Class,CU-10486,Consumer,United States,Houston,Texas,85331,Central,Office Supplies,Art,155.15,3,0.0,26.97
+919,US-2017-100918,01/17/2017,01/17/2017,First Class,CU-10484,Home Office,United States,Columbus,Ohio,42825,East,Office Supplies,Binders,95.94,12,0.3,-6.43
+920,US-2017-100919,01/18/2017,01/21/2017,Same Day,CU-10752,Corporate,United States,Philadelphia,Pennsylvania,48708,East,Office Supplies,Labels,55.31,7,0.0,2.06
+921,US-2017-100920,01/19/2017,01/24/2017,Second Class,CU-10675,Consumer,United States,Columbus,Ohio,33753,East,Furniture,Chairs,124.39,9,0.2,27.12
+922,US-2017-100921,01/19/2017,01/20/2017,Standard Class,CU-10151,Corporate,United States,Detroit,Michigan,60180,Central,Office Supplies,Storage,77.3,9,0.5,-13.48
+923,US-2017-100922,01/19/2017,01/21/2017,Standard Class,CU-10365,Consumer,United States,Los Angeles,California,57968,West,Technology,Machines,616.84,7,0.5,-116.13
+924,US-2017-100923,01/20/2017,01/20/2017,First Class,CU-10307,Consumer,United States,Chicago,Illinois,04764,Central,Office Supplies,Binders,83.09,5,0.0,34.22
+925,US-2017-100924,01/21/2017,01/26/2017,Standard Class,CU-10061,Corporate,United States,Chicago,Illinois,51275,Central,Office Supplies,Storage,252.3,6,0.5,-80.29
+926,US-2017-100925,01/22/2017,01/26/2017,First Class,CU-10502,Consumer,United States,Houston,Texas,03670,Central,Office Supplies,Labels,83.85,3,0.0,37.36
+927,US-2017-100926,01/23/2017,01/25/2017,First Class,CU-10599,Home Office,United States,Portland,Oregon,57232,West,Office Supplies,Art,85.85,4,0.3,-6.14
+928,US-2017-100927,01/23/2017,01/28/2017,Second Class,CU-10217,Home Office,United States,Seattle,Washington,84126,West,Furniture,Tables,166.47,3,0.0,9.54
+929,US-2017-100928,01/26/2017,01/31/2017,Standard Class,CU-10461,Consumer,United States,Portland,Oregon,39968,West,Office Supplies,Binders,40.86,3,0.1,7.7
+930,US-2017-100929,01/26/2017,02/01/2017,Same Day,CU-10354,Home Office,United States,Detroit,Michigan,28212,Central,Office Supplies,Storage,44.62,13,0.1,1.05
+931,US-2017-100930,01/27/2017,01/29/2017,Standard Class,CU-10142,Corporate,United States,New York City,New York,76664,East,Technology,Copiers,211.38,3,0.0,46.77
+932,US-2017-100931,01/27/2017,01/29/2017,Standard Class,CU-10325,Consumer,United States,Columbus,Ohio,01599,East,Office Supplies,Binders,72.65,14,0.0,13.91
+933,US-2017-100932,01/28/2017,01/29/2017,Standard Class,CU-10750,Consumer,United States,Detroit,Michigan,76396,Central,Furniture,Furnishings,508.13,8,0.0,48.83
+934,US-2017-100933,01/30/2017,02/01/2017,Standard Class,CU-10740,Consumer,United States,Chicago,Illinois,68881,Central,Office Supplies,Storage,60.22,6,0.3,-12.47
+935,US-2017-100934,01/31/2017,02/01/2017,Second Class,CU-10404,Corporate,United States,Miami,Florida,08211,South,Office Supplies,Paper,78.35,9,0.5,-16.16
+936,US-2017-100935,02/01/2017,02/07/2017,Same Day,CU-10457,Corporate,United States,Columbus,Ohio,24255,East,Technology,Copiers,170.93,11,0.5,-16.46
+937,US-2017-100936,02/02/2017,02/08/2017,Standard Class,CU-10723,Consumer,United States,Miami,Florida,23484,South,Furniture,Furnishings,252.73,6,0.2,-11.81
+938,US-2017-100937,02/03/2017,02/04/2017,Standard Class,CU-10760,Home Office,United States,Miami,Florida,49724,South,Technology,Machines,358.5,8,0.3,-76.02
+939,US-2017-100938,02/04/2017,02/07/2017,First Class,CU-10392,Consumer,United States,New York City,New York,02435,East,Technology,Accessories,753.13,9,0.0,134.53
+940,US-2017-100939,02/06/2017,02/09/2017,Standard Class,CU-10093,Consumer,United States,Columbus,Ohio,13969,East,Furniture,Bookcases,247.05,2,0.5,-20.31
+941,US-2017-100940,02/10/2017,02/13/2017,First Class,CU-10769,Corporate,United States,Seattle,Washington,72083,West,Office Supplies,Labels,166.05,6,0.0,11.35
+942,US-2017-100941,02/14/2017,02/15/2017,First Class,CU-10308,Consumer,United States,Seattle,Washington,28596,West,Office Supplies,Labels,114.13,5,0.3,-15.1
+943,US-2017-100942,02/15/2017,02/15/2017,Second Class,CU-10331,Consumer,United States,Seattle,Washington,57979,West,Office Supplies,Storage,44.66,6,0.0,13.41
+944,US-2017-100943,02/16/2017,02/17/2017,Standard Class,CU-10195,Home Office,United States,Chicago,Illinois,47924,Central,Furniture,Tables,137.07,6,0.0,8.45
+945,US-2017-100944,02/18/2017,02/20/2017,Second Class,CU-10588,Consumer,United States,Philadelphia,Pennsylvania,42814,East,Office Supplies,Paper,51.12,7,0.2,1.54
+946,US-2017-100945,02/19/2017,02/21/2017,Same Day,CU-10132,Corporate,United States,Portland,Oregon,64133,West,Office Supplies,Art,272.17,14,0.0,-0.88
+947,US-2017-100946,02/20/2017,02/25/2017,Standard Class,CU-10438,Corporate,United States,New York City,New York,37555,East,Office Supplies,Binders,33.67,7,0.3,0.38
+948,US-2017-100947,02/21/2017,02/21/2017,Standard Class,CU-10159,Corporate,United States,Miami,Florida,50041,South,Office Supplies,Paper,82.29,2,0.3,-16.92
+949,US-2017-100948,02/22/2017,02/25/2017,Standard Class,CU-10094,Consumer,United States,Houston,Texas,76689,Central,Office Supplies,Storage,150.06,3,0.2,3.82
+950,US-2017-100949,02/22/2017,02/24/2017,Second Class,CU-10780,Corporate,United States,Seattle,Washington,60866,West,Office Supplies,Storage,71.39,13,0.2,-3.91
+951,US-2017-100950,02/22/2017,02/22/2017,First Class,CU-10556,Consumer,United States,Houston,Texas,56494,Central,Office Supplies,Binders,58.69,4,0.0,9.31
+952,US-2017-100951,02/25/2017,03/01/2017,Second Class,CU-10227,Consumer,United States,Richmond,Virginia,75902,South,Office Supplies,Paper,70.75,10,0.0,19.13
+953,US-2017-100952,02/27/2017,02/28/2017,First Class,CU-10667,Consumer,United States,Philadelphia,Pennsylvania,22187,East,Office Supplies,Labels,85.05,5,0.1,-9.9
+954,US-2017-100953,02/28/2017,02/28/2017,Standard Class,CU-10633,Corporate,United States,Miami,Florida,74687,South,Technology,Accessories,418.72,2,0.5,-148.68
+955,US-2017-100954,02/28/2017,03/04/2017,Standard Class,CU-10082,Consumer,United States,Houston,Texas,98899,Central,Office Supplies,Storage,40.59,8,0.0,1.18
+956,US-2017-100955,03/01/2017,03/05/2017,Standard Class,CU-10570,Consumer,United States,Portland,Oregon,25662,West,Office Supplies,Binders,62.07,10,0.0,11.09
+957,US-2017-100956,03/01/2017,03/06/2017,Standard Class,CU-10122,Consumer,United States,Portland,Oregon,80966,West,Office Supplies,Storage,242.8,13,0.5,-87.33
+958,US-2017-100957,03/02/2017,03/05/2017,Standard Class,CU-10660,Consumer,United States,Philadelphia,Pennsylvania,43186,East,Office Supplies,Labels,319.12,8,0.5,-80.85
+959,US-2017-100958,03/03/2017,03/04/2017,Standard Class,CU-10515,Corporate,United States,Columbus,Ohio,77958,East,Office Supplies,Binders,153.5,4,0.1,14.75
+960,US-2017-100959,03/03/2017,03/09/2017,First Class,CU-10227,Home Office,United States,Miami,Florida,05741,South,Office Supplies,Storage,201.56,4,0.3,-25.62
+961,US-2017-100960,03/04/2017,03/06/2017,Standard Class,CU-10161,Corporate,United States,Seattle,Washington,99655,West,Furniture,Bookcases,390.35,6,0.0,-13.38
+962,US-2017-100961,03/05/2017,03/09/2017,Standard Class,CU-10035,Consumer,United States,Los Angeles,California,85939,West,Furniture,Chairs,274.3,14,0.0,50.3
+963,US-2017-100962,03/05/2017,03/09/2017,Standard Class,CU-10006,Consumer,United States,Los Angeles,California,58828,West,Office Supplies,Storage,58.14,5,0.2,1.0
+964,US-2017-100963,03/06/2017,03/10/2017,Second Class,CU-10106,Corporate,United States,Miami,Florida,78812,South,Office Supplies,Binders,18.49,11,0.5,-8.55
+965,US-2017-100964,03/06/2017,03/06/2017,Standard Class,CU-10669,Home Office,United States,Columbus,Ohio,17342,East,Office Supplies,Paper,200.85,4,0.3,-37.75
+966,US-2017-100965,03/10/2017,03/15/2017,Standard Class,CU-10041,Corporate,United States,Chicago,Illinois,75203,Central,Office Supplies,Art,216.75,13,0.0,37.33
+967,US-2017-100966,03/10/2017,03/15/2017,Standard Class,CU-10002,Home Office,United States,Richmond,Virginia,65986,South,Office Supplies,Storage,101.27,5,0.2,-14.72
+968,US-2017-100967,03/10/2017,03/12/2017,Second Class,CU-10045,Consumer,United States,Atlanta,Georgia,22510,South,Office Supplies,Storage,267.96,5,0.0,95.67
+969,US-2017-100968,03/12/2017,03/17/2017,Second Class,CU-10357,Corporate,United States,Columbus,Ohio,77961,East,Office Supplies,Labels,26.75,9,0.5,-10.63
+970,US-2017-100969,03/12/2017,03/18/2017,Second Class,CU-10099,Home Office,United States,New York City,New York,71264,East,Office Supplies,Art,231.65,6,0.3,9.29
+971,US-2017-100970,03/13/2017,03/13/2017,Same Day,CU-10425,Home Office,United States,Los Angeles,California,98067,West,Office Supplies,Art,21.8,6,0.0,2.61
+972,US-2017-100971,03/13/2017,03/14/2017,Standard Class,CU-10755,Home Office,United States,Philadelphia,Pennsylvania,83686,East,Office Supplies,Paper,134.75,5,0.0,23.61
+973,US-2017-100972,03/15/2017,03/15/2017,Second Class,CU-10682,Consumer,United States,Chicago,Illinois,98203,Central,Office Supplies,Binders,252.07,13,0.2,17.48
+974,US-2017-100973,03/16/2017,03/22/2017,Standard Class,CU-10710,Consumer,United States,New York City,New York,70802,East,Office Supplies,Art,201.4,4,0.2,20.94
+975,US-2017-100974,03/19/2017,03/22/2017,Standard Class,CU-10632,Consumer,United States,Philadelphia,Pennsylvania,89521,East,Office Supplies,Binders,78.78,11,0.5,-26.53
+976,US-2017-100975,03/19/2017,03/23/2017,Second Class,CU-10414,Home Office,United States,Portland,Oregon,49520,West,Office Supplies,Paper,125.24,7,0.1,19.62
+977,US-2017-100976,03/21/2017,03/27/2017,Standard Class,CU-10393,Home Office,United States,Philadelphia,Pennsylvania,46785,East,Office Supplies,Art,46.5,1,0.2,1.36
+978,US-2017-100977,03/21/2017,03/27/2017,Standard Class,CU-10032,Consumer,United States,Atlanta,Georgia,01243,South,Office Supplies,Binders,91.34,3,0.2,2.7
+979,US-2017-100978,03/22/2017,03/27/2017,Standard Class,CU-10358,Corporate,United States,Atlanta,Georgia,59271,South,Office Supplies,Art,101.84,5,0.5,-52.51
+980,US-2017-100979,03/22/2017,03/23/2017,Standard Class,CU-10060,Home Office,United States,New York City,New York,76190,East,Furniture,Furnishings,118.46,14,0.0,30.47
+981,US-2017-100980,03/23/2017,03/26/2017,Standard Class,CU-10569,Consumer,United States,Atlanta,Georgia,83114,South,Technology,Phones,154.01,14,0.0,33.2
+982,US-2017-100981,03/23/2017,03/29/2017,Standard Class,CU-10069,Home Office,United States,Seattle,Washington,50603,West,Office Supplies,Binders,111.74,7,0.1,-10.31
+983,US-2017-100982,03/24/2017,03/24/2017,Standard Class,CU-10596,Consumer,United States,Columbus,Ohio,19487,East,Technology,Machines,403.66,8,0.5,-90.92
+984,US-2017-100983,03/25/2017,03/27/2017,Same Day,CU-10333,Consumer,United States,Seattle,Washington,87143,West,Furniture,Furnishings,165.64,7,0.2,8.44
+985,US-2017-100984,03/25/2017,03/26/2017,Standard Class,CU-10347,Consumer,United States,New York City,New York,91822,East,Office Supplies,Storage,187.1,3,0.3,-7.06
+986,US-2017-100985,03/25/2017,03/26/2017,Same Day,CU-10456,Home Office,United States,Portland,Oregon,59519,West,Office Supplies,Binders,107.9,8,0.0,6.81
+987,US-2017-100986,03/27/2017,03/27/2017,Second Class,CU-10668,Consumer,United States,Los Angeles,California,54542,West,Furniture,Tables,529.15,6,0.0,5.69
+988,US-2017-100987,03/28/2017,03/30/2017,Standard Class,CU-10091,Consumer,United States,Seattle,Washington,74725,West,Office Supplies,Paper,26.52,3,0.5,-8.03
+989,US-2017-100988,03/29/2017,04/02/2017,First Class,CU-10666,Consumer,United States,Atlanta,Georgia,35721,South,Office Supplies,Art,34.23,3,0.0,6.4
+990,US-2017-100989,03/29/2017,04/03/2017,Standard Class,CU-10654,Home Office,United States,Seattle,Washington,82080,West,Office Supplies,Art,27.33,1,0.0,-1.07
+991,US-2017-100990,03/31/2017,04/06/2017,First Class,CU-10599,Corporate,United States,Portland,Oregon,08707,West,Furniture,Furnishings,339.14,4,0.1,-43.0
+992,US-2017-100991,03/31/2017,04/06/2017,Standard Class,CU-10284,Corporate,United States,Philadelphia,Pennsylvania,84526,East,Office Supplies,Art,34.98,3,0.0,7.45
+993,US-2017-100992,04/01/2017,04/07/2017,Same Day,CU-10290,Consumer,United States,Philadelphia,Pennsylvania,98048,East,Office Supplies,Binders,71.43,14,0.0,8.0
+994,US-2017-100993,04/01/2017,04/07/2017,Second Class,CU-10360,Consumer,United States,Portland,Oregon,58732,West,Technology,Machines,119.28,1,0.0,17.11
+995,US-2017-100994,04/04/2017,04/08/2017,Standard Class,CU-10394,Consumer,United States,Chicago,Illinois,22578,Central,Furniture,Furnishings,71.9,11,0.1,10.44
+996,US-2017-100995,04/06/2017,04/08/2017,Standard Class,CU-10111,Consumer,United States,New York City,New York,31123,East,Furniture,Bookcases,113.06,14,0.1,14.49
+997,US-2017-100996,04/10/2017,04/14/2017,Standard Class,CU-10792,Consumer,United States,Richmond,Virginia,83508,South,Furniture,Chairs,230.34,6,0.0,69.58
+998,US-2017-100997,04/11/2017,04/13/2017,Standard Class,CU-10159,Consumer,United States,Houston,Texas,38278,Central,Office Supplies,Art,206.15,11,0.0,33.27
+999,US-2017-100998,04/13/2017,04/19/2017,Standard Class,CU-10761,Corporate,United States,Richmond,Virginia,67609,South,Office Supplies,Storage,78.75,3,0.2,4.85
+1000,US-2017-100999,04/13/2017,04/15/2017,Second Class,CU-10239,Consumer,United States,Atlanta,Georgia,99542,South,Office Supplies,Art,63.13,2,0.0,4.27
+1001,US-2017-101000,04/14/2017,04/18/2017,Second Class,CU-10479,Consumer,United States,Miami,Florida,76034,South,Office Supplies,Art,84.91,4,0.3,-10.85
+1002,US-2017-101001,04/16/2017,04/18/2017,Standard Class,CU-10327,Consumer,United States,Portland,Oregon,46650,West,Office Supplies,Binders,177.98,10,0.1,-1.08
+1003,US-2017-101002,04/16/2017,04/22/2017,Standard Class,CU-10026,Home Office,United States,Los Angeles,California,28347,West,Technology,Phones,736.91,6,0.3,-67.92
+1004,US-2017-101003,04/16/2017,04/21/2017,Standard Class,CU-10184,Consumer,United States,Houston,Texas,69366,Central,Office Supplies,Paper,108.02,13,0.1,5.89
+1005,US-2017-101004,04/17/2017,04/23/2017,First Class,CU-10420,Consumer,United States,Philadelphia,Pennsylvania,77159,East,Technology,Copiers,506.64,8,0.5,-97.35
+1006,US-2017-101005,04/17/2017,04/18/2017,Standard Class,CU-10722,Consumer,United States,Seattle,Washington,26642,West,Technology,Copiers,210.33,13,0.2,-9.51
+1007,US-2017-101006,04/22/2017,04/23/2017,First Class,CU-10742,Corporate,United States,Houston,Texas,92535,Central,Office Supplies,Storage,22.09,1,0.0,4.7
+1008,US-2017-101007,04/23/2017,04/28/2017,Second Class,CU-10194,Consumer,United States,Portland,Oregon,54362,West,Furniture,Furnishings,252.85,1,0.5,-26.21
+1009,US-2017-101008,04/25/2017,05/01/2017,Standard Class,CU-10071,Home Office,United States,Chicago,Illinois,56434,Central,Office Supplies,Art,223.01,3,0.3,-52.28
+1010,US-2017-101009,04/29/2017,04/29/2017,Standard Class,CU-10376,Home Office,United States,Los Angeles,California,51148,West,Furniture,Bookcases,284.65,7,0.1,17.82
+1011,US-2017-101010,04/30/2017,05/02/2017,Standard Class,CU-10543,Consumer,United States,Miami,Florida,58896,South,Office Supplies,Storage,206.57,1,0.3,-11.34
+1012,US-2017-101011,04/30/2017,05/04/2017,Standard Class,CU-10310,Corporate,United States,Detroit,Michigan,11739,Central,Office Supplies,Binders,155.2,14,0.0,39.8
+1013,US-2017-101012,05/01/2017,05/05/2017,Second Class,CU-10794,Corporate,United States,Detroit,Michigan,15342,Central,Furniture,Bookcases,492.87,9,0.2,-154.16
+1014,US-2017-101013,05/02/2017,05/03/2017,Standard Class,CU-10353,Consumer,United States,Los Angeles,California,32934,West,Office Supplies,Labels,151.48,13,0.3,-25.52
+1015,US-2017-101014,05/03/2017,05/08/2017,Standard Class,CU-10152,Consumer,United States,Detroit,Michigan,88080,Central,Office Supplies,Binders,178.48,11,0.0,27.07
+1016,US-2017-101015,05/03/2017,05/06/2017,Standard Class,CU-10032,Home Office,United States,Seattle,Washington,82333,West,Technology,Machines,788.54,7,0.0,153.76
+1017,US-2017-101016,05/05/2017,05/10/2017,Standard Class,CU-10289,Consumer,United States,Philadelphia,Pennsylvania,92115,East,Furniture,Furnishings,560.46,11,0.2,-27.33
+1018,US-2017-101017,05/09/2017,05/14/2017,Standard Class,CU-10225,Consumer,United States,Los Angeles,California,58560,West,Furniture,Bookcases,157.6,13,0.0,48.51
+1019,US-2017-101018,05/11/2017,05/12/2017,Standard Class,CU-10710,Corporate,United States,Los Angeles,California,69915,West,Furniture,Bookcases,71.59,14,0.3,-13.11
+1020,US-2017-101019,05/11/2017,05/12/2017,Second Class,CU-10666,Home Office,United States,Seattle,Washington,56811,West,Office Supplies,Paper,40.43,1,0.5,-7.15
+1021,US-2017-101020,05/15/2017,05/20/2017,Standard Class,CU-10355,Corporate,United States,Detroit,Michigan,64579,Central,Furniture,Bookcases,606.73,7,0.0,269.25
+1022,US-2017-101021,05/15/2017,05/20/2017,First Class,CU-10079,Corporate,United States,Detroit,Michigan,50590,Central,Office Supplies,Paper,44.28,4,0.3,-4.7
+1023,US-2017-101022,05/17/2017,05/23/2017,First Class,CU-10464,Consumer,United States,Miami,Florida,21613,South,Office Supplies,Art,82.33,9,0.2,-2.96
+1024,US-2017-101023,05/19/2017,05/25/2017,Standard Class,CU-10710,Consumer,United States,Houston,Texas,47973,Central,Technology,Copiers,945.34,2,0.0,-19.55
+1025,US-2017-101024,05/20/2017,05/25/2017,Same Day,CU-10635,Consumer,United States,Atlanta,Georgia,28846,South,Office Supplies,Labels,30.71,6,0.5,-2.31
+1026,US-2017-101025,05/21/2017,05/24/2017,Second Class,CU-10653,Home Office,United States,Los Angeles,California,51026,West,Technology,Machines,67.8,5,0.1,1.03
+1027,US-2017-101026,05/22/2017,05/25/2017,Standard Class,CU-10767,Home Office,United States,Portland,Oregon,61226,West,Office Supplies,Labels,184.7,2,0.0,25.43
+1028,US-2017-101027,05/24/2017,05/24/2017,Second Class,CU-10680,Consumer,United States,Chicago,Illinois,71430,Central,Office Supplies,Storage,128.81,3,0.0,17.37
+1029,US-2017-101028,05/26/2017,06/01/2017,Second Class,CU-10636,Home Office,United States,Los Angeles,California,62448,West,Technology,Copiers,189.04,2,0.3,-13.86
+1030,US-2017-101029,05/27/2017,05/27/2017,Standard Class,CU-10197,Corporate,United States,Columbus,Ohio,64568,East,Office Supplies,Paper,71.4,14,0.0,6.07
+1031,US-2017-101030,05/27/2017,05/30/2017,Standard Class,CU-10425,Consumer,United States,Philadelphia,Pennsylvania,97490,East,Technology,Accessories,25.69,1,0.5,-8.21
+1032,US-2017-101031,05/30/2017,06/04/2017,Standard Class,CU-10034,Home Office,United States,Miami,Florida,97607,South,Office Supplies,Storage,126.61,6,0.5,-29.64
+1033,US-2017-101032,05/30/2017,06/02/2017,First Class,CU-10546,Consumer,United States,Columbus,Ohio,48603,East,Furniture,Furnishings,125.91,1,0.0,19.44
+1034,US-2017-101033,05/31/2017,06/05/2017,Same Day,CU-10773,Corporate,United States,Columbus,Ohio,16845,East,Office Supplies,Binders,91.0,1,0.5,-3.04
+1035,US-2017-101034,06/03/2017,06/03/2017,Standard Class,CU-10728,Home Office,United States,Los Angeles,California,33359,West,Office Supplies,Binders,86.06,14,0.1,8.72
+1036,US-2017-101035,06/06/2017,06/06/2017,Standard Class,CU-10696,Consumer,United States,Miami,Florida,11011,South,Furniture,Furnishings,460.47,6,0.5,-153.45
+1037,US-2017-101036,06/06/2017,06/06/2017,Second Class,CU-10564,Consumer,United States,Philadelphia,Pennsylvania,32193,East,Office Supplies,Labels,36.49,6,0.0,2.59
+1038,US-2017-101037,06/07/2017,06/13/2017,Standard Class,CU-10780,Consumer,United States,Detroit,Michigan,15861,Central,Office Supplies,Art,236.43,2,0.0,42.63
+1039,US-2017-101038,06/07/2017,06/07/2017,Second Class,CU-10521,Consumer,United States,Houston,Texas,20008,Central,Furniture,Bookcases,596.96,10,0.5,-85.29
+1040,US-2017-101039,06/09/2017,06/11/2017,Second Class,CU-10694,Consumer,United States,New York City,New York,39815,East,Office Supplies,Labels,89.08,3,0.0,14.26
+1041,US-2017-101040,06/10/2017,06/11/2017,First Class,CU-10720,Consumer,United States,Seattle,Washington,63317,West,Technology,Machines,339.35,12,0.0,9.99
+1042,US-2017-101041,06/11/2017,06/13/2017,Standard Class,CU-10479,Consumer,United States,New York City,New York,75858,East,Office Supplies,Storage,167.07,10,0.0,34.86
+1043,US-2017-101042,06/13/2017,06/13/2017,Standard Class,CU-10542,Corporate,United States,Houston,Texas,26160,Central,Office Supplies,Art,107.69,7,0.1,6.28
+1044,US-2017-101043,06/15/2017,06/21/2017,Second Class,CU-10680,Consumer,United States,Columbus,Ohio,60186,East,Furniture,Bookcases,407.11,11,0.2,126.92
+1045,US-2017-101044,06/16/2017,06/18/2017,Standard Class,CU-10630,Home Office,United States,Portland,Oregon,64919,West,Office Supplies,Paper,80.07,9,0.5,-8.88
+1046,US-2017-101045,06/20/2017,06/25/2017,Standard Class,CU-10653,Corporate,United States,Philadelphia,Pennsylvania,85857,East,Office Supplies,Paper,92.0,9,0.0,19.75
+1047,US-2017-101046,06/21/2017,06/21/2017,First Class,CU-10687,Corporate,United States,Los Angeles,California,09769,West,Office Supplies,Labels,140.43,9,0.0,21.28
+1048,US-2017-101047,06/21/2017,06/26/2017,Second Class,CU-10610,Consumer,United States,Atlanta,Georgia,41511,South,Office Supplies,Art,68.64,8,0.0,26.12
+1049,US-2017-101048,06/23/2017,06/25/2017,Second Class,CU-10037,Home Office,United States,New York City,New York,36441,East,Technology,Phones,664.93,14,0.0,182.63
+1050,US-2017-101049,06/25/2017,06/28/2017,Standard Class,CU-10037,Corporate,United States,New York City,New York,73141,East,Office Supplies,Labels,17.85,7,0.5,-3.92
+1051,US-2017-101050,06/25/2017,07/01/2017,Standard Class,CU-10399,Consumer,United States,Richmond,Virginia,01964,South,Office Supplies,Storage,37.99,11,0.1,3.77
+1052,US-2017-101051,06/26/2017,06/26/2017,Standard Class,CU-10017,Consumer,United States,Los Angeles,California,13666,West,Office Supplies,Art,92.68,1,0.0,14.1
+1053,US-2017-101052,06/27/2017,06/27/2017,First Class,CU-10699,Corporate,United States,Philadelphia,Pennsylvania,66498,East,Technology,Machines,403.9,13,0.2,-17.03
+1054,US-2017-101053,07/01/2017,07/02/2017,Second Class,CU-10541,Corporate,United States,New York City,New York,31490,East,Technology,Accessories,404.22,12,0.3,-60.07
+1055,US-2017-101054,07/06/2017,07/07/2017,Standard Class,CU-10383,Consumer,United States,Columbus,Ohio,04196,East,Technology,Phones,316.54,14,0.2,35.16
+1056,US-2017-101055,07/07/2017,07/07/2017,First Class,CU-10175,Home Office,United States,New York City,New York,40461,East,Office Supplies,Storage,91.92,2,0.0,17.59
+1057,US-2017-101056,07/08/2017,07/08/2017,First Class,CU-10787,Consumer,United States,Miami,Florida,06241,South,Furniture,Tables,262.55,5,0.0,3.89
+1058,US-2017-101057,07/08/2017,07/11/2017,Standard Class,CU-10607,Consumer,United States,Portland,Oregon,53362,West,Office Supplies,Labels,217.28,1,0.0,24.93
+1059,US-2017-101058,07/10/2017,07/10/2017,Second Class,CU-10153,Corporate,United States,Chicago,Illinois,36915,Central,Office Supplies,Art,79.88,11,0.1,14.42
+1060,US-2017-101059,07/14/2017,07/17/2017,Same Day,CU-10362,Consumer,United States,Seattle,Washington,06942,West,Office Supplies,Binders,43.77,11,0.2,0.9
+1061,US-2017-101060,07/15/2017,07/18/2017,Standard Class,CU-10468,Consumer,United States,New York City,New York,73206,East,Office Supplies,Storage,89.71,5,0.2,4.39
+1062,US-2017-101061,07/16/2017,07/17/2017,First Class,CU-10552,Home Office,United States,Philadelphia,Pennsylvania,79711,East,Technology,Accessories,659.46,6,0.0,264.08
+1063,US-2017-101062,07/18/2017,07/19/2017,Standard Class,CU-10099,Corporate,United States,Philadelphia,Pennsylvania,74957,East,Office Supplies,Binders,31.93,10,0.0,9.15
+1064,US-2017-101063,07/19/2017,07/19/2017,Standard Class,CU-10456,Consumer,United States,Chicago,Illinois,52881,Central,Office Supplies,Labels,54.64,3,0.0,4.82
+1065,US-2017-101064,07/20/2017,07/20/2017,Standard Class,CU-10394,Consumer,United States,Los Angeles,California,96468,West,Furniture,Chairs,121.26,14,0.1,4.79
+1066,US-2017-101065,07/21/2017,07/26/2017,Standard Class,CU-10590,Home Office,United States,Seattle,Washington,36299,West,Technology,Accessories,1321.12,4,0.0,572.27
+1067,US-2017-101066,07/22/2017,07/26/2017,Same Day,CU-10663,Home Office,United States,Columbus,Ohio,26840,East,Office Supplies,Labels,148.75,3,0.2,37.44
+1068,US-2017-101067,07/25/2017,07/30/2017,Standard Class,CU-10041,Home Office,United States,Seattle,Washington,59942,West,Furniture,Bookcases,266.48,8,0.1,5.39
+1069,US-2017-101068,07/26/2017,07/28/2017,Standard Class,CU-10393,Consumer,United States,Columbus,Ohio,31172,East,Furniture,Furnishings,195.61,8,0.3,-18.7
+1070,US-2017-101069,07/27/2017,07/28/2017,Standard Class,CU-10590,Home Office,United States,Richmond,Virginia,62047,South,Furniture,Tables,351.18,7,0.5,-112.9
+1071,US-2017-101070,07/28/2017,07/28/2017,Second Class,CU-10294,Corporate,United States,Houston,Texas,54406,Central,Furniture,Bookcases,336.79,5,0.3,1.86
+1072,US-2017-101071,07/28/2017,07/28/2017,First Class,CU-10696,Home Office,United States,Los Angeles,California,72243,West,Office Supplies,Binders,11.46,2,0.5,-3.56
+1073,US-2017-101072,07/29/2017,07/29/2017,Standard Class,CU-10399,Consumer,United States,Columbus,Ohio,25998,East,Office Supplies,Labels,105.13,13,0.3,-9.93
+1074,US-2017-101073,07/31/2017,08/06/2017,Second Class,CU-10634,Consumer,United States,Detroit,Michigan,55225,Central,Office Supplies,Binders,73.64,7,0.0,17.86
+1075,US-2017-101074,08/03/2017,08/07/2017,Same Day,CU-10349,Corporate,United States,Philadelphia,Pennsylvania,03229,East,Office Supplies,Storage,251.27,2,0.2,47.64
+1076,US-2017-101075,08/03/2017,08/08/2017,Standard Class,CU-10034,Corporate,United States,Seattle,Washington,44780,West,Office Supplies,Paper,91.15,6,0.5,-29.09
+1077,US-2017-101076,08/03/2017,08/09/2017,First Class,CU-10094,Corporate,United States,New York City,New York,46595,East,Office Supplies,Labels,14.36,2,0.0,-0.23
+1078,US-2017-101077,08/07/2017,08/10/2017,Second Class,CU-10671,Consumer,United States,Philadelphia,Pennsylvania,40722,East,Office Supplies,Binders,51.54,12,0.0,4.63
+1079,US-2017-101078,08/10/2017,08/15/2017,Standard Class,CU-10190,Consumer,United States,Los Angeles,California,47851,West,Office Supplies,Storage,166.72,9,0.0,47.52
+1080,US-2017-101079,08/13/2017,08/17/2017,Same Day,CU-10379,Consumer,United States,Seattle,Washington,35068,West,Office Supplies,Labels,169.07,14,0.0,31.32
+1081,US-2017-101080,08/13/2017,08/13/2017,Second Class,CU-10266,Consumer,United States,Detroit,Michigan,25103,Central,Furniture,Bookcases,328.25,3,0.2,-21.98
+1082,US-2017-101081,08/14/2017,08/18/2017,Standard Class,CU-10630,Corporate,United States,Houston,Texas,30104,Central,Furniture,Furnishings,322.67,8,0.0,118.06
+1083,US-2017-101082,08/19/2017,08/25/2017,Standard Class,CU-10413,Home Office,United States,Columbus,Ohio,16545,East,Office Supplies,Art,100.9,8,0.0,35.48
+1084,US-2017-101083,08/19/2017,08/21/2017,First Class,CU-10414,Consumer,United States,Seattle,Washington,20152,West,Office Supplies,Storage,125.71,1,0.5,-53.99
+1085,US-2017-101084,08/20/2017,08/24/2017,Standard Class,CU-10060,Corporate,United States,Chicago,Illinois,56083,Central,Furniture,Furnishings,473.59,5,0.5,-137.81
+1086,US-2017-101085,08/22/2017,08/25/2017,Standard Class,CU-10280,Home Office,United States,Los Angeles,California,34402,West,Office Supplies,Paper,39.84,11,0.0,13.91
+1087,US-2017-101086,08/24/2017,08/30/2017,Standard Class,CU-10665,Consumer,United States,Los Angeles,California,43302,West,Office Supplies,Labels,64.01,8,0.0,9.93
+1088,US-2017-101087,08/25/2017,08/29/2017,Second Class,CU-10171,Corporate,United States,Philadelphia,Pennsylvania,51311,East,Office Supplies,Art,66.51,7,0.5,-23.16
+1089,US-2017-101088,08/26/2017,08/30/2017,Standard Class,CU-10610,Consumer,United States,Columbus,Ohio,29102,East,Technology,Accessories,146.29,11,0.0,35.98
+1090,US-2017-101089,08/27/2017,08/30/2017,Standard Class,CU-10722,Consumer,United States,Philadelphia,Pennsylvania,77157,East,Office Supplies,Binders,232.91,6,0.5,-58.44
+1091,US-2017-101090,08/27/2017,08/30/2017,First Class,CU-10620,Corporate,United States,Houston,Texas,11741,Central,Office Supplies,Storage,25.66,5,0.5,-1.81
+1092,US-2017-101091,08/28/2017,09/01/2017,Standard Class,CU-10305,Consumer,United States,Seattle,Washington,63624,West,Technology,Phones,580.75,1,0.2,-22.28
+1093,US-2017-101092,08/29/2017,08/30/2017,First Class,CU-10270,Consumer,United States,Seattle,Washington,67037,West,Furniture,Bookcases,162.68,11,0.1,14.47
+1094,US-2017-101093,08/30/2017,09/02/2017,Standard Class,CU-10217,Corporate,United States,Miami,Florida,44449,South,Office Supplies,Binders,59.55,2,0.0,7.03
+1095,US-2017-101094,09/01/2017,09/05/2017,Standard Class,CU-10400,Consumer,United States,Los Angeles,California,63604,West,Office Supplies,Binders,99.23,14,0.2,10.14
+1096,US-2017-101095,09/04/2017,09/10/2017,Standard Class,CU-10465,Corporate,United States,Miami,Florida,32818,South,Office Supplies,Art,189.06,9,0.5,-56.55
+1097,US-2017-101096,09/05/2017,09/11/2017,Standard Class,CU-10529,Consumer,United States,Portland,Oregon,03405,West,Office Supplies,Binders,93.69,12,0.1,-5.17
+1098,US-2017-101097,09/07/2017,09/07/2017,Standard Class,CU-10227,Consumer,United States,Atlanta,Georgia,78378,South,Office Supplies,Labels,316.56,10,0.0,41.93
+1099,US-2017-101098,09/08/2017,09/12/2017,Standard Class,CU-10425,Consumer,United States,Philadelphia,Pennsylvania,74218,East,Furniture,Chairs,341.44,8,0.1,104.7
+1100,US-2017-101099,09/09/2017,09/10/2017,Standard Class,CU-10027,Home Office,United States,Chicago,Illinois,08815,Central,Office Supplies,Art,124.88,2,0.0,26.4
+1101,US-2017-101100,09/10/2017,09/14/2017,Second Class,CU-10047,Corporate,United States,New York City,New York,09561,East,Office Supplies,Art,64.92,13,0.0,1.58
+1102,US-2017-101101,09/11/2017,09/13/2017,Standard Class,CU-10443,Home Office,United States,Portland,Oregon,65124,West,Technology,Phones,548.13,1,0.0,45.94
+1103,US-2017-101102,09/11/2017,09/16/2017,Standard Class,CU-10377,Consumer,United States,Seattle,Washington,72731,West,Technology,Machines,172.63,11,0.1,29.11
+1104,US-2017-101103,09/12/2017,09/18/2017,Second Class,CU-10742,Corporate,United States,New York City,New York,86089,East,Technology,Machines,672.51,4,0.2,-4.45
+1105,US-2017-101104,09/15/2017,09/19/2017,Second Class,CU-10496,Corporate,United States,Detroit,Michigan,11260,Central,Office Supplies,Storage,114.22,4,0.0,15.9
+1106,US-2017-101105,09/15/2017,09/17/2017,Second Class,CU-10145,Corporate,United States,Los Angeles,California,33690,West,Office Supplies,Labels,28.35,14,0.1,-1.38
+1107,US-2017-101106,09/15/2017,09/20/2017,Second Class,CU-10114,Corporate,United States,Columbus,Ohio,55586,East,Furniture,Tables,758.89,11,0.5,-251.0
+1108,US-2017-101107,09/18/2017,09/24/2017,Second Class,CU-10468,Corporate,United States,Los Angeles,California,84783,West,Technology,Phones,236.33,6,0.0,13.74
+1109,US-2017-101108,09/19/2017,09/20/2017,Standard Class,CU-10053,Consumer,United States,Atlanta,Georgia,32478,South,Office Supplies,Labels,293.71,4,0.0,19.52
+1110,US-2017-101109,09/22/2017,09/22/2017,Standard Class,CU-10187,Home Office,United States,New York City,New York,85813,East,Furniture,Tables,532.31,13,0.0,152.81
+1111,US-2017-101110,09/23/2017,09/23/2017,Standard Class,CU-10580,Consumer,United States,Columbus,Ohio,77389,East,Office Supplies,Art,249.09,12,0.0,65.91
+1112,US-2017-101111,09/25/2017,09/25/2017,Standard Class,CU-10315,Corporate,United States,Houston,Texas,74070,Central,Technology,Accessories,667.22,10,0.0,265.65
+1113,US-2017-101112,09/26/2017,10/02/2017,Standard Class,CU-10770,Consumer,United States,Chicago,Illinois,42892,Central,Office Supplies,Binders,96.71,14,0.0,6.75
+1114,US-2017-101113,09/30/2017,10/06/2017,Standard Class,CU-10599,Consumer,United States,Miami,Florida,64432,South,Office Supplies,Binders,76.42,14,0.2,-4.21
+1115,US-2017-101114,10/01/2017,10/06/2017,Standard Class,CU-10367,Consumer,United States,Detroit,Michigan,39778,Central,Furniture,Chairs,96.18,5,0.0,24.85
+1116,US-2017-101115,10/02/2017,10/04/2017,Standard Class,CU-10705,Consumer,United States,Richmond,Virginia,82844,South,Furniture,Tables,509.41,10,0.1,-107.75
+1117,US-2017-101116,10/03/2017,10/09/2017,Standard Class,CU-10088,Consumer,United States,Atlanta,Georgia,61347,South,Office Supplies,Binders,41.99,12,0.1,-0.66
+1118,US-2017-101117,10/04/2017,10/05/2017,First Class,CU-10259,Home Office,United States,Columbus,Ohio,08106,East,Furniture,Bookcases,916.45,10,0.2,23.51
+1119,US-2017-101118,10/05/2017,10/11/2017,First Class,CU-10593,Home Office,United States,Richmond,Virginia,91350,South,Technology,Copiers,478.74,14,0.0,92.69
+1120,US-2017-101119,10/07/2017,10/10/2017,Standard Class,CU-10410,Corporate,United States,Los Angeles,California,75949,West,Office Supplies,Binders,48.29,8,0.3,-21.13
+1121,US-2017-101120,10/08/2017,10/09/2017,First Class,CU-10013,Corporate,United States,Detroit,Michigan,78536,Central,Office Supplies,Paper,291.47,4,0.0,59.6
+1122,US-2017-101121,10/08/2017,10/12/2017,Standard Class,CU-10173,Corporate,United States,New York City,New York,96743,East,Office Supplies,Storage,297.02,2,0.0,101.59
+1123,US-2017-101122,10/08/2017,10/11/2017,Standard Class,CU-10145,Consumer,United States,New York City,New York,17286,East,Office Supplies,Storage,23.71,7,0.2,-0.87
+1124,US-2017-101123,10/09/2017,10/09/2017,Standard Class,CU-10653,Home Office,United States,Chicago,Illinois,53001,Central,Office Supplies,Paper,161.05,12,0.0,13.72
+1125,US-2017-101124,10/10/2017,10/14/2017,Standard Class,CU-10098,Consumer,United States,Seattle,Washington,57200,West,Technology,Accessories,333.11,12,0.5,-138.74
+1126,US-2017-101125,10/11/2017,10/14/2017,First Class,CU-10443,Home Office,United States,Portland,Oregon,67196,West,Furniture,Chairs,429.68,1,0.0,114.6
+1127,US-2017-101126,10/11/2017,10/14/2017,Second Class,CU-10710,Consumer,United States,Chicago,Illinois,17191,Central,Office Supplies,Binders,240.44,5,0.3,34.24
+1128,US-2017-101127,10/11/2017,10/11/2017,Standard Class,CU-10073,Consumer,United States,Atlanta,Georgia,08693,South,Office Supplies,Labels,39.57,10,0.5,-10.71
+1129,US-2017-101128,10/12/2017,10/18/2017,Standard Class,CU-10718,Home Office,United States,Miami,Florida,07891,South,Technology,Copiers,260.69,7,0.2,58.46
+1130,US-2017-101129,10/12/2017,10/14/2017,Standard Class,CU-10147,Consumer,United States,Philadelphia,Pennsylvania,30059,East,Furniture,Bookcases,120.12,2,0.1,-7.87
+1131,US-2017-101130,10/12/2017,10/12/2017,Second Class,CU-10337,Home Office,United States,Miami,Florida,48283,South,Technology,Machines,379.97,1,0.1,71.27
+1132,US-2017-101131,10/12/2017,10/12/2017,Standard Class,CU-10667,Corporate,United States,Portland,Oregon,58252,West,Technology,Machines,88.74,2,0.3,-22.49
+1133,US-2017-101132,10/13/2017,10/18/2017,Standard Class,CU-10588,Corporate,United States,Chicago,Illinois,49919,Central,Office Supplies,Paper,132.8,10,0.0,38.1
+1134,US-2017-101133,10/16/2017,10/22/2017,First Class,CU-10615,Consumer,United States,Atlanta,Georgia,14024,South,Furniture,Furnishings,279.9,5,0.1,6.1
+1135,US-2017-101134,10/18/2017,10/21/2017,Standard Class,CU-10085,Consumer,United States,Columbus,Ohio,36807,East,Office Supplies,Labels,116.95,5,0.0,4.24
+1136,US-2017-101135,10/18/2017,10/20/2017,Standard Class,CU-10678,Corporate,United States,Philadelphia,Pennsylvania,40665,East,Office Supplies,Paper,121.43,7,0.0,13.81
+1137,US-2017-101136,10/20/2017,10/22/2017,Standard Class,CU-10612,Home Office,United States,Miami,Florida,36683,South,Office Supplies,Binders,101.55,13,0.5,-5.0
+1138,US-2017-101137,10/22/2017,10/28/2017,Standard Class,CU-10603,Corporate,United States,Columbus,Ohio,27947,East,Office Supplies,Storage,90.46,12,0.3,-10.25
+1139,US-2017-101138,10/22/2017,10/28/2017,Standard Class,CU-10704,Consumer,United States,Portland,Oregon,39739,West,Office Supplies,Paper,105.65,11,0.1,7.92
+1140,US-2017-101139,10/25/2017,10/31/2017,Same Day,CU-10788,Home Office,United States,Atlanta,Georgia,76627,South,Furniture,Bookcases,140.7,10,0.1,25.66
+1141,US-2017-101140,10/26/2017,10/28/2017,First Class,CU-10135,Home Office,United States,Columbus,Ohio,52565,East,Technology,Copiers,118.93,2,0.3,-0.52
+1142,US-2017-101141,10/28/2017,11/01/2017,Standard Class,CU-10440,Home Office,United States,Los Angeles,California,56719,West,Technology,Copiers,560.95,11,0.2,-4.33
+1143,US-2017-101142,10/28/2017,10/29/2017,Standard Class,CU-10760,Consumer,United States,Columbus,Ohio,47002,East,Office Supplies,Art,149.36,1,0.0,9.76
+1144,US-2017-101143,10/29/2017,10/30/2017,Standard Class,CU-10691,Corporate,United States,Los Angeles,California,61204,West,Office Supplies,Paper,75.4,5,0.5,-5.23
+1145,US-2017-101144,10/30/2017,11/01/2017,Second Class,CU-10583,Home Office,United States,Los Angeles,California,34968,West,Office Supplies,Labels,81.27,10,0.5,-20.96
+1146,US-2017-101145,10/30/2017,11/02/2017,Standard Class,CU-10593,Consumer,United States,Seattle,Washington,14963,West,Office Supplies,Storage,51.41,9,0.3,-0.44
+1147,US-2017-101146,11/03/2017,11/03/2017,Standard Class,CU-10539,Corporate,United States,Miami,Florida,58264,South,Office Supplies,Art,48.42,1,0.5,-3.13
+1148,US-2017-101147,11/04/2017,11/05/2017,Second Class,CU-10308,Corporate,United States,Los Angeles,California,92941,West,Office Supplies,Labels,75.61,12,0.0,9.76
+1149,US-2017-101148,11/06/2017,11/12/2017,Standard Class,CU-10258,Consumer,United States,Seattle,Washington,01669,West,Office Supplies,Art,166.96,5,0.2,-16.42
+1150,US-2017-101149,11/07/2017,11/13/2017,Standard Class,CU-10694,Consumer,United States,Portland,Oregon,36533,West,Office Supplies,Art,62.5,8,0.5,-20.12
+1151,US-2017-101150,11/08/2017,11/13/2017,Same Day,CU-10748,Consumer,United States,Houston,Texas,93644,Central,Furniture,Bookcases,870.45,13,0.3,-6.12
+1152,US-2017-101151,11/10/2017,11/16/2017,Standard Class,CU-10007,Corporate,United States,Columbus,Ohio,31686,East,Office Supplies,Storage,11.48,2,0.1,3.48
+1153,US-2017-101152,11/10/2017,11/15/2017,Standard Class,CU-10290,Corporate,United States,Richmond,Virginia,30435,South,Technology,Copiers,122.75,11,0.2,-17.58
+1154,US-2017-101153,11/10/2017,11/16/2017,Standard Class,CU-10363,Consumer,United States,Philadelphia,Pennsylvania,28981,East,Technology,Machines,238.67,10,0.3,-26.36
+1155,US-2017-101154,11/11/2017,11/17/2017,Standard Class,CU-10242,Consumer,United States,New York City,New York,48713,East,Office Supplies,Binders,35.69,3,0.0,-0.42
+1156,US-2017-101155,11/13/2017,11/18/2017,Standard Class,CU-10522,Corporate,United States,Atlanta,Georgia,67533,South,Office Supplies,Art,109.13,11,0.1,-4.97
+1157,US-2017-101156,11/13/2017,11/19/2017,First Class,CU-10448,Consumer,United States,New York City,New York,59836,East,Technology,Accessories,337.08,1,0.0,-7.22
+1158,US-2017-101157,11/15/2017,11/16/2017,Second Class,CU-10005,Consumer,United States,Houston,Texas,31338,Central,Office Supplies,Paper,291.75,11,0.1,36.1
+1159,US-2017-101158,11/15/2017,11/21/2017,Standard Class,CU-10087,Corporate,United States,Philadelphia,Pennsylvania,52345,East,Office Supplies,Binders,64.07,2,0.0,17.54
+1160,US-2017-101159,11/18/2017,11/20/2017,Standard Class,CU-10668,Home Office,United States,Houston,Texas,11684,Central,Office Supplies,Labels,44.44,4,0.0,8.35
+1161,US-2017-101160,11/18/2017,11/20/2017,Standard Class,CU-10352,Consumer,United States,Richmond,Virginia,95179,South,Technology,Phones,101.15,7,0.0,36.5
+1162,US-2017-101161,11/18/2017,11/18/2017,Second Class,CU-10241,Consumer,United States,Portland,Oregon,05007,West,Technology,Copiers,741.31,4,0.1,26.41
+1163,US-2017-101162,11/21/2017,11/23/2017,Standard Class,CU-10773,Consumer,United States,Detroit,Michigan,35482,Central,Office Supplies,Labels,112.79,6,0.1,-6.11
+1164,US-2017-101163,11/21/2017,11/21/2017,Standard Class,CU-10251,Consumer,United States,Chicago,Illinois,18542,Central,Office Supplies,Binders,282.82,14,0.0,32.94
+1165,US-2017-101164,11/21/2017,11/24/2017,Standard Class,CU-10295,Consumer,United States,Miami,Florida,44259,South,Office Supplies,Binders,24.02,8,0.2,1.76
+1166,US-2017-101165,11/22/2017,11/24/2017,First Class,CU-10492,Corporate,United States,Los Angeles,California,33411,West,Technology,Accessories,707.99,8,0.5,-143.63
+1167,US-2017-101166,11/23/2017,11/23/2017,Standard Class,CU-10799,Consumer,United States,Houston,Texas,60838,Central,Office Supplies,Storage,107.09,11,0.2,-2.81
+1168,US-2017-101167,11/23/2017,11/26/2017,Second Class,CU-10225,Consumer,United States,Philadelphia,Pennsylvania,90981,East,Technology,Machines,387.29,2,0.5,-120.51
+1169,US-2017-101168,11/23/2017,11/26/2017,Second Class,CU-10083,Corporate,United States,New York City,New York,31271,East,Furniture,Chairs,167.1,12,0.0,53.11
+1170,US-2017-101169,11/23/2017,11/23/2017,Standard Class,CU-10677,Consumer,United States,Columbus,Ohio,58420,East,Technology,Accessories,569.66,3,0.0,35.06
+1171,US-2017-101170,11/24/2017,11/25/2017,Second Class,CU-10387,Corporate,United States,New York City,New York,98869,East,Office Supplies,Storage,107.01,1,0.0,-10.44
+1172,US-2017-101171,11/25/2017,11/29/2017,Standard Class,CU-10185,Corporate,United States,Atlanta,Georgia,37315,South,Office Supplies,Labels,84.73,1,0.2,-4.94
+1173,US-2017-101172,11/25/2017,11/30/2017,Standard Class,CU-10448,Corporate,United States,Los Angeles,California,49772,West,Technology,Copiers,748.25,4,0.0,29.8
+1174,US-2017-101173,11/28/2017,12/04/2017,First Class,CU-10114,Corporate,United States,Columbus,Ohio,59286,East,Office Supplies,Art,135.72,3,0.1,34.88
+1175,US-2017-101174,11/29/2017,12/03/2017,Standard Class,CU-10107,Home Office,United States,Columbus,Ohio,95647,East,Office Supplies,Paper,100.32,9,0.0,19.76
+1176,US-2017-101175,11/30/2017,12/04/2017,Standard Class,CU-10094,Consumer,United States,Los Angeles,California,46158,West,Furniture,Tables,38.14,2,0.2,5.86
+1177,US-2017-101176,12/01/2017,12/04/2017,First Class,CU-10253,Home Office,United States,Los Angeles,California,18490,West,Furniture,Chairs,286.58,1,0.0,27.81
+1178,US-2017-101177,12/02/2017,12/05/2017,Second Class,CU-10288,Consumer,United States,Portland,Oregon,07745,West,Technology,Phones,146.2,4,0.0,44.32
+1179,US-2017-101178,12/03/2017,12/09/2017,First Class,CU-10541,Corporate,United States,Philadelphia,Pennsylvania,99803,East,Furniture,Chairs,83.94,9,0.3,-12.89
+1180,US-2017-101179,12/03/2017,12/03/2017,Standard Class,CU-10152,Consumer,United States,Detroit,Michigan,94339,Central,Office Supplies,Storage,108.18,4,0.2,-2.77
+1181,US-2017-101180,12/05/2017,12/09/2017,Standard Class,CU-10699,Consumer,United States,Houston,Texas,80770,Central,Technology,Machines,434.22,8,0.3,-4.29
+1182,US-2017-101181,12/06/2017,12/11/2017,First Class,CU-10534,Corporate,United States,Portland,Oregon,69694,West,Furniture,Bookcases,326.11,4,0.1,23.81
+1183,US-2017-101182,12/11/2017,12/11/2017,Second Class,CU-10315,Consumer,United States,New York City,New York,05863,East,Furniture,Chairs,248.67,11,0.3,-39.09
+1184,US-2017-101183,12/14/2017,12/15/2017,Standard Class,CU-10331,Consumer,United States,Houston,Texas,88694,Central,Office Supplies,Labels,116.94,4,0.3,-10.19
+1185,US-2017-101184,12/16/2017,12/16/2017,Standard Class,CU-10593,Consumer,United States,Chicago,Illinois,79037,Central,Office Supplies,Binders,189.65,4,0.1,35.75
+1186,US-2017-101185,12/17/2017,12/19/2017,Standard Class,CU-10142,Corporate,United States,Atlanta,Georgia,91968,South,Furniture,Furnishings,677.14,2,0.5,-254.04
+1187,US-2017-101186,12/19/2017,12/25/2017,Standard Class,CU-10580,Consumer,United States,Chicago,Illinois,39502,Central,Office Supplies,Art,189.07,13,0.1,-9.56
+1188,US-2017-101187,12/20/2017,12/26/2017,Standard Class,CU-10211,Consumer,United States,Chicago,Illinois,28070,Central,Office Supplies,Art,67.55,1,0.3,0.6
+1189,US-2017-101188,12/21/2017,12/24/2017,Standard Class,CU-10084,Consumer,United States,Philadelphia,Pennsylvania,96486,East,Technology,Phones,769.99,5,0.2,-85.51
+1190,US-2017-101189,12/21/2017,12/21/2017,Standard Class,CU-10295,Corporate,United States,Columbus,Ohio,10002,East,Technology,Phones,566.91,8,0.0,92.18
+1191,US-2017-101190,12/22/2017,12/25/2017,Second Class,CU-10519,Consumer,United States,New York City,New York,97392,East,Office Supplies,Labels,104.19,1,0.2,-27.65
+1192,US-2017-101191,12/24/2017,12/27/2017,Standard Class,CU-10105,Consumer,United States,New York City,New York,52764,East,Technology,Machines,536.37,10,0.1,128.62
+1193,US-2017-101192,12/26/2017,12/27/2017,Second Class,CU-10614,Home Office,United States,Chicago,Illinois,27071,Central,Office Supplies,Labels,192.78,12,0.5,-71.02
+1194,US-2017-101193,12/27/2017,12/31/2017,Standard Class,CU-10282,Home Office,United States,Chicago,Illinois,32437,Central,Technology,Machines,197.18,14,0.0,46.63
+1195,US-2017-101194,12/28/2017,12/29/2017,Second Class,CU-10085,Consumer,United States,Los Angeles,California,36874,West,Office Supplies,Binders,82.79,13,0.5,-26.96
+1196,US-2017-101195,12/29/2017,01/01/2018,Second Class,CU-10203,Home Office,United States,Detroit,Michigan,73171,Central,Technology,Copiers,553.24,2,0.0,196.78
+1197,US-2017-101196,12/30/2017,12/30/2017,Second Class,CU-10286,Consumer,United States,Columbus,Ohio,20069,East,Technology,Copiers,98.96,2,0.2,6.39
+1198,US-2017-101197,12/31/2017,01/05/2018,Standard Class,CU-10674,Corporate,United States,Portland,Oregon,23425,West,Office Supplies,Storage,162.2,3,0.1,2.46
+1199,US-2018-101198,01/01/2018,01/03/2018,Standard Class,CU-10248,Consumer,United States,Miami,Florida,04040,South,Office Supplies,Art,78.45,5,0.0,7.26
+1200,US-2018-101199,01/01/2018,01/04/2018,Standard Class,CU-10004,Corporate,United States,Los Angeles,California,57542,West,Technology,Copiers,208.5,5,0.0,54.18

@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/logo-wordmark-dark.svg">
+    <img alt="tabsight" src="docs/assets/logo-wordmark.svg" width="360">
+  </picture>
+</p>
+
 # tabsight
 
 **BI-quality charts, world maps and dashboards from a pandas DataFrame. Rule-based. No LLM. One offline HTML file.**
@@ -9,7 +16,7 @@
 ```python
 import tabsight as ts
 
-df = ts.load("superstore.csv")  # local files only; encoding detected; leading zeros kept
+df = ts.load("examples/superstore_sample.csv")  # local files only; encoding detected
 print(ts.profile(df))  # role, unit and aggregation of every column, with reasons
 print(ts.check(df))  # data-quality report; changes nothing
 clean_df, report = ts.clean(df)  # optional; every change listed, undoable, reusable
@@ -35,6 +42,17 @@ ts.auto(df).to_html("sales_dashboard.html")  # a full, offline, cross-filtering 
 - World maps: countries, states/provinces/counties for every country, and cities
 - Click any chart to filter the others, with correct numbers after filtering
 - Never changes your data; cleaning is optional and reported
+
+## Documentation
+
+The full guide is in [`docs/`](docs/README.md) and reads directly on GitHub. The same pages build a documentation website with search and dark mode:
+
+```bash
+python -m pip install -e ".[docs]"
+python -m mkdocs serve
+```
+
+Every example in the docs is run by the test suite, so the examples always work.
 
 ## Development setup
 

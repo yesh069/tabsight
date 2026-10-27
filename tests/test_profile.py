@@ -198,4 +198,14 @@ def test_hostile_column_names_are_bounded_in_output() -> None:
 
 def test_show_is_readable(store: pd.DataFrame) -> None:
     text = profile(store).show()
-    assert "Hierarchies:" in text and "Category → Sub_Category" in text
+    assert "Hierarchies:" in text and "Category -> Sub_Category" in text
+
+
+def test_reports_print_on_a_windows_console(store: pd.DataFrame) -> None:
+    """Regression: '→' in report text crashed print() on cp1252 Windows consoles."""
+    import tabsight as ts
+
+    messy = store.assign(Region=store["Region"].where(store.index % 9 != 0, " west "))
+    texts = [ts.profile(store).show(), ts.check(messy).show(), ts.clean(messy)[1].show()]
+    for text in texts:
+        text.encode("cp1252")  # raises UnicodeEncodeError if a report uses unprintable characters

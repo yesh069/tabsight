@@ -881,7 +881,7 @@ These are measured in `benchmarks/` on every release, not guessed.
 | Version control | git from day one, small commits, a CHANGELOG |
 | Releases | Semantic versioning, a deprecation policy (warn for one minor release before removing), early 0.0.1 publish to reserve the name on PyPI, and reserve `tabsight` / `tabsight-js` on npm and `tabsight` on GitHub at the same time |
 | CI | GitHub Actions on Windows, macOS and Linux × Python 3.11–3.14 × pandas 2/3, plus Node parity tests. Python 3.13 runs the full suite including browser checks; the other versions run the unit and parity tests. pandas 2 is tested only on Python versions it supports. |
-| Docs | mkdocs site: tutorial, API reference from docstrings, chart gallery, "how tabsight decides" pages, map coverage table |
+| Docs | Markdown in `docs/` (readable on GitHub) built into a site with MkDocs Material (search, dark mode, API reference from docstrings via mkdocstrings, GitHub-style callouts, no Google Fonts). `tests/test_docs.py` runs every example and checks reference tables against the code. Published by `.github/workflows/docs.yml` to GitHub Pages once the repository is public. **Material for MkDocs reaches end of life on 5 May 2027**; migrate to its successor Zensical (reads the same `mkdocs.yml`) before then. |
 | Optional extras | `excel` (openpyxl), `parquet` (pyarrow), `polars` (polars + pyarrow), `png` (playwright, which downloads its own browser on first use, as the docs warn) |
 | JS runtime | Ships inside the Python package; npm package `tabsight-js` after 0.1.0 |
 | Open source | CONTRIBUTING guide, code of conduct, issue and pull request templates, SECURITY policy (how to report a vulnerability) |

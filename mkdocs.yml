@@ -1,0 +1,115 @@
+site_name: tabsight
+site_description: BI-quality charts, world maps and dashboards from a pandas DataFrame. Rule-based, no LLM, one offline HTML file.
+site_url: https://yesh069.github.io/tabsight/
+repo_url: https://github.com/yesh069/tabsight
+repo_name: yesh069/tabsight
+edit_uri: edit/main/docs/
+copyright: tabsight is MIT licensed. Map data from Natural Earth (public domain). Charts by Apache ECharts.
+strict: true
+# docs/README.md is the table of contents for browsing the folder on GitHub; the site uses index.md.
+exclude_docs: |
+  README.md
+
+theme:
+  name: material
+  # No Google Fonts: the site makes no third-party requests (same rule as the package).
+  font: false
+  language: en
+  logo: assets/logo.svg
+  favicon: assets/logo.svg
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - navigation.indexes
+    - navigation.instant
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+    - toc.follow
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: sphinx
+            show_source: false
+            show_root_heading: true
+            show_root_full_path: false
+            show_signature_annotations: true
+            separate_signature: true
+            members_order: source
+            heading_level: 3
+
+markdown_extensions:
+  - tables
+  - toc:
+      permalink: true
+  - attr_list
+  - md_in_html
+  - admonition
+  # GitHub-style "> [!NOTE]" boxes, so callouts look right on GitHub and on the site.
+  - github-callouts
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: false
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.snippets:
+      base_path: ["."]
+      check_paths: true
+
+nav:
+  - Home: index.md
+  - Get started:
+      - Installation: getting-started/installation.md
+      - Quickstart: getting-started/quickstart.md
+      - How tabsight thinks: getting-started/concepts.md
+  - User guide:
+      - Loading data: guide/loading-data.md
+      - Profiling columns: guide/profiling.md
+      - Checking data quality: guide/checking.md
+      - Cleaning (optional): guide/cleaning.md
+      - Aggregating: guide/aggregating.md
+      - Dates and periods: guide/dates.md
+      - Table calculations: guide/table-calculations.md
+      - Calculated fields: guide/calculated-fields.md
+      - Formatting numbers and dates: guide/formatting.md
+      - Colours and themes: guide/colors-and-themes.md
+      - Settings: guide/settings.md
+      - Chart specs: guide/chart-specs.md
+  - Reference:
+      - API: reference/api.md
+      - Formula functions: reference/formula-functions.md
+      - Locales and currencies: reference/locales.md
+      - Chart kinds: reference/chart-kinds.md
+      - Warnings and errors: reference/warnings-and-errors.md
+  - Project:
+      - Roadmap: project/roadmap.md
+      - Security: project/security.md
+      - Security checklist: SECURITY_CHECKLIST.md
+      - Design decisions: decisions/0001-echarts-version.md
+      - Changelog: project/changelog.md
+      - Contributing: project/contributing.md

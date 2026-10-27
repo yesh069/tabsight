@@ -34,6 +34,12 @@ excel = ["openpyxl>=3.1", "defusedxml>=0.7"]
 parquet = ["pyarrow>=15"]
 polars = ["polars>=1.0", "pyarrow>=15"]
 png = ["playwright>=1.45"]
+docs = [
+    "mkdocs>=1.6",
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.26",
+    "markdown-callouts>=0.4",
+]
 dev = [
     "pytest>=8",
     "hypothesis>=6.100",
@@ -60,7 +66,7 @@ path = "src/tabsight/_version.py"
 packages = ["src/tabsight"]
 
 [tool.hatch.build.targets.sdist]
-exclude = ["/data-raw", "/tools/node_modules", "/.github"]
+exclude = ["/data-raw", "/tools/node_modules", "/.github", "/site"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -87,6 +93,7 @@ ignore = ["E501"]
 "src/tabsight/formats.py" = ["RUF001"]
 "tests/test_read.py" = ["RUF001"]
 "tests/test_formats.py" = ["RUF001"]
+"tests/test_docs.py" = ["RUF001", "S102"]
 # Tests may use assert and run Node/Python subprocesses with fixed arguments.
 "tests/**" = ["S101", "S603", "S607"]
 # The vendor fetcher downloads fixed, pinned https URLs (hash-checked afterwards).

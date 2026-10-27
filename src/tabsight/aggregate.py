@@ -377,8 +377,9 @@ def aggregate(
     - ``measures``: column names (aggregated by their profiled default), ``Measure``
       objects or dicts like ``{"column": "Discount", "agg": "wavg", "weight": "Sales"}``.
     - ``freq``: date grain for time dimensions (``"month"``), or a dict per column.
-    - ``top``: keep the top N values of the first dimension; the rest become one
-      exact "Other" row whose members are listed in ``result.other``.
+    - ``top``: keep the top N values of the first category dimension (never a date
+      dimension); the rest become one exact "Other" row whose members are listed in
+      ``result.other``. Ranking uses the first requested output.
     - ``sort``: ``"desc"`` / ``"asc"`` by the first measure, ``"none"`` for natural
       order, ``"by:<measure>"``, or an explicit list of values.
     - ``missing``: missing time periods as ``"gap"`` (NaN), ``"zero"`` or ``"connect"``
