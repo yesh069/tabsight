@@ -17,8 +17,23 @@ function itemValue(v) {
   return v === undefined ? null : v;
 }
 
+// Everything a chart draws from data: category axes, series data and links, colour scales.
+function extract(opt) {
+  const axes = [];
+  for (const key of ["xAxis", "yAxis"]) {
+    const list = Array.isArray(opt[key]) ? opt[key] : opt[key] ? [opt[key]] : [];
+    list.forEach((a) => a.type === "category" && axes.push(a.data));
+  }
+  const sortOutliers = (s) => (s.name === "Outliers" ? s.data.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]) : s.data);
+  const series = (opt.series || []).map((s) => ({ type: s.type, name: s.name ?? null, data: s.data ? sortOutliers(s) : null, links: s.links ?? null, max: s.max ?? null }));
+  const vm = opt.visualMap ? [opt.visualMap.min, opt.visualMap.max] : null;
+  const cal = opt.calendar ? (Array.isArray(opt.calendar) ? opt.calendar : [opt.calendar]).map((c) => c.range) : null;
+  return { axes, series, vm, cal };
+}
+
 function summary(tile, result) {
   const fig = result.figure;
+  if (cases.deep && cases.deep.includes(tile.id)) return { deep: extract(fig.option) };
   if (fig.kind === "kpi") return { kpi: fig.kpi };
   if (fig.kind === "table") return { rows: fig.table.rows };
   const opt = fig.option;

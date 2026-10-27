@@ -206,7 +206,7 @@ def funnel(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
     result = aggregate(frame, x, [m], sort=ctx.spec.sort, prof=ctx.prof, missing="connect")
     ctx.notes.extend(result.notes)
     vals = result.values
-    rows = [(str(k), num(v) or 0.0) for k, v in zip(vals[x], vals[m.label], strict=True)]
+    rows = [(_name(k), num(v) or 0.0) for k, v in zip(vals[x], vals[m.label], strict=True)]
     if not keep_order:
         rows.sort(key=lambda r: -r[1])
         ctx.decisions.append(
@@ -265,7 +265,7 @@ def pareto(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
     result = aggregate(frame, x, [m], top=top, prof=ctx.prof, missing="connect")
     ctx.notes.extend(result.notes)
     vals = result.values
-    rows = [(str(k), num(v) or 0.0) for k, v in zip(vals[x], vals[m.label], strict=True)]
+    rows = [(_name(k), num(v) or 0.0) for k, v in zip(vals[x], vals[m.label], strict=True)]
     if any(v < 0 for _, v in rows):
         raise InvalidSpecError(
             f"a Pareto chart needs totals of zero or more; {m.label} has negative ones"
@@ -308,3 +308,12 @@ def pareto(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
     ctx.describe_format([m], "")
     ctx.facts.update(categories=len(rows), series=2, rows=len(rows), x_time=False, negative=False)
     return figure(ctx, _pretty_title(ctx, m, [x]), option, height or 420)
+
+
+def _name(value: object) -> str:
+    """A stage or bar name; a missing value is "Unknown", never "nan"."""
+    if value is None or (isinstance(value, float) and value != value):
+        from tabsight.i18n import text
+
+        return text("unknown")
+    return str(value)

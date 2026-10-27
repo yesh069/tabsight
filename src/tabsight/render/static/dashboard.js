@@ -65,6 +65,7 @@
     this.n = data.rows;
     this.dims = data.dims;
     this.nums = data.nums;
+    this.lists = data.lists || {};
     this.labels = data.labels || {};
     this.meta = data.meta || {};
   }
@@ -102,7 +103,7 @@
   }
 
   function newParts() {
-    return { rows: 0, acc: {}, min: {}, max: {} };
+    return { rows: 0, acc: {}, min: {}, max: {}, lists: {} };
   }
 
   function addRow(table, parts, r, measures) {
@@ -110,6 +111,11 @@
     measures.forEach(function (m) {
       for (var p in m.parts) {
         var col = m.parts[p];
+        if (p === "values") {
+          var list = table.lists[col][r];
+          if (list && list.length) parts.lists[col] = (parts.lists[col] || []).concat(list);
+          continue;
+        }
         var v = table.nums[col][r];
         if (v === null || v === undefined) continue;
         if (p === "min") parts.min[col] = col in parts.min ? Math.min(parts.min[col], v) : v;
@@ -131,6 +137,7 @@
     }
     for (k in from.min) into.min[k] = k in into.min ? Math.min(into.min[k], from.min[k]) : from.min[k];
     for (k in from.max) into.max[k] = k in into.max ? Math.max(into.max[k], from.max[k]) : from.max[k];
+    for (k in from.lists) into.lists[k] = (into.lists[k] || []).concat(from.lists[k]);
   }
 
   // The measure's value from its parts, as tabsight/aggregate.py _finish does.
@@ -150,6 +157,26 @@
     }
     if (m.agg === "min") return P.min in parts.min ? parts.min[P.min] : null;
     if (m.agg === "max") return P.max in parts.max ? parts.max[P.max] : null;
+    var values = parts.lists[P.values] || [];
+    if (m.agg === "countd") {
+      var seen = {};
+      var n = 0;
+      values.forEach(function (v) {
+        if (!seen.hasOwnProperty(v)) {
+          seen[v] = 1;
+          n++;
+        }
+      });
+      return n;
+    }
+    if (m.agg === "median") {
+      if (!values.length) return null;
+      var sorted = values.slice().sort(function (a, c) {
+        return a - c;
+      });
+      var mid = Math.floor(sorted.length / 2);
+      return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+    }
     return null;
   }
 
@@ -175,7 +202,7 @@
   // ------------------------------------------------------------- models
 
   function zeroWhenEmpty(m) {
-    return m.agg === "sum" || m.agg === "count";
+    return m.agg === "sum" || m.agg === "count" || m.agg === "countd";
   }
 
   // Bars, lines, areas and donuts: one category axis, maybe one series per colour value.
@@ -241,7 +268,7 @@
     // Order of the categories (aggregate._sort).
     if (b.time) {
       xs = xs.slice().sort();
-      if (b.periods && b.missing !== "connect" && xs.length) {
+      if (b.periods && b.missing && b.missing !== "connect" && xs.length) {
         var lo = b.periods.indexOf(xs[0]);
         var hi = b.periods.indexOf(xs[xs.length - 1]);
         if (lo >= 0 && hi >= lo) xs = b.periods.slice(lo, hi + 1);
@@ -287,7 +314,7 @@
       if (o >= 0) xs = xs.slice(0, o).concat(xs.slice(o + 1), [OTHER_KEY]);
     }
     var fill = function (m) {
-      if (!b.time || b.missing === "connect") return null;
+      if (!b.time || !b.missing || b.missing === "connect") return null;
       return b.missing === "zero" && zeroWhenEmpty(m) ? 0 : null;
     };
     var series = [];
@@ -654,6 +681,718 @@
     return { table: out, keys: shown.map(function (row) { return row.keys[0]; }), rows: list };
   }
 
+  // ------------------------------------------------------------- more kinds
+  // Each mirrors its Python builder in tabsight/charts (parts.py, extra.py, grids.py,
+  // relation.py, maps.py); tests/test_dashboard.py checks them against Python.
+
+  function pct0(x) {
+    return String(Math.round(x * 100)) + "%";
+  }
+
+  function pct1(x) {
+    return (Math.round(x * 1000) / 10).toFixed(1) + "%";
+  }
+
+  function niceCeiling(value) {
+    if (value <= 0) return 1;
+    var power = Math.pow(10, Math.floor(Math.log10(value)));
+    var steps = [1, 2, 2.5, 5, 10];
+    for (var i = 0; i < steps.length; i++) if (steps[i] * power >= value) return steps[i] * power;
+    return 10 * power;
+  }
+
+  // (low, high, colours) for a colour scale, as _common.scale does.
+  function colourScale(values, ramps) {
+    var nums = values.filter(function (v) {
+      return v !== null && v !== undefined;
+    });
+    var lo = nums.length ? Math.min.apply(null, nums) : 0;
+    var hi = nums.length ? Math.max.apply(null, nums) : 1;
+    var diverging = lo < 0 && hi > 0;
+    if (diverging) {
+      var bound = Math.max(-lo, hi);
+      lo = -bound;
+      hi = bound;
+    }
+    if (hi === lo) hi = lo + (Math.abs(lo) || 1);
+    return { lo: lo, hi: hi, ramp: diverging ? ramps.div : ramps.seq };
+  }
+
+  function setScale(opt, m, ctx, s) {
+    var vm = opt.visualMap;
+    if (!vm) return;
+    vm.min = s.lo;
+    vm.max = s.hi;
+    if (vm.inRange) vm.inRange.color = s.ramp;
+    var tsj = root.tabsight;
+    vm.text = [tsj.formatNumber(s.hi, m.compact, ctx.locales), tsj.formatNumber(s.lo, m.compact, ctx.locales)];
+  }
+
+  function keyLabel(table, col, k, ctx, compact) {
+    if (k === OTHER_KEY) return ctx.other + " (" + ctx.otherCount + ")";
+    if (k === null) return ctx.unknown;
+    var l = table.labels[col];
+    if (l) return (compact ? l.compact[k] : l.full[k]) || k;
+    return String(k);
+  }
+
+  function goalValues(table, rows, b, model, ctx) {
+    if (b.goal_measure) {
+      var gm = model.series[1];
+      return gm ? gm.values : [];
+    }
+    return model.keys.map(function () {
+      return b.goal === undefined ? null : b.goal;
+    });
+  }
+
+  function bulletTile(fig, b, table, rows, ctx) {
+    var opt = clone(fig.option);
+    var measures = b.goal_measure ? [b.measures[0], b.goal_measure] : [b.measures[0]];
+    var nb = Object.assign({}, b, { measures: measures });
+    var model = categoryModel(table, nb, rows, ctx);
+    var labels = model.keys.map(function (k) {
+      return keyLabel(table, b.dims[0], k, ctx, false);
+    });
+    var actual = model.series[0].values;
+    var goals = goalValues(table, rows, b, model, ctx);
+    var tsj = root.tabsight;
+    opt.yAxis.data = labels;
+    opt.series[0].data = goals;
+    opt.series[1].data = actual.map(function (a, i) {
+      var item = { value: a };
+      var g = goals[i];
+      if (g !== null && g !== undefined) {
+        var share = a !== null && g ? " (" + pct0(a / g) + " of it)" : "";
+        item.note = "goal " + tsj.formatNumber(g, b.measures[0].full, ctx.locales) + share;
+      }
+      return item;
+    });
+    opt.series[2].data = goals;
+    return { option: opt, keys: model.keys, model: model, labels: labels };
+  }
+
+  function bulletValue(fig, b, table, rows, ctx) {
+    var opt = clone(fig.option);
+    var parts = newParts();
+    var measures = b.goal_measure ? [b.measures[0], b.goal_measure] : [b.measures[0]];
+    rows.forEach(function (r) {
+      addRow(table, parts, r, measures);
+    });
+    var a = rows.length ? finish(parts, b.measures[0], ctx.minGroup) : null;
+    var g = b.goal_measure ? (rows.length ? finish(parts, b.goal_measure, ctx.minGroup) : null) : b.goal;
+    var tsj = root.tabsight;
+    var item = { value: a };
+    if (g !== null && g !== undefined) {
+      item.note = "goal " + tsj.formatNumber(g, b.measures[0].full, ctx.locales) + (a !== null && g ? " (" + pct0(a / g) + " of it)" : "");
+    }
+    opt.series[0].data = [g];
+    opt.series[1].data = [item];
+    opt.series[2].data = [g];
+    return opt;
+  }
+
+  function gaugeTile(fig, b, table, rows, ctx) {
+    var opt = clone(fig.option);
+    var parts = newParts();
+    var measures = b.goal_measure ? [b.measures[0], b.goal_measure] : [b.measures[0]];
+    rows.forEach(function (r) {
+      addRow(table, parts, r, measures);
+    });
+    var value = rows.length ? finish(parts, b.measures[0], ctx.minGroup) : null;
+    var goal = b.goal_measure ? (rows.length ? finish(parts, b.goal_measure, ctx.minGroup) : null) : b.goal === undefined ? null : b.goal;
+    var top = goal && goal > 0 ? goal : niceCeiling((value || 0) * 1.1);
+    if (value !== null && value > top) top = niceCeiling(value * 1.05);
+    var s = opt.series[0];
+    s.max = top;
+    s.data = [{ value: value, name: goal && value !== null ? pct0(value / goal) + " of goal" : "" }];
+    return opt;
+  }
+
+  function funnelTile(fig, b, table, rows, ctx) {
+    var opt = clone(fig.option);
+    var model = categoryModel(table, Object.assign({}, b, { top: null }), rows, ctx);
+    var list = model.keys.map(function (k, i) {
+      var v = model.series[0].values[i];
+      return { key: k, name: k === null ? ctx.unknown : String(k), value: v === null ? 0 : v };
+    });
+    if (!b.keep_order) {
+      list.sort(function (a, c) {
+        return c.value - a.value;
+      });
+    }
+    var first = list.length ? list[0].value : 0;
+    opt.series[0].data = list.map(function (r, i) {
+      var note = "";
+      if (i > 0 && list[i - 1].value) note = pct0(r.value / list[i - 1].value) + " of the previous stage";
+      if (i && first) note += (note ? "; " : "") + pct0(r.value / first) + " of the first";
+      var item = { name: r.name, value: r.value, itemStyle: { color: b.palette[i % b.palette.length] } };
+      if (note) item.note = note;
+      return item;
+    });
+    return { option: opt, keys: list.map(function (r) { return r.key; }) };
+  }
+
+  function paretoTile(fig, b, table, rows, ctx) {
+    var opt = clone(fig.option);
+    var model = categoryModel(table, b, rows, ctx);
+    ctx.otherCount = model.other.length;
+    var labels = model.keys.map(function (k) {
+      return k === OTHER_KEY ? ctx.other + " (" + model.other.length + ")" : k === null ? ctx.unknown : String(k);
+    });
+    var values = model.series[0].values.map(function (v) {
+      return v === null ? 0 : v;
+    });
+    var total = values.reduce(function (a, v) { return a + v; }, 0) || 1;
+    var running = 0;
+    var cumulative = values.map(function (v) {
+      running += v;
+      return Math.round((running / total) * 1e6) / 1e6;
+    });
+    opt.xAxis.data = labels;
+    opt.series[0].data = values;
+    opt.series[1].data = cumulative;
+    return { option: opt, keys: model.keys, other: model.other, model: model, labels: labels };
+  }
+
+  function waterfallTile(fig, b, table, rows, ctx) {
+    var opt = clone(fig.option);
+    var model = categoryModel(table, Object.assign({}, b, { top: null, missing: "connect" }), rows, ctx);
+    var labels = model.keys.map(function (k) {
+      return keyLabel(table, b.dims[0], k, ctx, model.keys.length > 8 && /\|(month|day)$/.test(b.dims[0]));
+    });
+    var data = [];
+    var running = 0;
+    model.series[0].values.forEach(function (v, i) {
+      var change = v === null ? 0 : v;
+      var lo = running;
+      var hi = running + change;
+      running = hi;
+      data.push({ name: labels[i], value: [i, lo, hi, change, running], itemStyle: { color: change >= 0 ? b.colors.pos : b.colors.neg } });
+    });
+    var template = fig.option.series[0].data;
+    if (b.total) {
+      var last = template[template.length - 1];
+      labels = labels.concat(["Total"]);
+      data.push({ name: "Total", value: [data.length, 0, running, running, running], itemStyle: clone(last.itemStyle) });
+    }
+    opt.xAxis.data = labels;
+    opt.series[0].data = data;
+    return { option: opt, keys: model.keys };
+  }
+
+  // Rows of a two-dimension grid in Python's order: by the first dimension's rule, then natural.
+  function heatmapTile(fig, b, table, rows, ctx) {
+    var opt = clone(fig.option);
+    var model = categoryModel(table, Object.assign({}, b, { top: null, missing: "connect" }), rows, ctx);
+    var cells = group(table, rows, b.dims, b.measures);
+    var byX = {};
+    cells.order.forEach(function (id) {
+      var g = cells.groups[id];
+      var xk = JSON.stringify(g.keys[0]);
+      (byX[xk] = byX[xk] || []).push(g);
+    });
+    var rowKeys = [];
+    var sortedCells = [];
+    var seen = {};
+    var rowTime = /\|[a-z]+$/.test(b.dims[1]);
+    model.keys.forEach(function (xk) {
+      var list = (byX[JSON.stringify(xk)] || []).slice();
+      list.sort(function (a, c) {
+        var x = a.keys[1];
+        var y = c.keys[1];
+        if (rowTime) return x < y ? -1 : x > y ? 1 : 0;
+        return naturalCompare(x, y);
+      });
+      list.forEach(function (g) {
+        sortedCells.push(g);
+        var id = JSON.stringify(g.keys[1]);
+        if (!seen[id]) {
+          seen[id] = 1;
+          rowKeys.push(g.keys[1]);
+        }
+      });
+    });
+    var xLabels = model.keys.map(function (k) {
+      return keyLabel(table, b.dims[0], k, ctx, model.keys.length > 8 && /\|(month|day)$/.test(b.dims[0]));
+    });
+    var rowLabels = rowKeys.map(function (k) {
+      return keyLabel(table, b.dims[1], k, ctx, false);
+    });
+    var xi = {};
+    model.keys.forEach(function (k, i) {
+      xi[JSON.stringify(k)] = i;
+    });
+    var yi = {};
+    rowKeys.forEach(function (k, i) {
+      yi[JSON.stringify(k)] = i;
+    });
+    var data = [];
+    sortedCells.forEach(function (g) {
+      var i = xi[JSON.stringify(g.keys[0])];
+      var j = yi[JSON.stringify(g.keys[1])];
+      data.push({ value: [i, j, finish(g.parts, b.measures[0], ctx.minGroup)], name: rowLabels[j] + " · " + xLabels[i] });
+    });
+    opt.xAxis.data = xLabels;
+    opt.yAxis.data = rowLabels;
+    opt.series[0].data = data;
+    opt.series[0].label.show = data.length <= b.labelled_up_to;
+    setScale(opt, b.measures[0], ctx, colourScale(data.map(function (d) { return d.value[2]; }), b.ramps));
+    return { option: opt, keys: model.keys };
+  }
+
+  // Groups in aggregate()'s default order: by the first field's total (largest first),
+  // ties and the other fields in natural order. Python's stable sorts start from this.
+  function aggregateOrder(table, rows, dims, measures, ctx) {
+    var cells = group(table, rows, dims, measures);
+    var list = cells.order.map(function (id) {
+      var g = cells.groups[id];
+      return { keys: g.keys, parts: g.parts, value: finish(g.parts, measures[0], ctx.minGroup) };
+    });
+    var totals = {};
+    list.forEach(function (g) {
+      var k = JSON.stringify(g.keys[0]);
+      totals[k] = (totals[k] || 0) + (g.value === null ? 0 : g.value);
+    });
+    list.sort(function (a, c) {
+      var d = totals[JSON.stringify(c.keys[0])] - totals[JSON.stringify(a.keys[0])];
+      if (d) return d;
+      for (var i = 0; i < a.keys.length; i++) {
+        d = naturalCompare(a.keys[i], c.keys[i]);
+        if (d) return d;
+      }
+      return 0;
+    });
+    return list;
+  }
+
+  function treeTile(fig, b, table, rows, ctx, payload) {
+    var opt = clone(fig.option);
+    var leaves = aggregateOrder(table, rows, b.dims, b.measures, ctx).filter(function (g) {
+      return g.value !== null && g.value > 0;
+    });
+    if (leaves.length > b.max_leaves) {
+      leaves.sort(function (a, c) { return c.value - a.value; });
+      leaves = leaves.slice(0, b.max_leaves);
+    }
+    var total = leaves.reduce(function (a, l) { return a + l.value; }, 0) || 1;
+    var rootNode = { children: {}, order: [] };
+    leaves.forEach(function (l) {
+      var node = rootNode;
+      l.keys.forEach(function (k) {
+        var label = k === null ? "Unknown" : String(k);
+        if (!node.children[label]) {
+          node.children[label] = { name: label, value: 0, children: {}, order: [] };
+          node.order.push(label);
+        }
+        node = node.children[label];
+        node.value += l.value;
+      });
+    });
+    var emit = function (node, depth, color) {
+      var item = { name: node.name, value: Math.round(node.value * 1e10) / 1e10, note: pct1(node.value / total) + " of the total" };
+      if (depth === 0) color = payload.colors[node.name] || payload.other_color;
+      if (color) item.itemStyle = { color: color };
+      var kids = node.order.map(function (k) { return node.children[k]; });
+      kids.sort(function (a, c) { return c.value - a.value; });
+      if (kids.length) item.children = kids.map(function (k) { return emit(k, depth + 1, color); });
+      return item;
+    };
+    var top = rootNode.order.map(function (k) { return rootNode.children[k]; });
+    top.sort(function (a, c) { return c.value - a.value; });
+    opt.series[0].data = top.map(function (n) { return emit(n, 0, null); });
+    return { option: opt, keys: top.map(function (n) { return n.name === "Unknown" ? null : n.name; }) };
+  }
+
+  function sankeyTile(fig, b, table, rows, ctx, payload) {
+    var opt = clone(fig.option);
+    var links = [];
+    aggregateOrder(table, rows, b.dims, b.measures, ctx).forEach(function (g) {
+      if (g.value === null || g.value <= 0) return;
+      links.push([String(g.keys[0]), String(g.keys[1]), g.value]);
+    });
+    links.sort(function (a, c) { return c[2] - a[2]; });
+    links = links.slice(0, b.max_links);
+    var sources = {};
+    links.forEach(function (l) { sources[l[0]] = 1; });
+    var fixed = links.map(function (l) {
+      return [l[0], sources.hasOwnProperty(l[1]) ? "→ " + l[1] : l[1], l[2]];
+    });
+    var nodes = [];
+    var seen = {};
+    fixed.map(function (l) { return l[0]; }).concat(fixed.map(function (l) { return l[1]; })).forEach(function (n) {
+      if (!seen[n]) {
+        seen[n] = 1;
+        nodes.push(n);
+      }
+    });
+    var s = opt.series[0];
+    s.data = nodes.map(function (n) {
+      var bare = n.indexOf("→ ") === 0 ? n.slice(2) : n;
+      return { name: n, itemStyle: { color: payload.colors[bare] || payload.other_color } };
+    });
+    s.links = fixed.map(function (l) { return { source: l[0], target: l[1], value: l[2] }; });
+    return { option: opt, keys: [] };
+  }
+
+  function calendarTile(fig, b, table, rows, ctx) {
+    var opt = clone(fig.option);
+    var cells = group(table, rows, b.dims, b.measures);
+    var days = [];
+    cells.order.forEach(function (id) {
+      var g = cells.groups[id];
+      if (g.keys[0] === null) return;
+      days.push({ key: g.keys[0], v: finish(g.parts, b.measures[0], ctx.minGroup) });
+    });
+    days.sort(function (a, c) { return a.key < c.key ? -1 : a.key > c.key ? 1 : 0; });
+    var years = [];
+    days.forEach(function (d) {
+      var y = d.key.slice(0, 4);
+      if (years.indexOf(y) < 0) years.push(y);
+    });
+    years = years.slice(-b.max_years);
+    var labels = (table.labels[b.dims[0]] || {}).full || {};
+    var data = days.filter(function (d) { return years.indexOf(d.key.slice(0, 4)) >= 0; }).map(function (d) {
+      return { name: labels[d.key] || d.key, value: [d.key, d.v] };
+    });
+    var calTemplate = (Array.isArray(fig.option.calendar) ? fig.option.calendar : [fig.option.calendar])[0];
+    var serTemplate = fig.option.series[0];
+    opt.calendar = years.map(function (y, i) {
+      var c = clone(calTemplate);
+      c.top = 30 + i * 150;
+      c.range = y;
+      return c;
+    });
+    opt.series = years.map(function (y, i) {
+      var s = clone(serTemplate);
+      s.calendarIndex = i;
+      s.data = data.filter(function (d) { return d.value[0].slice(0, 4) === y; });
+      return s;
+    });
+    setScale(opt, b.measures[0], ctx, colourScale(data.map(function (d) { return d.value[1]; }), b.ramps));
+    if (opt.visualMap) {
+      opt.visualMap.seriesIndex = years.map(function (_, i) { return i; });
+    }
+    return { option: opt, keys: [] };
+  }
+
+  function histogramTile(fig, b, table, rows, ctx) {
+    var opt = clone(fig.option);
+    var counts = [];
+    for (var i = 0; i < b.bins; i++) counts.push(0);
+    var cells = group(table, rows, b.dims, b.measures);
+    cells.order.forEach(function (id) {
+      var g = cells.groups[id];
+      if (g.keys[0] === null) return;
+      counts[parseInt(g.keys[0], 10)] += g.parts.rows;
+    });
+    var lo = 0;
+    var hi = counts.length - 1;
+    while (lo < hi && counts[lo] === 0) lo++;
+    while (hi > lo && counts[hi] === 0) hi--;
+    var keys = [];
+    for (var k = lo; k <= hi; k++) keys.push(String(k));
+    opt.xAxis.data = keys.map(function (k2) { return b.labels[parseInt(k2, 10)]; });
+    opt.series[0].data = keys.map(function (k2) {
+      var j = parseInt(k2, 10);
+      return { value: counts[j], note: b.notes[j] };
+    });
+    return { option: opt, keys: keys };
+  }
+
+  function bubbleSize(v, biggest) {
+    return Math.round((6 + 34 * Math.sqrt(Math.abs(v) / (biggest || 1))) * 10) / 10;
+  }
+
+  function pointsTile(fig, b, table, rows, ctx, payload) {
+    var opt = clone(fig.option);
+    var model = categoryModel(table, Object.assign({}, b, { top: null, missing: "connect" }), rows, ctx);
+    var cells = group(table, rows, b.dims, b.measures);
+    var rowsOut = [];
+    var byId = {};
+    cells.order.forEach(function (id) {
+      byId[id] = cells.groups[id];
+    });
+    model.keys.forEach(function (xk) {
+      cells.order.forEach(function (id) {
+        var g = byId[id];
+        if (JSON.stringify(g.keys[0]) !== JSON.stringify(xk)) return;
+        rowsOut.push({ keys: g.keys, values: b.measures.map(function (m) { return finish(g.parts, m, ctx.minGroup); }) });
+      });
+    });
+    var need = b.measures.length;
+    var biggest = 1;
+    if (need === 3) {
+      biggest = 0;
+      rowsOut.forEach(function (r) { biggest = Math.max(biggest, Math.abs(r.values[2] || 0)); });
+      if (!biggest) biggest = 1;
+    }
+    var template = fig.option.series[0];
+    var colourOf = b.dims.length > 1;
+    var groups = {};
+    var names = [];
+    rowsOut.forEach(function (r) {
+      var name = colourOf ? (r.keys[1] === null ? ctx.unknown : String(r.keys[1])) : null;
+      var id = String(name);
+      if (!groups[id]) {
+        groups[id] = { name: name, data: [] };
+        names.push(id);
+      }
+      if (r.values[0] === null || r.values[1] === null) return;
+      var item = { name: r.keys[0] === null ? ctx.unknown : String(r.keys[0]), value: r.values.slice() };
+      if (need === 3) item.symbolSize = bubbleSize(r.values[2] || 0, biggest);
+      groups[id].data.push(item);
+    });
+    names.sort();
+    var labelled = rowsOut.length <= 20;
+    opt.series = names.map(function (id) {
+      var g = groups[id];
+      var s = clone(template);
+      s.name = g.name === null ? template.name : g.name;
+      s.data = g.data;
+      if (g.name !== null) s.itemStyle.color = payload.colors[g.name] || s.itemStyle.color;
+      if (labelled) {
+        s.label = s.label || { show: true, formatter: "{b}", position: "right", fontSize: 10, color: payload.theme.text_secondary };
+      } else {
+        delete s.label;
+      }
+      return s;
+    });
+    return { option: opt, keys: model.keys };
+  }
+
+  function pointsMapTile(fig, b, table, rows, ctx) {
+    var opt = clone(fig.option);
+    var m = b.measures[0];
+    var cells = group(table, rows, b.dims, b.measures);
+    var byPlace = {};
+    var order = [];
+    cells.order.forEach(function (id) {
+      var g = cells.groups[id];
+      var p = g.keys[0] === null ? null : b.points[g.keys[0]];
+      if (!p) return;
+      if (!byPlace[p[0]]) {
+        byPlace[p[0]] = { point: p, parts: newParts() };
+        order.push(p[0]);
+      }
+      merge(byPlace[p[0]].parts, g.parts);
+    });
+    var kept = [];
+    order.forEach(function (fid) {
+      var e = byPlace[fid];
+      var v = finish(e.parts, m, ctx.minGroup);
+      if (v !== null) kept.push({ p: e.point, v: v });
+    });
+    kept.sort(function (a, c) { return Math.abs(c.v) - Math.abs(a.v); });
+    kept = kept.slice(0, b.max_points);
+    if (fig.kind === "density_map") {
+      var peak = 0;
+      kept.forEach(function (k) { peak = Math.max(peak, Math.abs(k.v)); });
+      opt.series[0].data = kept.map(function (k) { return [k.p[1], k.p[2], Math.abs(k.v)]; });
+      if (opt.visualMap) opt.visualMap.max = peak || 1;
+      return { option: opt, keys: [] };
+    }
+    var biggest = 0;
+    kept.forEach(function (k) { biggest = Math.max(biggest, Math.abs(k.v)); });
+    biggest = biggest || 1;
+    opt.series[0].data = kept.map(function (k) {
+      return {
+        name: k.p[3],
+        value: [k.p[1], k.p[2], k.v],
+        symbolSize: Math.round((5 + 25 * Math.sqrt(Math.abs(k.v) / biggest)) * 10) / 10,
+        itemStyle: { color: k.v < 0 ? b.colors.neg : b.colors.pos },
+      };
+    });
+    return { option: opt, keys: [] };
+  }
+
+  function flowsTile(fig, b, table, rows, ctx) {
+    var opt = clone(fig.option);
+    var cells = group(table, rows, b.dims, b.measures);
+    var pairs = {};
+    var order = [];
+    cells.order.forEach(function (id) {
+      var g = cells.groups[id];
+      var a = g.keys[0] === null ? null : b.places[g.keys[0]];
+      var c = g.keys[1] === null ? null : b.places[g.keys[1]];
+      if (!a || !c || a[0] === c[0]) return;
+      var pid = a[0] + "\u0000" + c[0];
+      if (!pairs[pid]) {
+        pairs[pid] = { a: a, c: c, parts: newParts() };
+        order.push(pid);
+      }
+      merge(pairs[pid].parts, g.parts);
+    });
+    var flows = [];
+    order.forEach(function (pid) {
+      var p = pairs[pid];
+      var v = finish(p.parts, b.measures[0], ctx.minGroup);
+      if (v !== null && v > 0) flows.push({ a: p.a, c: p.c, v: v });
+    });
+    flows.sort(function (x, y) { return y.v - x.v; });
+    flows = flows.slice(0, b.max_flows);
+    var biggest = 0;
+    flows.forEach(function (f) { biggest = Math.max(biggest, f.v); });
+    biggest = biggest || 1;
+    var ends = {};
+    var endOrder = [];
+    opt.series[0].data = flows.map(function (f) {
+      [f.a, f.c].forEach(function (p) {
+        if (!ends.hasOwnProperty(p[3])) endOrder.push(p[3]);
+        ends[p[3]] = [p[1], p[2]];
+      });
+      return {
+        name: f.a[3] + " → " + f.c[3],
+        coords: [[f.a[1], f.a[2]], [f.c[1], f.c[2]]],
+        value: f.v,
+        lineStyle: { width: Math.round((1 + (7 * f.v) / biggest) * 100) / 100 },
+      };
+    });
+    if (opt.series[1]) {
+      opt.series[1].data = endOrder.map(function (n) { return { name: n, value: ends[n] }; });
+      if (opt.series[1].label) opt.series[1].label.show = endOrder.length <= 15;
+    }
+    return { option: opt, keys: [] };
+  }
+
+  function lollipop(opt, template, b) {
+    var stem = opt.series.filter(function (x) {
+      return x.type === "bar";
+    })[0];
+    var dot = clone(template.series.filter(function (x) {
+      return x.type === "scatter";
+    })[0]);
+    if (!stem || !dot) return opt;
+    dot.data = stem.data.map(function (d) {
+      return d && typeof d === "object" ? d.value : d;
+    });
+    if (stem.label) {
+      dot.label = stem.label;
+      dot.label.position = b.horizontal ? "right" : "top";
+      delete stem.label;
+    } else {
+      delete dot.label;
+    }
+    stem.data = stem.data.map(function (d) {
+      return d && typeof d === "object" && d.itemStyle && d.itemStyle.color ? d.value : d;
+    });
+    opt.series.push(dot);
+    return opt;
+  }
+
+
+  // numpy.percentile's default (linear) interpolation, including its rounding-safe lerp.
+  function percentile(sorted, q) {
+    var h = (sorted.length - 1) * q;
+    var lo = Math.floor(h);
+    var hi = Math.min(lo + 1, sorted.length - 1);
+    var t = h - lo;
+    var a = sorted[lo];
+    var c = sorted[hi];
+    var diff = c - a;
+    return t >= 0.5 ? c - diff * (1 - t) : a + diff * t;
+  }
+
+  function boxTile(fig, b, table, rows, ctx) {
+    var opt = clone(fig.option);
+    var col = b.measures[0].parts.values;
+    var groups = {};
+    var order = [];
+    rows.forEach(function (r) {
+      var k = b.dims.length ? table.key(b.dims[0], r) : b.name;
+      var id = k === null ? ctx.unknown : String(k);
+      if (!groups[id]) {
+        groups[id] = [];
+        order.push(id);
+      }
+      var list = table.lists[col][r];
+      if (list && list.length) groups[id] = groups[id].concat(list);
+    });
+    order = order.filter(function (id) { return groups[id].length; });
+    order.sort(function (a, c) { return groups[c].length - groups[a].length; });
+    order = order.slice(0, b.max_boxes);
+    var stats = order.map(function (id) {
+      var v = groups[id].slice().sort(function (x, y) { return x - y; });
+      var q1 = percentile(v, 0.25);
+      var med = percentile(v, 0.5);
+      var q3 = percentile(v, 0.75);
+      var iqr = q3 - q1;
+      var loF = q1 - 1.5 * iqr;
+      var hiF = q3 + 1.5 * iqr;
+      var inside = v.filter(function (x) { return x >= loF && x <= hiF; });
+      var out = groups[id].filter(function (x) { return x < loF || x > hiF; }).slice(0, 200);
+      return { id: id, box: [inside[0], q1, med, q3, inside[inside.length - 1]], n: v.length, out: out };
+    });
+    if (b.dims.length && b.order) {
+      var pos = {};
+      b.order.forEach(function (k, i) { pos[k] = i; });
+      stats.sort(function (a, c) {
+        return (a.id in pos ? pos[a.id] : b.order.length) - (c.id in pos ? pos[c.id] : b.order.length);
+      });
+    } else if (b.dims.length) {
+      stats.sort(function (a, c) { return c.box[2] - a.box[2]; });
+    }
+    opt.xAxis.data = stats.map(function (st) { return st.id; });
+    opt.series[0].data = stats.map(function (st) {
+      return { value: st.box, note: st.n.toLocaleString("en-US") + " rows" };
+    });
+    var outliers = [];
+    stats.forEach(function (st, i) {
+      st.out.forEach(function (v) { outliers.push([i, v]); });
+    });
+    opt.series[1].data = outliers;
+    return { option: opt, keys: stats.map(function (st) { return st.id === ctx.unknown ? null : st.id; }) };
+  }
+
+  // Lines over a number: one point per x value, on a real value axis (relation.numeric_lines).
+  function numericLinesTile(fig, b, table, rows, ctx, payload) {
+    var opt = clone(fig.option);
+    var cells = group(table, rows, b.dims, b.measures);
+    var list = cells.order.map(function (id) { return cells.groups[id]; }).filter(function (g) { return g.keys[0] !== null; });
+    list.sort(function (a, c) { return parseFloat(a.keys[0]) - parseFloat(c.keys[0]); });
+    var colourOf = b.dims.length > 1;
+    var names = [];
+    var byName = {};
+    list.forEach(function (g) {
+      var name = colourOf ? (g.keys[1] === null ? ctx.unknown : String(g.keys[1])) : null;
+      var id = String(name);
+      if (!byName[id]) {
+        byName[id] = { name: name, cells: [] };
+        names.push(id);
+      }
+      byName[id].cells.push(g);
+    });
+    names.sort();
+    var template = fig.option.series[0];
+    var single = names.length * b.measures.length === 1;
+    var out = [];
+    names.forEach(function (id) {
+      var grp = byName[id];
+      b.measures.forEach(function (m) {
+        var s = clone(template);
+        var label = grp.name !== null ? grp.name : m.label;
+        var color = single ? template.itemStyle.color : payload.colors[label] || template.itemStyle.color;
+        s.name = label;
+        s.data = grp.cells.map(function (g) { return [parseFloat(g.keys[0]), finish(g.parts, m, ctx.minGroup)]; });
+        s.showSymbol = s.data.length <= 40;
+        s.lineStyle.color = color;
+        s.itemStyle.color = color;
+        if (s.areaStyle) s.areaStyle.color = color;
+        delete s.markLine;
+        delete s.markArea;
+        delete s.markPoint;
+        out.push(s);
+      });
+    });
+    opt.series = out;
+    var fmt = opt.tooltip && opt.tooltip.formatter && opt.tooltip.formatter.$tooltip;
+    if (fmt) {
+      fmt.series_fmt = {};
+      out.forEach(function (s) { fmt.series_fmt[s.name] = b.measures[0].full; });
+    }
+    return { option: opt, keys: [] };
+  }
+
   // ------------------------------------------------------------- one tile, given filters
 
   // Recompute a tile: returns {figure, keys, other} (pure; used by the page and the tests).
@@ -679,6 +1418,29 @@
       fig.option = geo(fig, b, table, rows, ctx, sel || hl);
       return { figure: fig, keys: [] };
     }
+    var special = {
+      funnel: funnelTile, pareto: paretoTile, waterfall: waterfallTile, heatmap: heatmapTile, tree: treeTile,
+      sankey: sankeyTile, calendar: calendarTile, histogram: histogramTile, points: pointsTile,
+      points_map: pointsMapTile, flows: flowsTile, box: boxTile, numeric_lines: numericLinesTile,
+    }[b.shape];
+    if (b.shape === "gauge") {
+      fig.option = gaugeTile(fig, b, table, rows, ctx);
+      return { figure: fig, keys: [] };
+    }
+    if (b.shape === "bullet" && !b.dims.length) {
+      fig.option = bulletValue(fig, b, table, rows, ctx);
+      return { figure: fig, keys: [] };
+    }
+    if (b.shape === "bullet") {
+      var bt = bulletTile(fig, b, table, rows, ctx);
+      fig.option = bt.option;
+      return { figure: fig, keys: bt.keys, labels: bt.labels, series: bt.model.series };
+    }
+    if (special) {
+      var st = special(fig, b, table, rows, ctx, payload);
+      fig.option = st.option;
+      return { figure: fig, keys: st.keys, other: st.other || [], labels: st.labels, series: st.model && st.model.series };
+    }
     if (b.shape === "rows") {
       var t = tableModel(fig, b, table, rows, ctx);
       fig.table = t.table;
@@ -691,6 +1453,7 @@
       fig.kind === "donut"
         ? donut(fig, b, model, labels, payload, sel || hl)
         : cartesian(fig, b, model, labels, payload, sel || hl);
+    if (fig.kind === "lollipop") fig.option = lollipop(fig.option, tile.figure.option, b);
     return { figure: fig, keys: model.keys, other: model.other, labels: labels, series: model.series };
   }
 
@@ -1007,7 +1770,32 @@
         if (raws.length) pickMany(t, raws, add);
         return;
       }
-      if (p.componentType !== "series" || p.dataIndex === undefined) return;
+      if (p.componentType !== "series") return;
+      if (b.shape === "tree") {
+        var path = p.treePathInfo || [];
+        if (path.length > 1) pick(t, path[1].name === payload.unknown ? null : path[1].name, add);
+        return;
+      }
+      if (b.shape === "sankey") {
+        if (p.dataType === "node" && String(p.name).indexOf("→ ") !== 0) pick(t, p.name, add);
+        return;
+      }
+      if (b.shape === "points" || b.shape === "points_map") {
+        var names = [];
+        if (b.shape === "points") names = [p.name === payload.unknown ? null : p.name];
+        else for (var raw2 in b.points) if (b.points[raw2][3] === p.name) names.push(raw2);
+        if (names.length) pickMany(t, names, add);
+        return;
+      }
+      if (b.shape === "calendar") {
+        if (Array.isArray(p.value)) pick(t, p.value[0], add);
+        return;
+      }
+      if (b.shape === "heatmap") {
+        if (Array.isArray(p.value) && t.keys[p.value[0]] !== undefined) pick(t, t.keys[p.value[0]], add);
+        return;
+      }
+      if (b.shape === "flows" || p.dataIndex === undefined) return;
       var key = t.keys[p.dataIndex];
       if (key === undefined) return;
       if (key === OTHER_KEY) pickMany(t, t.other, add);

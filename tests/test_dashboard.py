@@ -112,12 +112,18 @@ def _close(a: Any, b: Any) -> bool:
 
 
 def _node(
-    payload: dict[str, Any], filters: list[dict[str, Any]], tmp: Path, sanitize: Any = None
+    payload: dict[str, Any],
+    filters: list[dict[str, Any]],
+    tmp: Path,
+    sanitize: Any = None,
+    deep: list[str] | None = None,
 ) -> Any:
     data = tmp / "cases.json"
     cases: dict[str, Any] = {"payload": payload, "filters": filters}
     if sanitize is not None:
         cases["sanitize"] = sanitize
+    if deep is not None:
+        cases["deep"] = deep
     data.write_text(json.dumps(cases), encoding="utf-8")
     run = subprocess.run(
         ["node", str(SCRIPT), str(STATIC / "tabsight.js"), str(STATIC / "dashboard.js"), str(data)],
@@ -206,13 +212,24 @@ def test_kpi_compares_the_filtered_months_with_the_same_months_last_year(
 # ---------------------------------------------------------------- the model and the file
 
 
-def test_static_tiles_say_why(orders: pd.DataFrame) -> None:
-    dash = ts.Dashboard("Mixed", data=orders).add("scatter", x="Sales", y="Profit").add(
-        "bar", x="Region", y="Order_ID", agg="countd"
-    ).add("bar", x="Region", y="Sales")  # fmt: skip
+def test_only_single_row_charts_stay_static(orders: pd.DataFrame) -> None:
+    coords = orders.assign(
+        lat=40.0 + np.arange(len(orders)) % 5, lon=-100.0 + np.arange(len(orders)) % 7
+    )
+    dash = (ts.Dashboard("Mixed", data=coords).add("scatter", x="Sales", y="Profit")
+            .add("symbol_map", lat="lat", lon="lon", y="Sales").add("bar", x="Region", y="Order_ID", agg="countd"))  # fmt: skip
     tiles = dash.build()["tiles"]
-    assert "scatter" in tiles[0]["static"] and "distinct counts" in tiles[1]["static"]
+    assert "single rows" in tiles[0]["static"] and "single rows" in tiles[1]["static"]
     assert "binding" in tiles[2] and "static" not in tiles[2]
+    codes = [c for c in dash.build()["data"]["lists"] if c.endswith("_values")]
+    assert codes and all(
+        isinstance(v, int) for lst in dash.build()["data"]["lists"][codes[0]] for v in lst
+    )
+
+
+def test_distinct_counts_never_put_the_values_in_the_page(orders: pd.DataFrame) -> None:
+    page = ts.Dashboard("IDs", data=orders).add("kpi", y="Order_ID", agg="countd").to_html()
+    assert orders["Order_ID"].iloc[0] not in page and orders["Order_ID"].iloc[-1] not in page
 
 
 def test_shared_table_holds_parts_not_rows(orders: pd.DataFrame) -> None:
@@ -377,3 +394,119 @@ def test_filters_from_the_address_bar_are_checked(orders: pd.DataFrame, tmp_path
         "source": "t3",
         "mode": "highlight",
     }
+
+
+# ---------------------------------------------------------------- every other kind
+
+
+MORE_TILES: list[dict[str, Any]] = [
+    {"kind": "lollipop", "x": "Region", "y": "Sales"},
+    {"kind": "combo", "x": "Category", "y": ["Sales", "Quantity"]},
+    {"kind": "bullet", "x": "Region", "y": "Sales", "goal": 20000},
+    {"kind": "bullet", "y": "Sales", "goal": 100000},
+    {"kind": "gauge", "y": "Profit", "goal": 10000},
+    {"kind": "funnel", "x": "Segment", "y": "Sales"},
+    {"kind": "pareto", "x": "Sub_Category", "y": "Sales", "top": 5},
+    {"kind": "waterfall", "x": "Region", "y": "Profit"},
+    {"kind": "heatmap", "x": "Region", "color": "Category", "y": "Sales"},
+    {"kind": "treemap", "x": ["Category", "Sub_Category"], "y": "Sales"},
+    {"kind": "sunburst", "x": ["Region", "Segment"], "y": "Quantity"},
+    {"kind": "sankey", "source": "Region", "target": "Category", "y": "Sales"},
+    {"kind": "calendar_heatmap", "x": "Order_Date", "y": "Sales"},
+    {"kind": "histogram", "x": "Sales", "bin_width": 100},
+    {"kind": "scatter", "x": "Category", "y": ["Sales", "Profit"]},
+    {"kind": "bubble", "x": "Region", "y": ["Sales", "Profit", "Quantity"], "color": "Segment"},
+    {"kind": "symbol_map", "geo": "State", "y": "Sales"},
+    {"kind": "density_map", "geo": "State", "y": "Sales"},
+    {"kind": "flow_map", "source": "State", "target": "Hub", "y": "Sales"},
+    {"kind": "bar", "x": "Region", "y": "Order_ID", "agg": "countd"},
+    {"kind": "bar", "x": "Category", "y": "Sales", "agg": "median"},
+    {"kind": "kpi", "y": "Order_ID", "agg": "countd"},
+    {"kind": "table", "x": ["Region"], "y": ["Sales", "Discount"], "agg": "median"},
+    {"kind": "boxplot", "x": "Category", "y": "Sales"},
+    {"kind": "boxplot", "y": "Profit"},
+    {"kind": "line", "x": "Discount", "y": "Sales"},
+    {"kind": "multi_line", "x": "Quantity", "y": "Profit", "color": "Segment"},
+]
+MORE_FILTERS: list[dict[str, Any]] = [
+    {},
+    {"Region": {"type": "in", "values": ["West", "East"]}},
+    {
+        "Category": {"type": "in", "values": ["Technology"]},
+        "Segment": {"type": "in", "values": ["Consumer"]},
+    },
+    {"Order_Date|month": {"type": "range", "lo": "2016-01-01", "hi": "2016-12-01"}},
+]
+
+
+def _close_deep(a: Any, b: Any, where: str) -> None:
+    if isinstance(a, dict) and isinstance(b, dict):
+        assert set(a) == set(b), (where, sorted(set(a) ^ set(b)))
+        for k in a:
+            _close_deep(a[k], b[k], f"{where}.{k}")
+    elif isinstance(a, list) and isinstance(b, list):
+        assert len(a) == len(b), (where, len(a), len(b))
+        for i, (x, y) in enumerate(zip(a, b, strict=True)):
+            _close_deep(x, y, f"{where}[{i}]")
+    elif isinstance(a, int | float) and isinstance(b, int | float) and not isinstance(a, bool):
+        assert np.isclose(float(a), float(b), rtol=1e-9, atol=1e-9), (where, a, b)
+    else:
+        assert a == b, (where, a, b)
+
+
+def _extract(option: dict[str, Any]) -> dict[str, Any]:
+    opt = json.loads(json.dumps(option))
+    axes = []
+    for key in ("xAxis", "yAxis"):
+        items = opt.get(key)
+        for a in items if isinstance(items, list) else [items] if items else []:
+            if a.get("type") == "category":
+                axes.append(a["data"])
+    series = [{"type": s.get("type"), "name": s.get("name"),
+               "data": sorted(s["data"]) if s.get("name") == "Outliers" else s.get("data"),
+               "links": s.get("links"), "max": s.get("max")} for s in opt.get("series", [])]  # fmt: skip
+
+    vm = [opt["visualMap"]["min"], opt["visualMap"]["max"]] if opt.get("visualMap") else None
+    cal = opt.get("calendar")
+    cal = [c["range"] for c in (cal if isinstance(cal, list) else [cal])] if cal else None
+    return {"axes": axes, "series": series, "vm": vm, "cal": cal}
+
+
+@pytest.mark.node
+@pytest.mark.skipif(shutil.which("node") is None, reason="Node.js not installed")
+def test_every_other_kind_matches_python_after_filters(
+    orders: pd.DataFrame, tmp_path: Path
+) -> None:
+    data = orders.assign(Hub=np.roll(orders["State"].to_numpy(), 7))
+    dash = ts.Dashboard("More", data=data, filters=["Region", "Order_Date", "Category", "Segment"])
+    for tile in MORE_TILES:
+        dash.add(**tile)
+    payload = dash.build()
+    static = [(t["figure"]["kind"], t["static"]) for t in payload["tiles"] if "static" in t]
+    assert not static, static
+    deep = [t["id"] for t in payload["tiles"] if t["figure"]["kind"] not in ("kpi", "table", "bar")]
+    results = _node(payload, MORE_FILTERS, tmp_path, deep=deep)
+    for filters, tiles in zip(MORE_FILTERS, results, strict=True):
+        for got in tiles:
+            i = int(got["id"][1:])
+            tile = dict(MORE_TILES[i])
+            frame = _apply(data, filters)
+            if tile["kind"] == "waterfall":  # steps keep the order of all the data while filtering
+                tile["sort"] = list(dict.fromkeys(data[tile["x"]].dropna().astype(str)))
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                fig = ts.chart(frame, tile.pop("kind"), colors=payload["colors"], **tile)
+            where = f"tile {i} {MORE_TILES[i]} with {filters}"
+            if "deep" in got:
+                _close_deep(got["deep"], _extract(fig.option or {}), where)
+            elif "kpi" in got:
+                assert got["kpi"]["value_text"] == fig.kpi["value_text"], where  # type: ignore[index]
+            elif "rows" in got:
+                assert got["rows"] == fig.table["rows"], where  # type: ignore[index]
+            else:
+                want = _summary(fig, MORE_TILES[i])
+                assert got["labels"] == want["labels"], where
+                for name, values in want["series"].items():
+                    assert all(
+                        _close(a, b) for a, b in zip(got["series"][name], values, strict=True)
+                    ), (where, name)

@@ -173,6 +173,7 @@ def _grouped_scatter(frame: pd.DataFrame, ctx: _Context, height: int | None, x: 
     biggest = (
         max((abs(num(v) or 0) for v in vals[measures[2].label]), default=1.0) if need == 3 else 1.0
     )
+    vals = _unknown_as_text(vals, [x] + ([spec.color] if spec.color else []))
     groups = (
         list(vals.groupby(spec.color, sort=True, observed=True)) if spec.color else [(None, vals)]
     )
@@ -379,9 +380,13 @@ def boxplot(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
         stats.append((k, [low, q1, med, q3, high], len(v)))
         out = v[(v < lo_fence) | (v > hi_fence)]
         outliers += [[i, float(o)] for o in out.iloc[:200]]
-    stats.sort(key=lambda s: -s[1][2]) if group is not None and not ctx.prof[
-        group
-    ].ordered else None
+    if group is not None and ctx.prof[group].ordered:
+        rank = {v: i for i, v in enumerate(ctx.prof[group].ordered or ())}
+        stats.sort(
+            key=lambda s: rank.get(s[0], len(rank))
+        )  # the column's own order (Low, Medium, High)
+    elif group is not None:
+        stats.sort(key=lambda s: -s[1][2])
     labels = [s[0] for s in stats]
     position = {k: i for i, k in enumerate(labels)}
     outliers = [[position[order[i]], v] for i, v in outliers]
@@ -438,6 +443,7 @@ def numeric_lines(frame: pd.DataFrame, ctx: _Context, height: int | None, x: str
     vals = result.values.sort_values(x, kind="stable")
     series: list[dict[str, Any]] = []
     thinned = False
+    vals = _unknown_as_text(vals, [spec.color] if spec.color else [])
     groups = (
         list(vals.groupby(spec.color, sort=True, observed=True)) if spec.color else [(None, vals)]
     )
@@ -510,4 +516,15 @@ def lttb(points: list[list[Any]], threshold: int) -> list[list[Any]]:
         out.append(points[best])
         a = best
     out.append(points[-1])
+    return out
+
+
+def _unknown_as_text(frame: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
+    """Missing category values become "Unknown", so their points are drawn, not silently dropped."""
+    from tabsight.i18n import text
+
+    out = frame.copy()
+    for col in columns:
+        if out[col].isna().any():
+            out[col] = out[col].astype("object").where(out[col].notna(), text("unknown"))
     return out

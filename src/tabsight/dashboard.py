@@ -33,6 +33,7 @@ import pandas as pd
 
 from tabsight.aggregate import Measure, _numeric, _part_name, _time_values, bucket, build_parts
 from tabsight.charts._build import OTHER_COLOR
+from tabsight.charts.maps import MAX_POINTS as MAX_MAP_POINTS
 from tabsight.colors import ColorRegistry, natural_key
 from tabsight.figure import Figure
 from tabsight.formats import format_date, js_spec, locale_payload
@@ -51,9 +52,13 @@ MAX_FILTERS = 12
 MAX_FILE_BYTES = 1_000_000
 FILTER_GRAIN = "month"  # date filters work by month, so a day-level date can't blow up the table
 MAX_FILTER_VALUES = 2000
-LIVE_KINDS = ("bar", "hbar", "grouped_bar", "stacked_bar", "stacked100_bar", "line", "multi_line", "area",
-              "stacked_area", "donut", "kpi", "table", "choropleth")  # fmt: skip
-EXACT_AGGS = ("sum", "count", "mean", "min", "max")
+
+RAW_KINDS: tuple[
+    str, ...
+] = ()  # kinds that would need single rows (none: scatter rows are checked below)
+EXACT_AGGS = ("sum", "count", "mean", "min", "max", "countd", "median")
+MAX_LIST_VALUES = 200_000  # medians and distinct counts keep values; above this a tile stays static
+CODES = "__codes:"
 TILE_KEYS = frozenset({
     "kind", "x", "y", "color", "agg", "sort", "top", "freq", "title", "subtitle", "unit", "currency", "decimals",
     "format", "geo", "lat", "lon", "map", "level", "layer", "geo_map", "geo_names", "projection", "size", "goal",
@@ -416,9 +421,15 @@ class Dashboard:
 
 
 def _colour_fields(fig: Figure) -> list[str]:
+    """Columns whose values each get a colour in this tile (shared across the dashboard)."""
     spec = fig.spec
-    if fig.kind in ("donut",) and isinstance(spec.x, str):
+    if fig.kind == "donut" and isinstance(spec.x, str):
         return [spec.x]
+    if fig.kind in ("treemap", "sunburst"):
+        first = spec.x if isinstance(spec.x, str) else (spec.x or (None,))[0]
+        return [first] if first else []
+    if fig.kind == "sankey":
+        return [c for c in (spec.source, spec.target) if c]
     return [spec.color] if spec.color else []
 
 
@@ -522,19 +533,19 @@ class _SharedTable:
         return name
 
     def measure(self, column: str | None, agg: str) -> dict[str, str]:
+        """The shared-table columns that hold this measure's exact parts."""
+        if agg == "countd" and column is not None:
+            column = (
+                CODES + column
+            )  # distinct counts keep integer codes, never the values themselves
         m = Measure(column, agg)
         if m not in self.measures:
             self.measures.append(m)
         i = self.measures.index(m)
         if column is None:
             return {"count": "__rows"}
-        names = {
-            "sum": ("sum",),
-            "mean": ("sum", "count"),
-            "count": ("count",),
-            "min": ("min",),
-            "max": ("max",),
-        }
+        names = {"sum": ("sum",), "mean": ("sum", "count"), "count": ("count",), "min": ("min",),
+                 "max": ("max",), "countd": ("values",), "median": ("values",)}  # fmt: skip
         return {p: _part_name(i, p) for p in names[agg]}
 
     def filter(self, field: str) -> dict[str, Any]:
@@ -561,12 +572,20 @@ class _SharedTable:
         for m in self.measures:
             if m.column is None or m.column in work:
                 continue
-            work[m.column] = _numeric(self.frame[m.column], self.prof[m.column].source)
+            if m.column.startswith(CODES):
+                source = self.frame[m.column[len(CODES) :]]
+                codes = pd.Series(
+                    pd.factorize(source.astype("object").map(_key))[0], index=self.frame.index
+                )
+                work[m.column] = codes.where(source.notna())
+            else:
+                work[m.column] = _numeric(self.frame[m.column], self.prof[m.column].source)
         parts = build_parts(work, dims, self.measures)
         out: dict[str, Any] = {
             "rows": len(parts),
             "dims": {},
             "nums": {},
+            "lists": {},
             "labels": self.labels,
             "meta": self.meta,
         }
@@ -577,6 +596,12 @@ class _SharedTable:
             out["dims"][col] = {"values": distinct, "codes": [index[v] for v in values]}
         for col in parts.columns:
             if col in self.dims:
+                continue
+            if col.endswith("_values"):  # medians and distinct counts: the values of each group
+                out["lists"][col] = [
+                    [int(v) if float(v).is_integer() and abs(v) < 2**53 else float(v) for v in t
+                     if v is not None and np.isfinite(v)] for t in parts[col]
+                ]  # fmt: skip
                 continue
             nums = pd.to_numeric(parts[col], errors="coerce").astype("float64")
             out["nums"][col] = [None if not np.isfinite(v) else (int(v) if float(v).is_integer() and abs(v) < 2**53 else float(v))
@@ -604,41 +629,66 @@ def _binding(fig: Figure, tile: Mapping[str, Any], table: _SharedTable, prof: Pr
              i: int) -> tuple[dict[str, Any] | None, str]:  # fmt: skip
     """How the browser recomputes this tile, or None and the reason it can't exactly."""
     kind, spec, facts = fig.kind, fig.spec, fig.facts
-    if kind not in LIVE_KINDS:
-        return None, f"{kind.replace('_', ' ')} tiles are not recomputed after filtering yet"
+    option = fig.option or {}
+    if kind in RAW_KINDS:
+        return (
+            None,
+            f"{kind.replace('_', ' ')} tiles need every row's value, which the page doesn't hold",
+        )
+    xaxis: dict[str, Any] = option["xAxis"] if isinstance(option.get("xAxis"), dict) else {}
+    numeric_x = (
+        kind in ("line", "area", "multi_line", "stacked_area") and xaxis.get("type") == "value"
+    )
+    if kind in ("scatter", "bubble"):
+        first = (option.get("series") or [{}])[0].get("data") or []
+        if first and (not isinstance(first[0], dict) or "name" not in first[0]):
+            return (
+                None,
+                "a scatter of single rows needs the rows themselves, which the page doesn't hold",
+            )
+    if spec.lat or spec.lon:
+        return None, "maps of coordinates draw single rows, which the page doesn't hold"
     measures = list(facts.get("measures", ()))
     for m in measures:
         if m["agg"] not in EXACT_AGGS:
-            what = {
-                "countd": "distinct counts",
-                "median": "medians",
-                "wavg": "weighted averages",
-            }.get(m["agg"], m["agg"])
+            what = {"wavg": "weighted averages"}.get(m["agg"], m["agg"])
             return None, f"{what} can't be recomputed exactly from the shared table"
+        if m["agg"] in ("countd", "median") and len(frame) > MAX_LIST_VALUES:
+            what = "medians" if m["agg"] == "median" else "distinct counts"
+            return None, f"exact {what} would need all {len(frame):,} values"
+    if any(m["agg"] == "median" for m in measures) and resolve().min_group_size:
+        return (
+            None,
+            "medians would show single values, and min_group_size asks to hide small groups",
+        )
     if any(f.currency_code_column and f.distinct > 1 for f in prof.fields):
         return None, "amounts in several currencies are split by currency"
-    option = fig.option or {}
-    if (
-        kind in ("line", "area", "multi_line", "stacked_area")
-        and (option.get("xAxis") or {}).get("type") == "value"
-    ):
-        return None, "lines over a number axis are drawn from all the data"
     b: dict[str, Any] = {"kind": kind}
     parts = [
         {"parts": table.measure(m["column"], m["agg"]), "agg": m["agg"], "label": m["column"],
          "full": m["full"], "compact": m["compact"]}
         for m in measures
     ]  # fmt: skip
-    if not measures and kind in ("choropleth", "kpi"):
-        count = js_spec("count", "full", locale=table.locale)
-        parts = [{"parts": {"count": "__rows"}, "agg": "count", "label": "Rows", "full": count,
-                  "compact": js_spec("count", "compact", locale=table.locale)}]  # fmt: skip
+    count = {"parts": {"count": "__rows"}, "agg": "count", "label": "Rows",
+             "full": js_spec("count", "full", locale=table.locale),
+             "compact": js_spec("count", "compact", locale=table.locale)}  # fmt: skip
+    if not measures and kind in (
+        "choropleth",
+        "kpi",
+        "symbol_map",
+        "density_map",
+        "flow_map",
+        "sankey",
+    ):
+        parts = [count]
     b["measures"] = parts
     dims = [spec.x] if isinstance(spec.x, str) else list(spec.x or ())
     freq = spec.options.get("freq")
-    if kind == "kpi":
-        b["shape"] = "value"
+    if kind in ("kpi", "gauge") or (kind == "bullet" and not dims):
+        b["shape"] = "value" if kind == "kpi" else kind
         b["dims"] = []
+        if kind != "kpi":
+            return _goal_binding(b, spec, table, prof), ""
         how = spec.options.get("compare")
         if how:
             date = next((f.name for f in prof.fields if f.role == "time"), None)
@@ -652,24 +702,67 @@ def _binding(fig: Figure, tile: Mapping[str, Any], table: _SharedTable, prof: Pr
             flag = pd.Series(np.where((day >= c.start) & (day <= c.end), "cur",
                                       np.where((day >= c.previous_start) & (day <= c.previous_end), "prev", None)),
                              index=frame.index)  # fmt: skip
+            unit = prof[measures[0]["column"]] if measures else None
             b["compare"] = {
                 "how": how, "window": table.window(f"__w{i}", flag), "month": table.dim(date, "month"),
                 "date_field": date, "current_label": c.current_label, "previous_label": c.previous_label,
                 "shift": {"previous_year": 12, "previous_quarter": 3, "previous_month": 1}[how],
                 "pct_fmt": js_spec("percent", "full", locale=table.locale, decimals=1),
-                "pp": (prof[measures[0]["column"]].unit in ("percent", "pp")) if measures else False,
+                "pp": unit is not None and unit.unit in ("percent", "pp"),
                 "pp_fmt": js_spec("pp", "full", locale=table.locale, decimals=1,
-                                  percent_scale=(prof[measures[0]["column"]].percent_scale or "fraction") if measures else "fraction"),
+                                  percent_scale=(unit.percent_scale if unit else None) or "fraction"),
             }  # fmt: skip
         return b, ""
     if kind == "choropleth":
         geo = facts.get("geo_field")
         if not geo:
             return None, "this map can't be recomputed after filtering"
-        b["shape"] = "geo"
-        b["dims"] = [table.dim(geo)]
-        b["shapes"] = facts.get("geo_shapes", {})
+        b.update(shape="geo", dims=[table.dim(geo)], shapes=facts.get("geo_shapes", {}))
         b["click"] = b["dims"][0]
+        return b, ""
+    if kind in ("symbol_map", "density_map"):
+        geo = facts.get("geo_field")
+        if not geo or "geo_points" not in facts:
+            return None, "this map can't be recomputed after filtering"
+        b.update(shape="points_map", dims=[table.dim(geo)], points=facts["geo_points"], max_points=MAX_MAP_POINTS,
+                 colors=_signs(fig))  # fmt: skip
+        b["click"] = b["dims"][0]
+        return b, ""
+    if kind == "flow_map":
+        if "flow_places" not in facts:
+            return None, "this map can't be recomputed after filtering"
+        b.update(shape="flows", dims=[table.dim(str(spec.source)), table.dim(str(spec.target))],
+                 places=facts["flow_places"], max_flows=100)  # fmt: skip
+        b["click"] = b["dims"][0]
+        return b, ""
+    if kind == "sankey":
+        b.update(
+            shape="sankey",
+            dims=[table.dim(str(spec.source)), table.dim(str(spec.target))],
+            max_links=60,
+        )
+        b["click"] = b["dims"][0]
+        return b, ""
+    if kind == "histogram":
+        return _histogram_binding(b, fig, table, frame, i)
+    if kind == "boxplot":
+        from tabsight.charts.relation import MAX_BOXES
+
+        column = spec.y if isinstance(spec.y, str) else None
+        if column is None:
+            return None, "this box plot can't be recomputed after filtering"
+        if len(frame) > MAX_LIST_VALUES:
+            return None, f"exact quartiles would need all {len(frame):,} values"
+        if resolve().min_group_size:
+            return (
+                None,
+                "quartiles would show single values, and min_group_size asks to hide small groups",
+            )
+        group_col = spec.x if isinstance(spec.x, str) else None
+        b.update(shape="box", dims=[table.dim(group_col)] if group_col else [], max_boxes=MAX_BOXES, name=column,
+                 order=[str(v) for v in prof[group_col].ordered or ()] if group_col and prof[group_col].ordered else None,
+                 measures=[{"parts": table.measure(column, "median"), "agg": "median", "label": column}])  # fmt: skip
+        b["click"] = b["dims"][0] if b["dims"] else None
         return b, ""
     if kind == "table":
         b["shape"] = "rows"
@@ -680,28 +773,145 @@ def _binding(fig: Figure, tile: Mapping[str, Any], table: _SharedTable, prof: Pr
         b["top"] = spec.top
         b["click"] = b["dims"][0] if b["dims"] else None
         return b, ""
+    if kind in ("treemap", "sunburst"):
+        tree_dims = dims + ([spec.color] if spec.color else [])
+        b.update(shape="tree", dims=[table.dim(d) for d in tree_dims], max_leaves=500)
+        b["click"] = b["dims"][0]
+        return b, ""
     x = dims[0]
+    if numeric_x:
+        from tabsight.charts.relation import MAX_LINE_POINTS, _numbers
+
+        numbers = _numbers(frame, x)
+        if numbers.nunique() > MAX_LINE_POINTS:
+            return (
+                None,
+                f"lines over more than {MAX_LINE_POINTS:,} x values are thinned, so they are drawn from all the data",
+            )
+        keys = pd.Series(
+            [repr(float(v)) if np.isfinite(v) else None for v in numbers],
+            index=frame.index,
+            dtype="object",
+        )
+        b.update(
+            shape="numeric_lines",
+            dims=[table.window(f"__num{i}", keys)]
+            + ([table.dim(spec.color)] if spec.color else []),
+        )
+        return b, ""
     time = prof[x].role == "time"
     grain = freq or prof[x].grain or "day"
+    if kind == "calendar_heatmap":
+        b.update(shape="calendar", dims=[table.dim(x, "day")], max_years=3, ramps=_ramps(fig))
+        b["click"] = b["dims"][0]
+        return b, ""
     xcol = table.dim(x, grain if time else None)
-    b["dims"] = [xcol] + ([table.dim(spec.color)] if spec.color else [])
-    b["shape"] = "series" if spec.color else "category"
     b["time"] = time
     b["click"] = xcol
     if time:
         b["periods"] = table.periods(xcol)
     b["sort"] = "time" if time else _sort_rule(spec, prof, x, True)
     b["order"] = None if time else _order(spec, prof, x)
-    top = spec.top
-    if kind == "donut" and top is None:
-        top = 7
-    b["top"] = top
-    b["missing"] = (
-        "zero"
-        if kind in ("bar", "hbar", "grouped_bar", "stacked_bar", "stacked100_bar")
-        else resolve().missing
-    )
-    b["horizontal"] = kind == "hbar"
+    b["top"] = spec.top
+    yaxis: dict[str, Any] = option["yAxis"] if isinstance(option.get("yAxis"), dict) else {}
+    b["horizontal"] = yaxis.get("type") == "category"
+    if kind == "heatmap":
+        b.update(
+            shape="heatmap",
+            dims=[xcol, table.dim(str(spec.color))],
+            ramps=_ramps(fig),
+            labelled_up_to=150,
+        )
+        return b, ""
+    if kind == "waterfall":
+        b.update(
+            shape="waterfall",
+            dims=[xcol],
+            total=spec.options.get("total", True),
+            colors=_signs(fig),
+        )
+        if spec.sort is None and not time and not prof[x].ordered:
+            b["sort"], b["order"] = "order", list(dict.fromkeys(frame[x].dropna().astype(str)))
+        return b, ""
+    if kind == "funnel":
+        b.update(shape="funnel", dims=[xcol], keep_order=spec.sort is not None or bool(prof[x].ordered),
+                 palette=_palette(fig))  # fmt: skip
+        return b, ""
+    if kind == "pareto":
+        b.update(shape="pareto", dims=[xcol])
+        b["top"] = spec.top or 30
+        return b, ""
+    if kind in ("scatter", "bubble"):
+        b.update(shape="points", dims=[xcol] + ([table.dim(spec.color)] if spec.color else []))
+        return b, ""
+    if kind == "bullet":
+        b.update(shape="bullet", dims=[xcol])
+        return _goal_binding(b, spec, table, prof), ""
+    b["dims"] = [xcol] + ([table.dim(spec.color)] if spec.color else [])
+    b["shape"] = "series" if spec.color else "category"
+    if kind == "donut" and b["top"] is None:
+        b["top"] = 7
+    bars = ("bar", "hbar", "grouped_bar", "stacked_bar", "stacked100_bar", "lollipop")
+    b["missing"] = "zero" if kind in bars or (kind == "combo" and not time) else resolve().missing
+    return b, ""
+
+
+def _palette(fig: Figure) -> list[str]:
+    from tabsight.colors import PALETTES
+
+    name = resolve().palette
+    return list(PALETTES.get(name, PALETTES["classic10"]))
+
+
+def _goal_binding(
+    b: dict[str, Any], spec: Any, table: _SharedTable, prof: Profile
+) -> dict[str, Any]:
+    goal = spec.options.get("goal")
+    if isinstance(goal, str):
+        field = prof[goal]
+        agg = field.agg if field.agg in ("sum", "mean", "min", "max") else "sum"
+        b["goal_measure"] = {"parts": table.measure(goal, agg), "agg": agg, "label": goal}
+    elif goal is not None:
+        b["goal"] = float(goal)
+    return b
+
+
+def _signs(fig: Figure) -> dict[str, str]:
+    from tabsight.charts._common import NEGATIVE, POSITIVE, is_dark
+
+    mode = "dark" if is_dark(fig.theme.tile) else "light"
+    return {"pos": POSITIVE[mode], "neg": NEGATIVE[mode]}
+
+
+def _ramps(fig: Figure) -> dict[str, list[str]]:
+    from tabsight.charts._common import DIV_DARK, DIV_LIGHT, SEQ_DARK, SEQ_LIGHT, is_dark
+
+    dark = is_dark(fig.theme.tile)
+    return {"seq": SEQ_DARK if dark else SEQ_LIGHT, "div": DIV_DARK if dark else DIV_LIGHT}
+
+
+def _histogram_binding(b: dict[str, Any], fig: Figure, table: _SharedTable, frame: pd.DataFrame,
+                       i: int) -> tuple[dict[str, Any] | None, str]:  # fmt: skip
+    """Bins stay those of all the data, so bars line up while filtering; counts are recomputed."""
+    from tabsight.charts.relation import _bins, _numbers
+
+    spec = fig.spec
+    column = spec.x if isinstance(spec.x, str) else spec.y if isinstance(spec.y, str) else None
+    if column is None:
+        return None, "this histogram can't be recomputed after filtering"
+    values = _numbers(frame, column).to_numpy(dtype="float64")
+    finite = pd.Series(values[np.isfinite(values)])
+    edges, _ = _bins(finite, spec.options.get("bins"), spec.options.get("bin_width"))
+    index = np.clip(np.searchsorted(edges, values, side="right") - 1, 0, len(edges) - 2)
+    keys = pd.Series([str(int(k)) if np.isfinite(v) else None for k, v in zip(index, values, strict=True)],
+                     index=frame.index, dtype="object")  # fmt: skip
+    col = table.window(f"__bin{i}", keys)
+    option = fig.option or {}
+    data = option["series"][0]["data"]
+    b.update(shape="histogram", dims=[col], bins=len(edges) - 1, labels=list(option["xAxis"]["data"]),
+             notes=[d.get("note") for d in data],
+             measures=[{"parts": {"count": "__rows"}, "agg": "count", "label": "Rows"}])  # fmt: skip
+    b["click"] = col
     return b, ""
 
 

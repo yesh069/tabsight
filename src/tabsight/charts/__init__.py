@@ -304,21 +304,16 @@ class _Context:
                 why = "; ".join(r.split(", because ", 1)[-1] if r.startswith(_AGG_WORDS.get(agg, "~")) else r
                                 for r in field.reasons) or "the default for this column"  # fmt: skip
             self.decisions.append(f"{name} is {_AGG_WORDS.get(agg, agg)}: {why}")
-            self.facts.setdefault("measures", []).append(
-                {
-                    "column": name,
-                    "agg": agg,
-                    "unit": field.unit,
-                    "role": field.role,
-                    "default_agg": field.agg,
-                }
-            )
             out.append(Measure(name, agg))
             fmt = self.number_kwargs(out[-1])
             unit = fmt.pop("unit")
-            self.facts["measures"][-1].update(
-                full=js_spec(unit, "full", **fmt), compact=js_spec(unit, "compact", **fmt)
-            )
+            fact = {"column": name, "agg": agg, "unit": field.unit, "role": field.role, "default_agg": field.agg,
+                    "full": js_spec(unit, "full", **fmt), "compact": js_spec(unit, "compact", **fmt)}  # fmt: skip
+            known = self.facts.setdefault("measures", [])
+            if not any(
+                f["column"] == name and f["agg"] == agg for f in known
+            ):  # a builder may ask twice
+                known.append(fact)
         return out
 
     def describe_format(self, measures: list[Measure], where: str) -> None:

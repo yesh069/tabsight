@@ -84,12 +84,14 @@ After a filter, the browser re-ranks the top N and the "Other" group, re-sorts t
 
 ## Tiles that are drawn from all the data
 
-Some tiles can't be recomputed exactly from the shared table, so they are drawn from all the data. When a filter is active they say "Not affected by filters" and why, so nothing looks wrong silently:
+Almost every tile is recomputed after filtering. Only charts that draw single rows can't be, because the page never holds your rows:
 
 ```python
+coords = orders.assign(lat=40.0, lon=-100.0)
 dash2 = (
-    ts.Dashboard("Mixed", data=orders)
+    ts.Dashboard("Mixed", data=coords)
     .add("scatter", x="Sales", y="Profit")
+    .add("symbol_map", lat="lat", lon="lon", y="Sales")
     .add("bar", x="Region", y="Customer_ID", agg="countd")
 )
 for tile in dash2.build()["tiles"]:
@@ -97,12 +99,18 @@ for tile in dash2.build()["tiles"]:
 ```
 
 ```text title="Output"
-scatter - scatter tiles are not recomputed after filtering yet
-bar - distinct counts can't be recomputed exactly from the shared table
+scatter - a scatter of single rows needs the rows themselves, which the page doesn't hold
+symbol_map - maps of coordinates draw single rows, which the page doesn't hold
+bar - recomputed
 ```
 
-- **Recomputed after filtering:** bar, horizontal bar, grouped, stacked and 100% stacked bars, line, multi-line, area, stacked area, donut, KPI (with or without a comparison), table and filled map.
-- **Drawn from all the data:** scatter and bubble (one dot per row), histogram, box plot, treemap, sunburst, waterfall, funnel, Pareto, lollipop, bullet, gauge, combo, heatmaps, Sankey, symbol, density and flow maps, and any tile using a median, distinct count or weighted average.
+When a filter is active, those tiles say "Not affected by filters" and why, so nothing looks wrong silently.
+
+- **Recomputed after filtering:** every bar, line and area kind (including lines over a number axis, up to 2,000 x values), donut, lollipop, combo, KPI, gauge and bullet, table, funnel, Pareto, waterfall, heatmap, calendar heatmap, treemap, sunburst, Sankey, histogram, box plot, scatter and bubble by category, and filled, symbol, density and flow maps.
+- **Medians, distinct counts and box plots** are exact too. For these the page keeps the values of each group, up to 200,000 in total. Distinct counts keep numbered codes, never the values themselves, so a count of customer IDs never puts an ID in the file. Medians and box plots are left static when `min_group_size` is set, because one value of a small group would show.
+- **Histograms keep the bins of all the data**, so the bars stay in the same place while you filter. Only the counts change.
+- **Waterfall steps keep their order** from all the data while you filter.
+- **Drawn from all the data:** a scatter of single rows (numbers on both axes), maps placed by `lat=`/`lon=`, and lines with more than 2,000 x values (which are thinned).
 
 Trend lines, forecasts and reference lines are shown while nothing is filtered and hidden when a filter is on, because they describe all the data. The insights panel says the same when filters are active.
 

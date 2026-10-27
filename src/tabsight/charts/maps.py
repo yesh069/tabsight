@@ -121,6 +121,14 @@ def map_chart(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
             else None
         )
         option, maps = _symbols(points, base, m, ctx, dark, lang, insets=target.country == "USA")
+        # Dashboards redraw the points after filtering: where each spelling sits, and its name.
+        usa = target.country == "USA"
+        ctx.facts["geo_points"] = {
+            raw: [fid, *(_inset_point(xy) if usa else xy), _place_name(target, fid, lang)]
+            for raw, fid in matched.ids.items()
+            if (xy := _point(target, fid)) is not None
+        }
+        ctx.facts["geo_field"] = geo
         if spec.kind == "density_map":
             option = _to_density(option, m, ctx)
     ctx.describe_format(measures, "; in tooltips and the legend")
@@ -389,6 +397,13 @@ def _flow_map(
 
     def place(v: Any) -> str | None:
         return matched.ids.get(str(v).strip()) if pd.notna(v) else None
+
+    usa_lines = target.country == "USA" and target.level in ("region", "city")
+    ctx.facts["flow_places"] = {
+        raw: [fid, *(_inset_point(xy) if usa_lines else xy), _place_name(target, fid, lang)]
+        for raw, fid in matched.ids.items()
+        if (xy := _point(target, fid)) is not None
+    }
 
     work = frame.assign(
         **{"__from": frame[source].map(place), "__to": frame[target_col].map(place)}
