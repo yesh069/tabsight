@@ -29,7 +29,8 @@ classifiers = [
 dependencies = ["pandas>=2.2"]
 
 [project.optional-dependencies]
-excel = ["openpyxl>=3.1"]
+# defusedxml makes openpyxl reject XML bombs; pyarrow >= 15 is after CVE-2023-47248.
+excel = ["openpyxl>=3.1", "defusedxml>=0.7"]
 parquet = ["pyarrow>=15"]
 polars = ["polars>=1.0", "pyarrow>=15"]
 png = ["playwright>=1.45"]
@@ -39,6 +40,10 @@ dev = [
     "ruff>=0.6",
     "mypy>=1.10",
     "pandas-stubs",
+    "pip-audit>=2.7",
+    "openpyxl>=3.1",
+    "defusedxml>=0.7",
+    "pyarrow>=15",
 ]
 
 [project.scripts]
@@ -71,9 +76,28 @@ src = ["src", "tests"]
 extend-exclude = ["data-raw", "tools/node_modules"]
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "PTH"]
+# S = flake8-bandit security rules (see docs/SECURITY_CHECKLIST.md)
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "PTH", "S"]
+# Line length is handled by `ruff format`; long message strings and data tables are fine.
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+# These modules handle number text on purpose: minus signs and non-breaking spaces.
+"src/tabsight/read.py" = ["RUF001"]
+"src/tabsight/formats.py" = ["RUF001"]
+"tests/test_read.py" = ["RUF001"]
+"tests/test_formats.py" = ["RUF001"]
+# Tests may use assert and run Node/Python subprocesses with fixed arguments.
+"tests/**" = ["S101", "S603", "S607"]
+# The vendor fetcher downloads fixed, pinned https URLs (hash-checked afterwards).
+"tools/fetch_vendor.py" = ["S310"]
 
 [tool.mypy]
 python_version = "3.11"
 strict = true
 files = ["src/tabsight"]
+
+[[tool.mypy.overrides]]
+# Optional readers without type information.
+module = ["openpyxl", "openpyxl.*", "pyarrow", "pyarrow.*", "polars", "polars.*"]
+ignore_missing_imports = true

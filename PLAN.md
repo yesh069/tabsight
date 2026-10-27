@@ -225,7 +225,7 @@ Rows 53–60 were added in the second review and rows 61–68 in the third. They
 
 | # | Feature | How it works |
 |---|---------|--------------|
-| 52 | Where settings come from | **Per chart → per dashboard → `with ts.config(...)` block → global → default.** Settings are stored in `contextvars`, so they are safe in web servers with many users at once. |
+| 52 | Where settings come from | **Per chart → per dashboard → `with ts.config(...)` block → `ts.set_defaults(...)` → built-in default.** Scoped settings live in `contextvars`, so they are safe in web servers with many users at once. `ts.set_defaults` changes the whole program (typically once at start-up). Calling `ts.config(...)` without `with` does nothing, so tabsight warns and points to `set_defaults`. |
 
 ---
 
@@ -284,7 +284,7 @@ Most users clean data their own way, so tabsight never forces cleaning.
 |------|----------|-----------------------|---------------|
 | Column names | Clean internal key; display name kept | — | Duplicates |
 | Text values | Trim spaces | Merge case variants into the most common spelling | Near-duplicates (`Califronia`), with a "did you mean" |
-| Dates | Standardise separators; infer day/month from values above 12 | Use the locale when the data can't decide (assumption recorded) | Unparseable values; year 1900; future dates; ship-before-order |
+| Dates | Standardise separators; infer day/month from values above 12 | Use the locale when the data can't decide (assumption recorded) | Unparseable values; dates before 1901; future dates (only against an explicit `as_of`, never the clock); ship-before-order |
 | Numbers as text | `"$1,234.50"`, `"15%"`, `"(500)"` → numbers, unit remembered | European separators | Values that can't be converted |
 | Excel serial dates | — | A date-named column of numbers like `43831` → dates (Excel's day count) | The guess and the date range it produces |
 | Missing values | Placeholders (`N/A`, `-`, `null`, `?`, `""`) → missing | — | Measures are never filled; dimensions show "Unknown" |
@@ -293,10 +293,10 @@ Most users clean data their own way, so tabsight never forces cleaning.
 
 ```python
 clean_df, report = ts.clean(df, mode="safe")
-report.show()            # applied / suggested / warnings, quality score out of 100
+report.show()  # applied / suggested / warnings, quality score out of 100
 report.apply("Segment")  # apply one suggestion
-report.undo("Region")    # restore one column
-report.to_dict()         # save the decisions and reuse them on next month's data
+report.undo("Region")  # restore one column
+report.to_dict()  # save the decisions and reuse them on next month's data
 ```
 
 ---
@@ -499,6 +499,7 @@ Street or satellite backgrounds (OpenStreetMap tiles) need a network connection,
 **Way 1: one line (beginners)**
 ```python
 import pandas as pd, tabsight as ts
+
 df = pd.read_csv("superstore.csv")
 ts.auto(df).to_html("sales_dashboard.html")
 ```
@@ -508,11 +509,12 @@ tabsight auto superstore.csv -o sales_dashboard.html
 
 **Way 2: pick your own charts (analysts)**
 ```python
-ts.config(locale="en_IE", currency="EUR")
-ts.recommend(df, x="Region", y="Sales")          # ranked, with reasons
+ts.set_defaults(locale="en_IE", currency="EUR")  # whole program
+ts.recommend(df, x="Region", y="Sales")  # ranked, with reasons
 
-fig = ts.chart(df, "map", geo="County", y="Sales")   # Irish county map, detected automatically
-fig.lint(); fig.explain()
+fig = ts.chart(df, "map", geo="County", y="Sales")  # Irish county map, detected automatically
+fig.lint()
+fig.explain()
 
 dash = ts.Dashboard("Sales Performance", data=df, filters=["Region", "Order_Date"])
 dash.kpi("Sales", compare="previous_year").kpi("Profit")
@@ -529,7 +531,7 @@ ts.Dashboard.load("sales.json").bind(new_df).to_html("my_dashboard_nov.html")
 
 **Way 3: inside a web app (developers)**
 ```python
-@app.post("/chart")                              # FastAPI
+@app.post("/chart")  # FastAPI
 def chart(query: Query):
     with ts.config(locale=query.locale):
         return ts.serve_payload(run_sql(query.sql))
@@ -620,8 +622,9 @@ With cross-filtering, *any* tile's field can filter every other tile, and drill-
 `ts.serve_payload(...)` returns JSON. The same JS runtime draws it, and filter changes call the API instead of filtering locally. Medians, distinct counts and huge data are always exact in this mode.
 
 ### 9.4 Settings
-- `ts.config` stores settings in `contextvars`.
-- A `with ts.config(...)` block scopes them, so concurrent web requests never overwrite each other.
+- `ts.set_defaults(...)` changes process-wide defaults (thread-safe, under a lock).
+- `with ts.config(...)` scopes settings in `contextvars`, so concurrent web requests (threads or async tasks) never overwrite each other. Both are tested.
+- Every setting is validated (locale and currency patterns, ranges, names), and unknown setting names get a "did you mean".
 
 ---
 
@@ -634,7 +637,7 @@ tabsight/
   src/tabsight/
     __init__.py            public API
     __main__.py / cli.py   command line: tabsight auto | check | clean | recommend
-    config.py              contextvars settings, hierarchy, `with ts.config(...)`
+    settings.py            Settings, ts.set_defaults, `with ts.config(...)` (contextvars); named settings.py so it is not hidden by the ts.config function
     warnings.py            tabsight warning categories
     io.py                  read CSV / Excel / Parquet, polars and list-of-dicts input
     read.py                internal copy, date and number reading (never changes user data)
@@ -834,6 +837,7 @@ Every insight shows a small tag: "for current filters" or "based on all data". A
 | Small groups | Grouped data can still reveal one person (for example the salary of a one-person team). `min_group_size=5` hides groups smaller than that, shown as "fewer than 5". Off by default; recommended in the docs for HR, health and survey data. |
 | Untrusted dashboard files | A saved spec contains no code: formatters are allow-listed names, formulas go through our parser, raw ECharts options cannot contain functions, and unknown keys are rejected. Loading someone else's spec is therefore safe, and tests use malicious specs to prove it. |
 | URL state | Filter values read from the address are treated as data: matched against known values and escaped, never inserted as HTML. |
+| Built into every phase | `docs/SECURITY_CHECKLIST.md`. Enforced automatically on every test run: an AST guard (no `eval`/`exec`/`pickle`/`subprocess`, no `.format()` on runtime strings, no network modules, file readers only in `io.py`), ruff bandit rules (`S`), pip-audit and npm audit in CI, Dependabot, hash-locked vendored files, fuzz tests on every parser, and "input unchanged" tests. |
 | Trademark | "Tableau" is a trademark of Salesforce. Branding, the PyPI description and the README tagline say "BI-quality" or "dashboard-quality". Tableau is named only in factual comparisons. The `tabsight` name gets a trademark search before 0.1.0. |
 
 Tests use malicious category names (`<img onerror=...>`, `</script>`) to prove the escaping works.
@@ -917,6 +921,8 @@ These go in the README to show tabsight is better, with numbers.
 ---
 
 ## 20. Build order (each phase is finished and tested before the next)
+
+**Status:** Phase 0 done (27 Oct 2026). Phase 1 done (27 Oct 2026). Every phase follows `docs/SECURITY_CHECKLIST.md`, and its automated guards run with every test run.
 
 | Phase | Deliverable | Done when |
 |-------|-------------|-----------|

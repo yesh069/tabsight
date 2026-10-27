@@ -98,7 +98,9 @@ def main() -> int:
         lock[rel] = {"url": url, "sha256": digest, "bytes": dest.stat().st_size}
         print(f"ok        {rel}  {dest.stat().st_size:,} bytes  {digest[:12]}")
 
-    LOCK.write_text(json.dumps(lock, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    LOCK.write_text(
+        json.dumps(lock, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n"
+    )
     return 1 if failed else 0
 
 
