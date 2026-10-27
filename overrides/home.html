@@ -1,0 +1,32 @@
+{% extends "main.html" %}
+
+{% block tabs %}
+  {{ super() }}
+  <section class="ts-hero" aria-label="tabsight">
+    <div class="md-grid ts-hero__inner">
+      <div class="ts-hero__copy">
+        <p class="ts-hero__eyebrow">
+          <img src="{{ 'assets/logo.svg' | url }}" alt="" width="28" height="28">
+          tabsight
+        </p>
+        <h1 class="ts-hero__title">A DataFrame in.<br>A dashboard you can trust out.</h1>
+        <p class="ts-hero__lede">
+          tabsight reads your data the way a careful analyst would, explains every guess
+          it makes, and keeps the numbers exact. No server, no LLM, no network.
+        </p>
+        <div class="ts-hero__actions">
+          <a class="ts-hero__button ts-hero__button--primary" href="{{ 'getting-started/quickstart/' | url }}">Read the quickstart</a>
+          <a class="ts-hero__button ts-hero__button--ghost" href="{{ 'guide/profiling/' | url }}">See how it reads data</a>
+        </div>
+        <p class="ts-hero__status">
+          Early development: data reading, cleaning, formatting and exact aggregation work today.
+          Charts arrive next. <a href="{{ 'project/roadmap/' | url }}">Roadmap</a>
+        </p>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block content %}
+  <div class="ts-home">{{ super() }}</div>
+{% endblock %}

@@ -12,6 +12,7 @@ exclude_docs: |
 
 theme:
   name: material
+  custom_dir: overrides
   # No Google Fonts: the site makes no third-party requests (same rule as the package).
   font: false
   language: en
@@ -22,20 +23,19 @@ theme:
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: indigo
-      accent: blue
+      primary: custom
+      accent: custom
       toggle:
         icon: material/weather-night
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: indigo
-      accent: blue
+      primary: custom
+      accent: custom
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
   features:
-    - navigation.tabs
     - navigation.sections
     - navigation.top
     - navigation.footer
@@ -46,6 +46,9 @@ theme:
     - content.code.copy
     - content.action.edit
     - toc.follow
+
+extra_css:
+  - stylesheets/tabsight.css
 
 plugins:
   - search

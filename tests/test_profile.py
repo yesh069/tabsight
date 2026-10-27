@@ -209,3 +209,10 @@ def test_reports_print_on_a_windows_console(store: pd.DataFrame) -> None:
     texts = [ts.profile(store).show(), ts.check(messy).show(), ts.clean(messy)[1].show()]
     for text in texts:
         text.encode("cp1252")  # raises UnicodeEncodeError if a report uses unprintable characters
+
+
+def test_field_prints_as_one_readable_line(store: pd.DataFrame) -> None:
+    prof = profile(store)
+    assert str(prof["Sales"]) == "Sales: measure, currency, summed (name suggests money)"
+    assert str(prof["Order_Date"]).startswith("Order_Date: time, by day")
+    assert "\n" not in str(prof["Discount"])

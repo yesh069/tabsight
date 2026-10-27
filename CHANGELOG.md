@@ -4,6 +4,17 @@ All notable changes are listed here. The project follows [Semantic Versioning](h
 
 ## Unreleased
 
+### Changed (documentation redesign)
+- Editorial redesign of the docs site: navy hero home page, logo colours throughout, wider reading column, code and its output shown as one unit, quieter tables (`overrides/home.html`, `docs/stylesheets/tabsight.css`).
+- Guide pages rewritten to explain the problem first, with real examples and opinions, and tables only for reference lists.
+- Every example's printed output is real: `tools/render_doc_outputs.py` runs each page and writes the output; `tests/test_docs.py` fails if any shown output is stale.
+
+### Fixed (found by the real outputs)
+- `print(profile["Sales"])` now prints one readable line instead of every internal field.
+- % of total column name: `Sales (% of total, shown rows)` instead of `Sales (% of total (of shown rows))`.
+- With a date first and `top=`, "Other" rows now stay inside each date instead of sinking below every date.
+
+
 ### Added (documentation and logo)
 - Documentation in `docs/`: getting started, 12 user-guide pages, API reference generated from docstrings, formula functions, locales, chart kinds, warnings and errors, roadmap and security. Reads on GitHub and builds a MkDocs Material site.
 - `tests/test_docs.py` runs every documentation example and checks the locale, formula, chart-kind, settings and check-code tables against the code.

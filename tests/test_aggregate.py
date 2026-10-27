@@ -302,3 +302,17 @@ def test_large_input_is_reasonably_fast() -> None:
     start = time.perf_counter()
     aggregate(df, "g", ["v", {"column": "v", "agg": "wavg", "weight": "w", "name": "wv"}], top=5)
     assert time.perf_counter() - start < 5
+
+
+def test_other_stays_inside_each_date_when_grouping_by_date_first() -> None:
+    """Regression: 'Other' rows used to be pushed below every date."""
+    df = pd.DataFrame(
+        {
+            "Month": pd.to_datetime(["2017-01-05", "2017-02-05"] * 3),
+            "Region": ["A", "A", "B", "B", "C", "C"],
+            "Sales": [10.0, 10.0, 5.0, 5.0, 1.0, 1.0],
+        }
+    )
+    vals = aggregate(df, ["Month", "Region"], "Sales", freq="month", top=1).values
+    assert vals["Month"].is_monotonic_increasing
+    assert vals["Region"].tolist() == ["A", "Other (2)", "A", "Other (2)"]

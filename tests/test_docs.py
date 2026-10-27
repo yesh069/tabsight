@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 import re
-import warnings
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -18,36 +18,38 @@ from tabsight.spec import ALIASES, CHART_KINDS
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 PAGES = sorted(DOCS.rglob("*.md"))
-FENCE = re.compile(r"^```python\n(.*?)^```", re.M | re.S)
+PAGES_WITH_CODE = [p for p in PAGES if "```python" in p.read_text(encoding="utf-8")]
 
-
-def python_blocks(page: Path) -> list[str]:
-    blocks = FENCE.findall(page.read_text(encoding="utf-8"))
-    return [b for b in blocks if not b.lstrip().startswith("# not run")]
-
-
-PAGES_WITH_CODE = [p for p in PAGES if python_blocks(p)]
+sys.path.insert(0, str(ROOT / "tools"))
+import render_doc_outputs  # noqa: E402 - tools/ is not a package
 
 
 @pytest.mark.parametrize("page", PAGES_WITH_CODE, ids=lambda p: str(p.relative_to(DOCS)))
-def test_every_example_runs(page: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    """Run a page's examples in order, in one namespace, from the repository root."""
-    namespace: dict[str, object] = {"__name__": "__docs__"}
+def test_examples_run_and_shown_output_is_current(page: Path) -> None:
+    """Every example runs, and every 'Output' block shows exactly what the code prints.
+
+    If this fails after a change, run: python tools/render_doc_outputs.py
+    """
+    render_doc_outputs._setup()
     old = Path.cwd()
     os.chdir(ROOT)
     try:
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            for i, block in enumerate(python_blocks(page), 1):
-                try:
-                    exec(compile(block, f"{page.name} block {i}", "exec"), namespace)
-                except Exception as err:  # pragma: no cover - reported as a failure
-                    pytest.fail(
-                        f"{page.relative_to(DOCS)} example {i} failed: {type(err).__name__}: {err}\n{block}"
-                    )
+        text = page.read_text(encoding="utf-8")
+        rendered = render_doc_outputs.render(text, str(page.relative_to(DOCS)))
     finally:
         os.chdir(old)
         ts.settings.reset_defaults()
+    assert rendered == text, (
+        f"{page.relative_to(DOCS)}: shown output is out of date; run python tools/render_doc_outputs.py"
+    )
+
+
+def test_pages_with_code_show_real_output() -> None:
+    """The guide shows results, not just code (TensorFlow/Polars style)."""
+    for page in (DOCS / "guide").glob("*.md"):
+        text = page.read_text(encoding="utf-8")
+        if "```python" in text:
+            assert '```text title="Output"' in text, f"{page.name} shows no output"
 
 
 def _normalise(text: str) -> str:

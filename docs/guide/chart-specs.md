@@ -1,55 +1,48 @@
 # Chart specs
 
-A `ChartSpec` describes **what a chart shows** as plain, versioned JSON: the kind of chart, which columns go where, how to aggregate and sort, and options. Charts themselves are drawn from Phase 3 onwards; specs exist now so they can be saved, loaded and validated.
+A chart spec is a description of a chart: what kind it is, which columns go where, how to summarise and sort. It's plain JSON, so it can be saved next to a dashboard, sent from a web server to a browser, or written by hand.
+
+Charts themselves arrive in the next phase. Specs exist already so that the format is settled and validated before anything depends on it.
 
 ```python
 import tabsight as ts
 
-spec = ts.ChartSpec(
-    "bar",
-    x="Region",
-    y="Sales",
-    sort="desc",
-    top=10,
-    title="Sales by Region",
-    options={"menu": True},
-)
-text = spec.to_json()
-print(text)
-print(ts.ChartSpec.from_json(text) == spec)
+spec = ts.ChartSpec("bar", x="Region", y="Sales", sort="desc", top=10, title="Sales by region")
+print(spec.to_json())
+print(ts.ChartSpec.from_json(spec.to_json()) == spec)
 ```
 
-## Fields
+```text title="Output"
+{"kind": "bar", "sort": "desc", "tabsight_spec": 1, "title": "Sales by region", "top": 10, "x": "Region", "y": "Sales"}
+True
+```
 
-| Field | Meaning |
-|-------|---------|
-| `kind` | One of the [33 chart kinds](../reference/chart-kinds.md). Aliases: `map`, `pie`, `stackbar`, `column`, `box` |
-| `x`, `y` | Column names; `y` can be a list (combo charts) |
-| `color`, `size`, `facet` | Columns for colour, size and small multiples |
-| `geo`, `lat`, `lon` | Map columns |
-| `source`, `target` | Sankey and flow maps |
-| `agg` | Aggregation (`sum`, `mean`, `wavg`...) |
-| `sort` | `"asc"`, `"desc"`, `"none"`, `"by:<column>"` or a list of values |
-| `top` | Top N (1–1000) |
-| `calc` | Table calculation (`running_total`, `moving_avg:3`...) |
-| `unit`, `currency`, `decimals`, `format` | Formatting |
-| `title`, `subtitle` | Up to 300 characters |
-| `options` | Allow-listed extras: `trend`, `forecast`, `compare`, `fixed`, `log`, `y_min`, `y_max`, `scale`, `action`, `cross_filter`, `drill`, `menu`, `missing`, `weight`, `as_of`, `negative`, `freq`, `projection`, `geo_names`, `insights`, `season` |
+## What a spec can say
 
-## Loading specs is safe
+`kind` is one of the [33 chart kinds](../reference/chart-kinds.md), and a few friendly aliases work too: `map` means `choropleth`, and `pie` means `donut`. The rest are optional: `x` and `y` (a list of `y` columns makes a combo chart), `color`, `size` and `facet` for small multiples, the map columns `geo`, `lat` and `lon`, and `source` and `target` for flows. You can also set how to aggregate (`agg`), sort (`sort`), limit (`top`), add a [table calculation](table-calculations.md) (`calc`), format (`unit`, `currency`, `decimals`, `format`), and give a `title` and `subtitle`.
 
-Specs are often saved and shared, so loading one never runs code:
+Anything more specialised goes in `options`, which only accepts known keys: `trend`, `forecast`, `compare`, `log`, `y_min`, `y_max` and a few others listed in the [API reference](../reference/api.md#tabsight.spec.ChartSpec).
 
-- every key is checked against an allow-list; unknown keys are rejected
-- every value is checked for type and range
-- strings are length-limited and may not contain control characters
-- JSON input is limited to 1 MB
+## Loading a spec someone else wrote
+
+Specs get shared, so loading one has to be safe even when you don't trust where it came from. Every key is checked against a list of known keys, every value is checked for type and range, text is limited in length, and nothing in a spec is ever run as code:
 
 ```python
 from tabsight.warnings import InvalidSpecError
 
-try:
-    ts.ChartSpec.from_dict({"kind": "bar", "options": {"onclick": "alert(1)"}})
-except InvalidSpecError as err:
-    print(err)
+for suspicious in (
+    {"kind": "bar", "options": {"onclick": "alert(1)"}},
+    {"kind": "bar", "title": "x" * 5000},
+    {"kind": "bar", "format": "{0.__class__}"},
+):
+    try:
+        ts.ChartSpec.from_dict(suspicious)
+    except InvalidSpecError as err:
+        print(err)
+```
+
+```text title="Output"
+unknown option 'onclick'
+title must be text of at most 300 characters
+format pattern '{0.__class__}' is not supported; use forms like '#,##0', '0.0%', '"€"#,##0.00'
 ```

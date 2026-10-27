@@ -1,0 +1,292 @@
+/* tabsight documentation theme: colours from the logo, editorial reading layout. */
+
+:root {
+  --ts-navy: #1f3b5c;
+  --ts-navy-deep: #152a42;
+  --ts-blue: #3f6fa3;
+  --ts-orange: #f28e2b;
+  --ts-orange-text: #b35f0d; /* orange dark enough for text on white (WCAG AA) */
+  --ts-paper: #fbfaf7;
+}
+
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: var(--ts-navy);
+  --md-primary-fg-color--light: var(--ts-blue);
+  --md-primary-fg-color--dark: var(--ts-navy-deep);
+  --md-accent-fg-color: var(--ts-orange);
+  --md-typeset-a-color: #1d5fa3;
+  --md-default-bg-color: #ffffff;
+  --md-code-bg-color: #f5f6f8;
+  --ts-output-bg: var(--ts-paper);
+  --ts-output-border: #e6e1d6;
+  --ts-rule: #e8e8e8;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-hue: 215;
+  --md-primary-fg-color: #1b2f47;
+  --md-primary-fg-color--light: #2a4a6e;
+  --md-primary-fg-color--dark: #101e2e;
+  --md-accent-fg-color: var(--ts-orange);
+  --md-typeset-a-color: #8cb6e6;
+  --md-default-bg-color: #12161c;
+  --md-code-bg-color: #1a2029;
+  --ts-output-bg: #161b22;
+  --ts-output-border: #2b333e;
+  --ts-rule: #262d36;
+}
+
+/* ---------------------------------------------------------------- reading layout */
+
+.md-typeset {
+  font-size: 0.84rem;
+  line-height: 1.72;
+}
+
+.md-content__inner {
+  max-width: 48rem;
+}
+
+.md-typeset h1 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--md-default-fg-color);
+  margin-bottom: 0.6em;
+}
+
+.md-typeset h2 {
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  margin-top: 2.2em;
+  padding-top: 1.2em;
+  border-top: 1px solid var(--ts-rule);
+}
+
+.md-typeset h3 {
+  font-weight: 650;
+}
+
+/* The first paragraph of a page reads as an introduction. */
+.md-typeset h1 + p {
+  font-size: 1.08em;
+  color: var(--md-default-fg-color);
+  opacity: 0.82;
+}
+
+.md-typeset a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.md-typeset a:hover {
+  color: var(--ts-orange-text);
+}
+
+[data-md-color-scheme="slate"] .md-typeset a:hover {
+  color: var(--ts-orange);
+}
+
+/* ---------------------------------------------------------------- code and output */
+
+.md-typeset pre > code {
+  font-size: 0.8rem;
+}
+
+/* A code block followed by its output reads as one unit: code above, result below. */
+.md-typeset .highlight:has(+ .highlight span.filename) pre {
+  margin-bottom: 0;
+}
+
+.md-typeset .highlight:has(+ .highlight span.filename) + .highlight span.filename {
+  margin-top: 0;
+}
+
+/* Output is for reading, not copying. */
+.md-typeset .highlight:has(span.filename) .md-clipboard {
+  display: none;
+}
+
+.md-typeset .highlight:has(+ .highlight .language-text),
+.md-typeset .highlight:has(+ .highlight span.filename) {
+  margin-bottom: 0;
+}
+
+.md-typeset .highlight:has(+ .highlight .language-text) pre > code,
+.md-typeset .highlight:has(+ .highlight span.filename) pre > code {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.md-typeset .highlight .language-text,
+.md-typeset .highlight:has(.language-text) pre > code {
+  background: var(--ts-output-bg);
+  box-shadow: inset 0 0 0 1px var(--ts-output-border);
+}
+
+.md-typeset .highlight span.filename {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--md-default-fg-color--light);
+  background: var(--ts-output-bg);
+  box-shadow: inset 0 0 0 1px var(--ts-output-border);
+  border-radius: 0;
+  padding: 0.35em 1.1em;
+}
+
+.md-typeset .highlight:has(span.filename) {
+  margin-top: 0;
+}
+
+/* ---------------------------------------------------------------- tables: reference only, quieter */
+
+.md-typeset table:not([class]) {
+  font-size: 0.78rem;
+  border: 1px solid var(--ts-rule);
+  box-shadow: none;
+}
+
+.md-typeset table:not([class]) th {
+  background: transparent;
+  font-weight: 650;
+  border-bottom: 2px solid var(--ts-rule);
+}
+
+/* ---------------------------------------------------------------- header */
+
+.md-header {
+  box-shadow: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.md-header__topic:first-child {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* ---------------------------------------------------------------- home page hero */
+
+.ts-hero {
+  background: var(--ts-navy);
+  color: #f2f4f7;
+  border-bottom: 4px solid var(--ts-orange);
+}
+
+[data-md-color-scheme="slate"] .ts-hero {
+  background: #152335;
+}
+
+.ts-hero__inner {
+  padding: 3.4rem 0.8rem 3rem;
+}
+
+.ts-hero__copy {
+  max-width: 40rem;
+}
+
+.ts-hero__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 1.4rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #dfe6ee;
+}
+
+.ts-hero__eyebrow img {
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
+.ts-hero__title {
+  margin: 0 0 1rem;
+  font-size: 2.15rem;
+  line-height: 1.12;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+}
+
+.ts-hero__lede {
+  margin: 0 0 1.8rem;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: #cdd7e2;
+  max-width: 34rem;
+}
+
+.ts-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-bottom: 1.6rem;
+}
+
+.ts-hero__button {
+  display: inline-block;
+  padding: 0.6em 1.25em;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 650;
+  text-decoration: none;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.ts-hero__button--primary {
+  background: var(--ts-orange);
+  border-color: var(--ts-orange);
+  color: #1b1206;
+}
+
+.ts-hero__button--primary:hover,
+.ts-hero__button--primary:focus-visible {
+  background: #ffa04a;
+  border-color: #ffa04a;
+  color: #1b1206;
+}
+
+.ts-hero__button--ghost {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.ts-hero__button--ghost:hover,
+.ts-hero__button--ghost:focus-visible {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+.ts-hero__button:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.ts-hero__status {
+  margin: 0;
+  font-size: 0.72rem;
+  color: #a9b8c8;
+}
+
+.ts-hero__status a {
+  color: #ffffff;
+}
+
+@media screen and (max-width: 44.9375em) {
+  .ts-hero__title {
+    font-size: 1.6rem;
+  }
+  .ts-hero__inner {
+    padding: 2.2rem 0.8rem 2rem;
+  }
+}
+
+/* The home page: the hero already names the product, so hide the automatic title. */
+.ts-home > h1 {
+  display: none;
+}

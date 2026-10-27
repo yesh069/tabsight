@@ -1,52 +1,59 @@
 # How tabsight thinks
 
-## The six rules
+tabsight makes a lot of decisions for you. This page explains the few rules those decisions follow, so the defaults stop being surprising.
 
-Every feature follows these rules. They are also tested automatically.
+## It suggests; you decide
 
-1. **Never change the user's data.** Every function works on a copy. A test calls every public function and checks that the input DataFrame is identical afterwards.
-2. **A smart default, but always overridable.** Every guess can be changed in one argument (`overrides=`, `agg=`, `dayfirst=`, `unit=` ...).
-3. **Warn, don't block.** Problems show up as warnings, not errors, unless you ask for strict mode (`ts.set_defaults(strict=True)`).
-4. **Show every guess.** Profiles list a reason for every decision; results carry `notes`.
-5. **Extras are opt-in.** Cleaning, forecasts and insights are off or clearly labelled.
-6. **Private and offline by default.** No network calls, no telemetry, no clock.
+Every decision tabsight makes about your data is a suggestion with a reason attached. You can read the reason and you can change the decision in one argument. Nothing is hidden behind a setting you can't reach.
 
-## Reading vs cleaning
+That's also why tabsight warns rather than stops. If your data has two currencies in one column, you get a warning and the totals are split by currency; you don't get an exception at 5 pm on a Friday. If you'd rather it did stop, turn on strict mode with `ts.set_defaults(strict=True)`.
 
-tabsight separates *understanding* data from *changing* it.
+## It never changes your data
 
-| | Reading (always on) | Cleaning (optional) |
-|---|---|---|
-| What it does | Works out roles, units and formats so results are right | Changes values: trims spaces, merges spellings, converts types |
-| Changes your data? | No. It works on a temporary internal copy | Only in a new copy, with a report you can undo |
-| Example | Reads `"01/15/2017"` as a date for grouping | Turns `west` into `West` |
+Every function works on a copy. You can hand tabsight the DataFrame your whole notebook depends on and get it back untouched. This is checked by a test that calls every public function and compares the input before and after.
+
+The one place values change is cleaning, and that's opt-in. tabsight separates *reading* data from *changing* it:
+
+- Reading happens all the time. It's how tabsight knows `"01/15/2017"` is a date and `"$1,234.50"` is a number. It works on a temporary copy, so your data doesn't change.
+- Cleaning only happens when you call `ts.clean`. It returns a new DataFrame and a report listing every change, and any change can be undone.
 
 ## Roles
 
-`ts.profile` gives every column one role:
+Each column gets one role, and the role decides what tabsight is willing to do with it. A *dimension* is something you group by, such as Region. A *measure* is something you add up or average, such as Sales. *Time* columns are dates, or whole-number years. An *id* is counted but never summed, which is the whole point of recognising it. *coord* is latitude or longitude, and *text* is long free text that nobody charts.
 
-| Role | Meaning | Example |
-|------|---------|---------|
-| `dimension` | Something you group by | Region, Category, Segment |
-| `measure` | Something you add up or average | Sales, Profit, Discount |
-| `time` | Dates and times (or whole-number years) | Order_Date, Year |
-| `id` | Identifiers; counted, never summed | Order_ID, Postal_Code |
-| `coord` | Latitude or longitude | Latitude, Lng |
-| `text` | Long free text | Comments |
+## Exact numbers, even after filtering
 
-## Exact numbers after filtering
+This is the rule that shapes the most code. When a dashboard viewer filters to one region, every chart has to recompute. Sums are easy: add the remaining sums. Averages are not. The average of three regional averages is not the average of the orders in those regions, and medians can't be recombined at all.
 
-Dashboards let viewers filter. Re-adding sums after a filter is easy, but you cannot average averages, and a median of medians is wrong. tabsight therefore stores every aggregation as **parts** that can be re-combined exactly:
+So tabsight never stores a finished average. It stores the *parts*: a sum and a count for a mean, Σ(weight × value) and Σweight for a weighted average, and the values themselves for a median. Recombining the parts after a filter gives exactly what you'd get from the raw rows. Here's what that looks like:
 
-| Aggregation | Stored | Re-combined as |
-|-------------|--------|----------------|
-| sum | sum | sum of sums |
-| mean | sum + count | total sum ÷ total count |
-| weighted average | Σ(w·x) and Σw | Σ(w·x) ÷ Σw |
-| median, distinct count | the values | computed from the values |
+```python
+import tabsight as ts
+from tabsight.aggregate import build_parts, combine_parts
 
-A property-based test generates random datasets and filters and checks that re-combined parts always equal pandas computing from the raw rows. See [Aggregating](../guide/aggregating.md).
+orders = ts.load("examples/superstore_sample.csv")
+discount = ts.Measure("Discount", "mean")
 
-## Determinism
+parts = build_parts(orders, ["Region", "Segment"], [discount])
+west = parts[parts["Region"] == "West"]
+print(combine_parts(west, ["Segment"], [discount])[["Segment", "Discount"]])
+print(orders[orders.Region == "West"].groupby("Segment").Discount.mean())
+```
 
-The same input always gives the same output: no randomness, no reading of the clock ("today" comes from the data or `as_of=`), and ties are broken by name.
+```text title="Output"
+       Segment  Discount
+0  Home Office      0.14
+1     Consumer      0.14
+2    Corporate      0.15
+Segment
+Consumer       0.14
+Corporate      0.15
+Home Office    0.14
+Name: Discount, dtype: float64
+```
+
+The two results match. A property-based test checks the same thing for thousands of random datasets and filters, across all eight aggregations.
+
+## Same input, same output
+
+There's no randomness, no reading of the clock, and no network. Ties are broken by name, so "same input, same output" holds even for sorting and colours. Anything relative to "today" uses the latest date in your data, or an `as_of=` date you pass in. A report you run on Monday matches the one you run on Friday.

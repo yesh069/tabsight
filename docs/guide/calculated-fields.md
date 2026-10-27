@@ -1,94 +1,136 @@
 # Calculated fields
 
-`ts.calc` creates a new field from a formula, like a Tableau calculated field:
+Sometimes the number you need isn't a column. Profit margin, days to ship and order size buckets are formulas. `ts.calc` lets you write them in a small formula language that will feel familiar if you've used Tableau or Excel.
 
 ```python
 import tabsight as ts
 
-df = ts.load("examples/superstore_sample.csv")
+orders = ts.load("examples/superstore_sample.csv")
 margin = ts.calc("Margin = SUM(Profit) / SUM(Sales)")
-print(margin.level, margin.fields)  # aggregate ('Profit', 'Sales')
-print(ts.aggregate(df, "Category", ["Sales", margin]).values)
+result = ts.aggregate(orders, "Segment", ["Sales", margin]).values
+result["Margin"] = result["Margin"].map(lambda m: ts.format_number(m, "percent"))
+print(result)
 ```
 
-Write it as `Name = formula`, or pass the name separately: `ts.calc("SUM(Profit) / SUM(Sales)", name="Margin")`.
+```text title="Output"
+       Segment      Sales Margin
+0     Consumer  148427.19   2.7%
+1    Corporate   76696.93   2.5%
+2  Home Office   50134.72   5.7%
+```
 
-## Two levels
+## Row-level or aggregate?
 
-| Level | Example | Computed |
-|-------|---------|----------|
-| **Row-level** | `[Profit] / [Sales]` | For every row, then aggregated (summed) |
-| **Aggregate** | `SUM([Profit]) / SUM([Sales])` | After grouping |
+This is the one idea to get right. A formula can work on each row, or on the totals after grouping:
 
-For ratios you almost always want the **aggregate** form: total profit ÷ total sales, not the sum of each row's ratio. Aggregate formulas stay exact when a dashboard is filtered, because each `SUM(...)` inside is stored as an exact measure.
+- `[Profit] / [Sales]` is **row-level**. It's computed for every order, then the results are added up.
+- `SUM([Profit]) / SUM([Sales])` is an **aggregate** formula. tabsight adds up profit, adds up sales, then divides.
 
-You cannot mix the two in one formula (`SUM([Sales]) / [Profit]` is an error), and aggregates cannot be nested (`SUM(SUM(...))`).
-
-Row-level formulas can also be computed directly:
+For ratios, you almost always want the aggregate form. Here's why, on the same data:
 
 ```python
-ratio = ts.calc("[Unit Margin] = [Profit] / [Sales]")
-print(ratio.evaluate(df).head())
+row_margin = ts.calc("[Row margin] = [Profit] / [Sales]")
+print(
+    "average of order margins:",
+    ts.format_number(row_margin.evaluate(orders).mean(), "percent", decimals=2),
+)
+print(
+    "margin of the business:  ",
+    ts.format_number(orders.Profit.sum() / orders.Sales.sum(), "percent", decimals=2),
+)
 ```
 
-## The language
+```text title="Output"
+average of order margins: 3.34%
+margin of the business:   3.21%
+```
 
-**Fields**: `Sales`, or `[Order Date]` in brackets when the name has spaces or symbols.
+On this synthetic file the two are close. On real data, with refunds and lots of small orders, they can be far apart, because a $3 order with a 60% margin counts as much as a $3,000 order in the first number. The second number is the margin of the business. Aggregate formulas also stay exact when a dashboard is filtered, because each `SUM(...)` inside is stored as an exact measure.
 
-**Values**: numbers (`3`, `0.15`, `1e6`), text in single or double quotes (`'West'`; write `''` for a quote inside), `TRUE`, `FALSE`, `NULL`.
+tabsight won't let you mix the two in one formula (`SUM([Sales]) / [Profit]` is an error), and it won't nest aggregates (`SUM(SUM(...))`).
 
-**Operators** (lowest to highest precedence):
+## Writing formulas
 
-| Operators | Meaning |
-|-----------|---------|
-| `OR` | either |
-| `AND` | both |
-| `NOT` | not |
-| `=` `==` `<>` `!=` `<` `<=` `>` `>=` | comparison |
-| `+` `-` | add, subtract (`+` joins text) |
-| `*` `/` `%` | multiply, divide, remainder |
-| `-x` | negative |
-
-**Conditions**:
+Refer to columns by name, or in square brackets when the name has spaces: `[Order Date]`. Text goes in quotes, and `+` joins text. Conditions use `IF … THEN … ELSEIF … ELSE … END`:
 
 ```python
 size = ts.calc("""Size = IF [Sales] >= 500 THEN 'Large'
                          ELSEIF [Sales] >= 100 THEN 'Medium'
                          ELSE 'Small' END""")
-print(size.evaluate(df).value_counts())
+print(size.evaluate(orders).value_counts())
 ```
 
-All functions are listed in the [formula function reference](../reference/formula-functions.md).
+```text title="Output"
+Size
+Medium    630
+Small     424
+Large     146
+Name: count, dtype: int64
+```
+
+Dates have their own functions:
+
+```python
+ship_days = ts.calc("Days to ship = DATEDIFF('day', [Order_Date], [Ship_Date])")
+print(ship_days.evaluate(orders).value_counts().sort_index())
+```
+
+```text title="Output"
+Days to ship
+0    182
+1    166
+2    154
+3    197
+4    146
+5    187
+6    168
+Name: count, dtype: int64
+```
+
+Every available function is listed in the [formula function reference](../reference/formula-functions.md).
 
 ## Parameters
 
-`$Name` is a parameter whose value you supply:
+A `$Name` in a formula is a value you supply when you run it, such as a target:
 
 ```python
-over = ts.calc("Over = SUM(Sales) - $Target")
-print(ts.aggregate(df, "Region", [over], params={"Target": 50_000}).values)
+gap = ts.calc("Gap to target = SUM(Sales) - $Target")
+print(ts.aggregate(orders, "Region", [gap], params={"Target": 70_000}).values)
 ```
 
-Parameter values must be numbers, text (up to 500 characters) or true/false.
+```text title="Output"
+    Region  Gap to target
+0     East       17642.84
+1     West        9286.84
+2  Central       -5332.10
+3    South      -26338.74
+```
 
 > [!NOTE]
-> In offline HTML dashboards (a later phase), parameters can only change values computed **after** grouping, like `SUM(Sales) - $Target` or a Top N. A parameter inside a **row-level** formula (`[Sales] > $Threshold`) needs every row to be recomputed, so it needs server mode. `CalcField.needs_server` tells you.
+> Once dashboards arrive, a parameter will work offline only when it changes things computed *after* grouping, like this target or a Top N. A parameter inside a row-level formula (`[Sales] > $Threshold`) means every row must be recomputed, which needs server mode. `CalcField.needs_server` tells you which kind you have.
 
-## Missing values and errors
+## Errors are values, not crashes
 
-- Division by zero, `LN(0)`, `SQRT(-1)` and numeric overflow give a **missing value**, never an error or infinity.
-- `ZN(x)` turns missing into 0; `IFNULL(x, y)` uses `y` when `x` is missing.
-- Wrong types (`[Product] * 2`) give a clear error.
+Dividing by zero, `LN(0)` and `SQRT(-1)` give a missing value rather than an error or infinity, so one bad row doesn't sink the whole result. Wrong types, such as multiplying a product name by two, do give a clear error.
 
-## Safety
+## Formulas can't run code
 
-Formulas are read by tabsight's own parser. **Nothing is ever executed as Python**: there is no `eval`, no attribute access and no imports. Only the listed functions exist. Limits protect against hostile formulas: 2,000 characters, 1,000 parts, 50 levels of nesting and 500-character text values. All of this is covered by injection, fuzz and resource tests.
+The formula language is parsed by tabsight itself. Nothing is ever handed to Python's `eval`, so a formula can only call the listed functions:
 
 ```python
 from tabsight.formulas import CalcError
 
-try:
-    ts.calc("X = __import__('os').system('whoami')")
-except CalcError as err:
-    print("rejected:", err)
+for attempt in ("X = __import__('os')", "X = [Sales].__class__", "X = eval('1+1')"):
+    try:
+        ts.calc(attempt)
+    except CalcError as err:
+        print(f"{attempt:24} -> {err}")
 ```
+
+```text title="Output"
+X = __import__('os')     -> unknown function '__import__'
+X = [Sales].__class__    -> unexpected character '.' at position 9
+X = eval('1+1')          -> unknown function 'eval'
+```
+
+There are also limits on length (2,000 characters), nesting (50 levels) and text values (500 characters), so a formula pasted from somewhere else can't hang your session.

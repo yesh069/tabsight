@@ -664,10 +664,6 @@ def _sort(
     keys: list[str] = []
     asc: list[bool] = []
     work = result.copy()
-    if OTHER_FLAG in work:
-        work["_other"] = work[OTHER_FLAG].fillna(False).astype(bool)
-        keys.append("_other")
-        asc.append(True)  # "Other" always last
     first = dims[0]
     if isinstance(sort, list | tuple):
         order = {v: i for i, v in enumerate(sort)}
@@ -694,6 +690,12 @@ def _sort(
         work["_s"] = totals
         keys.append("_s")
         asc.append(sort == "asc")
+    if OTHER_FLAG in work:
+        # "Other" goes last: last overall, or last within each date when grouping by date first.
+        work["_other"] = work[OTHER_FLAG].fillna(False).astype(bool)
+        at = 1 if first in grains else 0
+        keys.insert(at, "_other")
+        asc.insert(at, True)
     work["_n"] = work[first].map(natural_key)
     keys.append("_n")
     asc.append(True)

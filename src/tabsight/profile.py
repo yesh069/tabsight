@@ -155,6 +155,23 @@ class Field:
     reasons: tuple[str, ...] = ()
     overridden: bool = False
 
+    def __str__(self) -> str:
+        """One readable line, for example ``Sales: measure, currency, summed (name suggests money)``."""
+        how = {"sum": "summed", "mean": "averaged", "countd": "counted (distinct)", "none": ""}.get(
+            self.agg, self.agg
+        )
+        parts = [self.role]
+        if self.unit != "none":
+            parts.append(self.unit)
+        if self.role == "time" and self.grain:
+            parts.append(f"by {self.grain}")
+        if self.ordered:
+            parts.append("ordered")
+        if how:
+            parts.append(how)
+        why = "; ".join(self.reasons)
+        return f"{self.name}: {', '.join(parts)}" + (f" ({why})" if why else "")
+
     @property
     def is_measure(self) -> bool:
         return self.role == "measure"

@@ -1,58 +1,62 @@
 # Colours and themes
 
-## The same value always gets the same colour
+## The same region is the same colour everywhere
 
-A `ColorRegistry` gives each value a palette colour and remembers it, so `West` is the same colour on every chart. Values are **sorted before colours are assigned**, so the same data always gets the same colours, whatever order the rows are in.
+A dashboard where West is blue in one chart and orange in the next makes people work harder than they should. tabsight gives each value one colour and keeps it:
 
 ```python
 import tabsight as ts
 
-colors = ts.ColorRegistry()  # default palette: classic10
+colors = ts.ColorRegistry()
 colors.assign(["West", "East", "Central", "South"])
 print(colors.mapping())
 ```
 
-Pin colours you care about:
+```text title="Output"
+{'Central': '#4e79a7', 'East': '#f28e2b', 'South': '#e15759', 'West': '#76b7b2'}
+```
+
+The values are sorted before colours are handed out, so you get the same colours however the rows happen to be ordered. If a colour matters to you, such as your company's red for its home region, pin it:
 
 ```python
 brand = ts.ColorRegistry(pinned={"West": "#e15759"})
-brand.assign(["East", "West"])
-print(brand.color("West"), brand.color("East"))
-saved = brand.to_dict()  # save with a dashboard; ts.ColorRegistry.from_dict(saved) restores it
+brand.assign(["East", "West", "South"])
+print(brand.mapping())
 ```
+
+```text title="Output"
+{'West': '#e15759', 'East': '#4e79a7', 'South': '#f28e2b'}
+```
+
+A registry saves with `to_dict()` and comes back with `ts.ColorRegistry.from_dict(...)`, so next month's dashboard uses the same colours.
 
 ## Palettes
 
-| Name | Colours | Notes |
-|------|---------|-------|
-| `classic10` | 10 | The default; same colours as d3's widely used `schemeTableau10` |
-| `okabe_ito` | 8 | Designed to be distinguishable with colour-vision deficiency |
-| `muted` | 8 | Softer tones |
+The default, `classic10`, uses the same ten colours as d3's widely used `schemeTableau10`. `okabe_ito` is designed to stay distinguishable for people with colour-vision deficiency, and the print theme uses it. `muted` is a softer set for dense charts. Pick one with `ts.ColorRegistry("okabe_ito")`, or for everything with `ts.set_defaults(palette="okabe_ito")`.
 
-Sequential (`blues`, `greens`) and diverging (`red_blue`) scales are in `tabsight.colors`.
-
-> [!IMPORTANT]
-> Colours must be hex codes such as `#4e79a7`. Anything else (colour names, `rgb()`, CSS) is rejected, so a colour value can never inject CSS or markup into HTML output.
+Colours have to be hex codes such as `#4e79a7`. Names like `red`, `rgb()` and anything else are rejected. That keeps a colour value from smuggling CSS into an HTML file.
 
 ## Themes
 
-| Theme | Use |
-|-------|-----|
-| `light` | Default: white tiles on a light grey page |
-| `dark` | Dark tiles and page |
-| `print` | White, black text, colour-blind-safe palette, square corners |
+There are three built-in themes: `light` (white tiles on a pale grey page), `dark`, and `print` (pure white, black text, the colour-blind-safe palette and square corners). Each one meets the WCAG AA contrast standard for text, and a test makes sure it stays that way.
 
-Every built-in theme passes **WCAG AA contrast** (4.5:1) for its text, and a test checks this.
+To match a brand, start from a built-in theme and change what you need:
 
 ```python
+from tabsight.warnings import InvalidSpecError
+
 brand_theme = ts.custom_theme("light", accent="#0b5394", font='"Inter", Arial, sans-serif')
-print(brand_theme.accent)
+print(brand_theme.accent, "|", brand_theme.font)
+
+try:
+    ts.custom_theme("light", text="#c8c8c8")
+except InvalidSpecError as err:
+    print(err)
 ```
 
-`custom_theme` checks contrast and refuses themes whose text would be hard to read. Fonts may only contain letters, digits, spaces, commas, quotes and hyphens. tabsight never downloads fonts; the default is the system font stack.
-
-```python
-from tabsight.colors import contrast_ratio
-
-print(round(contrast_ratio("#1f2329", "#ffffff"), 1))
+```text title="Output"
+#0b5394 | "Inter", Arial, sans-serif
+theme fails WCAG AA contrast: text on tile is 1.67:1; text on page is 1.55:1; text on header is 1.50:1
 ```
+
+The second theme was refused because light grey text on white is hard to read. Font names can only contain letters, digits, spaces, commas, quotes and hyphens, and tabsight never downloads fonts: the default is whatever sans-serif your system already has.

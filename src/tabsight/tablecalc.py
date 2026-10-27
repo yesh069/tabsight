@@ -112,7 +112,7 @@ def table_calc(
 
     suffix = f"moving avg {window}" if kind == "moving_avg" else CALC_LABELS[kind]
     if kind == "pct_of_total":
-        suffix += " (fixed)" if fixed_total is not None else " (of shown rows)"
+        suffix += ", fixed total" if fixed_total is not None else ", shown rows"
     column = name or f"{measure} ({suffix})"
     new_frame = frame.copy()
     new_frame[column] = out.astype("Int64") if kind == "rank" else out

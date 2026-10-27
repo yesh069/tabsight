@@ -36,11 +36,11 @@ def test_running_total_restarts_per_region(monthly: pd.DataFrame) -> None:
 def test_pct_of_total_filtered_and_fixed(monthly: pd.DataFrame) -> None:
     res = aggregate(monthly, "Region", "Sales")
     shown = table_calc(res, "pct_of_total").frame.set_index("Region")[
-        "Sales (% of total (of shown rows))"
+        "Sales (% of total, shown rows)"
     ]
     assert shown["W"] == pytest.approx(60 / 67)
     fixed = table_calc(res, "pct_of_total", fixed_total=134.0).frame.set_index("Region")
-    assert fixed["Sales (% of total (fixed))"]["W"] == pytest.approx(60 / 134)
+    assert fixed["Sales (% of total, fixed total)"]["W"] == pytest.approx(60 / 134)
 
 
 def test_rank_difference_and_moving_average(monthly: pd.DataFrame) -> None:

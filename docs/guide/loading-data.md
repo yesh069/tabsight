@@ -1,54 +1,64 @@
 # Loading data
 
-Every tabsight function accepts:
-
-- a **pandas DataFrame** (used as is, never modified)
-- a **polars DataFrame** (converted with `to_pandas()`, needs `pyarrow`)
-- a **list of dicts** (`[{"Region": "West", "Sales": 10}, ...]`)
-- a **dict of lists** (`{"Region": ["West"], "Sales": [10]}`)
-- a **local file path**, read with `ts.load`
-
-## `ts.load`
+You can pass tabsight a pandas DataFrame directly and skip this page. But if your data is still in a file, `ts.load` avoids a handful of problems that `pd.read_csv` leaves to you.
 
 ```python
 import tabsight as ts
 
-df = ts.load("examples/superstore_sample.csv")
-print(df.dtypes.head())
+orders = ts.load("examples/superstore_sample.csv")
+print(orders.dtypes.to_string())
 ```
 
-| File type | How it is read |
-|-----------|----------------|
-| `.csv`, `.txt` | Delimiter detected (`,` `;` tab `\|`) |
-| `.tsv` | Tab-separated |
-| `.xlsx`, `.xlsm` | First sheet, or `sheet="Name"` / `sheet=2`. Needs the `excel` extra. Macros never run. |
-| `.parquet` | Needs the `parquet` extra (pyarrow 15 or newer) |
-| `.json` | A list of records, or an object of column lists |
+```text title="Output"
+Row_ID            int64
+Order_ID            str
+Order_Date          str
+Ship_Date           str
+Ship_Mode           str
+Customer_ID         str
+Segment             str
+Country             str
+City                str
+State               str
+Postal_Code         str
+Region              str
+Category            str
+Sub_Category        str
+Sales           float64
+Quantity          int64
+Discount        float64
+Profit          float64
+```
 
-Not supported on purpose: old `.xls` (save as `.xlsx`), pickle files and other formats that can run code.
+Look at `Postal_Code`: it's text, not a number, so `02134` stays `02134`. tabsight reads every column as text first and only converts the ones that are plainly numbers with no leading zeros. The dates are still text on purpose. The [date reader](dates.md) handles them, and it reports what it assumed about day/month order instead of guessing silently.
 
-### What `ts.load` does for you
+## Encodings
 
-- **Encoding.** Tries UTF-8, then UTF-8 with a byte-order mark, then Windows-1252, and warns which one it used. Many CSV files from Excel are Windows-1252. Override with `encoding="latin-1"`.
-- **Leading zeros.** Text files are read as text first. Columns that are plain numbers become numbers, but codes like `02134` stay text.
-- **True/false.** `true`/`false` columns become booleans.
-- **Missing values.** `""`, `NA`, `N/A`, `null`, `None`, `-`, `#N/A` and similar become missing.
-- **Dates stay text.** tabsight's date reader handles them later and tells you what it assumed (see [Dates and periods](dates.md)).
+A lot of CSV files that come out of Excel aren't UTF-8. They're Windows-1252, and `pd.read_csv` either crashes on them or mangles every `é` and `€`. `ts.load` tries UTF-8, then UTF-8 with a byte-order mark, then Windows-1252, and warns you which one it used. If the characters still look wrong, pass `encoding=` yourself.
 
-## Safety rules
+It also works out the delimiter. European exports often use `;` instead of `,`, and that's picked up without you saying so.
 
-> [!IMPORTANT]
-> tabsight **never downloads anything.** Passing a URL raises an error. Download the file yourself and pass the local path.
+## Other formats
+
+Excel (`.xlsx`, `.xlsm`), Parquet and JSON work too; pass `sheet=` to pick an Excel sheet. Excel needs the `excel` extra and Parquet the `parquet` extra (see [installation](../getting-started/installation.md)). Old `.xls` files aren't supported; save them as `.xlsx`.
+
+Anything else that tabsight functions accept works without `ts.load`: a polars DataFrame, a list of dicts, or a dict of lists.
+
+## What tabsight refuses to do
+
+`ts.load` never downloads anything. Give it a URL and you get an error rather than a network request:
 
 ```python
 from tabsight.warnings import UnsafeInputError
 
 try:
-    ts.load("https://example.com/data.csv")
+    ts.load("https://example.com/sales.csv")
 except UnsafeInputError as err:
     print(err)
 ```
 
-- Excel files are only read with `defusedxml` installed, which blocks malicious XML.
-- Parquet files are only read with pyarrow 15 or newer.
-- Your file is never written to.
+```text title="Output"
+tabsight does not download data (it never uses the network). Download the file yourself and pass the local path.
+```
+
+The same thinking applies elsewhere. Pickle files can run code when they're opened, so they're not supported. Excel files are only read when `defusedxml` is installed, because it blocks malicious XML. Parquet is only read with pyarrow 15 or newer, because older versions had a code-execution bug. And your file is only ever read, never written.

@@ -12,4 +12,13 @@ python -m mkdocs serve      # live preview at http://127.0.0.1:8000
 python -m mkdocs build --strict
 ```
 
-Every Python example in the docs is run by `tests/test_docs.py`, so examples must work as written. Use a `text` code block for output, and start a block with `# not run` if it only illustrates.
+Every Python example in the docs runs. To show what an example prints, put an empty block right after it:
+
+````markdown
+```text title="Output"
+```
+````
+
+Then run `python tools/render_doc_outputs.py`, which runs the page and fills in the real output. `tests/test_docs.py` fails if any shown output no longer matches what the code prints, so the docs can't drift from the package. Start a code block with `# not run` if it only illustrates.
+
+A few habits keep the docs readable: start a page with the problem it solves, show a small real example before any options, explain *why* in plain sentences, and save tables for genuine reference lists.
