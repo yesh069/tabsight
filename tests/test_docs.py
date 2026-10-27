@@ -39,6 +39,8 @@ def test_examples_run_and_shown_output_is_current(page: Path) -> None:
     finally:
         os.chdir(old)
         ts.settings.reset_defaults()
+    if int(pd.__version__.split(".")[0]) < 3:
+        return  # examples ran; exact output is defined by pandas 3 (pandas 2 prints some types differently)
     assert rendered == text, (
         f"{page.relative_to(DOCS)}: shown output is out of date; run python tools/render_doc_outputs.py"
     )

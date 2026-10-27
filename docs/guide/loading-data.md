@@ -6,31 +6,19 @@ You can pass tabsight a pandas DataFrame directly and skip this page. But if you
 import tabsight as ts
 
 orders = ts.load("examples/superstore_sample.csv")
-print(orders.dtypes.to_string())
+zips = orders["Postal_Code"]
+print(zips[zips.str.startswith("0")].head(3).tolist())
+print(orders["Sales"].dtype, orders["Quantity"].dtype)
+print(orders["Order_Date"].head(2).tolist())
 ```
 
 ```text title="Output"
-Row_ID            int64
-Order_ID            str
-Order_Date          str
-Ship_Date           str
-Ship_Mode           str
-Customer_ID         str
-Segment             str
-Country             str
-City                str
-State               str
-Postal_Code         str
-Region              str
-Category            str
-Sub_Category        str
-Sales           float64
-Quantity          int64
-Discount        float64
-Profit          float64
+['02765', '03510', '04891']
+float64 int64
+['01/04/2014', '01/04/2014']
 ```
 
-Look at `Postal_Code`: it's text, not a number, so `02134` stays `02134`. tabsight reads every column as text first and only converts the ones that are plainly numbers with no leading zeros. The dates are still text on purpose. The [date reader](dates.md) handles them, and it reports what it assumed about day/month order instead of guessing silently.
+The postal codes are text, not numbers, so the leading zeros survive. tabsight reads every column as text first and only converts the ones that are plainly numbers with no leading zeros. The dates are still text on purpose. The [date reader](dates.md) handles them, and it reports what it assumed about day/month order instead of guessing silently.
 
 ## Encodings
 
