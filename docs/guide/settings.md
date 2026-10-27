@@ -55,6 +55,7 @@ When the same setting is given in several places, the most specific wins: an arg
 | `max_size_mb` | `5.0` | Warn when an HTML file would be bigger than this |
 | `min_group_size` | `None` | Hide groups with fewer rows than this |
 | `csv_safe` | `True` | Protect CSV downloads from spreadsheet formula injection |
+| `picture` | `True` | In notebooks, add a still picture under each live chart, so a saved notebook still shows the chart when it is reopened untrusted or viewed on GitHub. Needs the `static` extra (dukpy); without it nothing changes |
 | `cdn` | `False` | In notebooks, load ECharts from jsDelivr (pinned by a hash) instead of putting 1 MB into every chart. Charts then need the internet to draw |
 
 Every value is checked when you set it. A typo gets a suggestion rather than being ignored:

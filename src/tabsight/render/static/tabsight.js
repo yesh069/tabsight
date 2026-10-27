@@ -217,11 +217,18 @@
         var p = list[i];
         var v = Array.isArray(p.value) ? p.value[p.value.length - 1] : p.value;
         if (v === null || v === undefined || v === "-") continue;
+        if (cfg.skip && cfg.skip.indexOf(p.seriesName) >= 0) continue; // helper series (a forecast band)
         var spec = (cfg.series_fmt && cfg.series_fmt[p.seriesName]) || cfg.fmt;
+        var range = "";
+        var band = cfg.bands && cfg.bands[p.seriesName];
+        if (band && band.low[p.dataIndex] !== null && band.low[p.dataIndex] !== undefined) {
+          range = '<span class="ts-tt-share">' + escapeHtml(formatNumber(band.low[p.dataIndex], spec, locales) +
+            " – " + formatNumber(band.high[p.dataIndex], spec, locales)) + "</span>";
+        }
         rows.push(
           '<div class="ts-tt-row">' + marker(p.color) +
             '<span class="ts-tt-name">' + escapeHtml(p.seriesName) + "</span>" +
-            '<span class="ts-tt-value">' + escapeHtml(formatNumber(v, spec, locales)) + "</span></div>"
+            '<span class="ts-tt-value">' + escapeHtml(formatNumber(v, spec, locales)) + "</span>" + range + "</div>"
         );
       }
       return rows.join("");
@@ -295,9 +302,10 @@
     }
     if (node.$label) {
       var labelSpec = node.$label;
+      var prefix = typeof node.prefix === "string" ? node.prefix : ""; // "Average " on a reference line
       return function (p) {
         var v = Array.isArray(p.value) ? p.value[p.value.length - 1] : p.value;
-        return formatNumber(v, labelSpec, locales);
+        return prefix + formatNumber(v, labelSpec, locales);
       };
     }
     if (node.$tooltip) {

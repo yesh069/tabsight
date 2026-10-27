@@ -70,6 +70,21 @@
   "avg_of": "Avg {field}",
   "count_of": "Count of {field}",
   "distinct_of": "Distinct {field}",
-  "by": "{measure} by {dimension}"
+  "by": "{measure} by {dimension}",
+  "ins_peak": "{measure} peaked in {period} ({value}{change}).",
+  "ins_vs": ", {pct} vs {period}",
+  "ins_low": "{measure} was lowest in {period} ({value}).",
+  "ins_trend_up": "{grain_adj} {measure} rose about {pct} per {grain} from {start} to {end}.",
+  "ins_trend_down": "{grain_adj} {measure} fell about {pct} per {grain} from {start} to {end}.",
+  "ins_season": "{measure} is high every {months}: in the top 3 months of each year from {first} to {last}.",
+  "ins_change_up": "{measure} is up {pct} in {current} compared with {previous}.",
+  "ins_change_down": "{measure} is down {pct} in {current} compared with {previous}.",
+  "ins_change_flat": "{measure} is unchanged in {current} compared with {previous}.",
+  "ins_contributor": "{name} makes up {pct} of total {measure}.",
+  "ins_concentration": "The top {n} {dim} values make up {pct} of {measure}: {names}.",
+  "ins_negative": "{k} of {n} {dim} values have negative {measure}: {names}.",
+  "ins_outliers_large": "{k} {rows} have unusually large {measure} ({edge} or more).",
+  "ins_outliers_small": "{k} {rows} have unusually small {measure} ({edge} or less).",
+  "ins_and_more": " and {n} more"
  }
 }

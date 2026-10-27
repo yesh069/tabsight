@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import dataclasses
+import html
 from collections.abc import Iterable
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -20,6 +21,7 @@ __all__ = ["FIGURE_VERSION", "Figure"]
 
 FIGURE_VERSION = 1
 NOTEBOOK_TIP_BYTES = 10_000_000
+PICTURE_MAX_BYTES = 2_000_000  # a bigger picture would bloat the notebook more than it helps
 _NOTEBOOK = {"bytes": 0, "tipped": 0}  # charts shown in this Python session
 _MAX_PATCH_DEPTH = 20
 
@@ -45,6 +47,7 @@ class Figure:
         dict[str, Any], ...
     ] = ()  # shapes a map needs (TopoJSON), registered in the browser
     facts: dict[str, Any] = dataclasses.field(default_factory=dict)  # what lint() checks
+    insights: tuple[dict[str, Any], ...] = ()  # plain-English facts, when insights=True
 
     def to_dict(self) -> dict[str, Any]:
         out: dict[str, Any] = {
@@ -66,6 +69,8 @@ class Figure:
             out["table"] = self.table
         if self.maps:
             out["maps"] = list(self.maps)
+        if self.insights:
+            out["insights"] = [{"text": i["text"], "scope": i["scope"]} for i in self.insights]
         return out
 
     def to_html(self, path: str | Path | None = None, *, cdn: bool = False) -> str:
@@ -106,7 +111,44 @@ class Figure:
 
                 )  # fmt: skip
         extra = (150 if self.kind not in ("kpi", "table") else 260) + _notes_height(self.notes)
-        return srcdoc_iframe(document, self.height + extra)
+        if self.insights:
+            extra += 40 + _notes_height(tuple(i["text"] for i in self.insights))
+        frame = srcdoc_iframe(document, self.height + extra)
+        picture = self._picture() if current().picture else None
+        if picture is None:
+            return frame
+        # The picture and the live chart share one grid cell, the live chart on top. A saved
+        # notebook opened untrusted (or on GitHub) strips the iframe and shows the picture.
+        return (
+            '<div style="display:grid">'
+            f'<div style="grid-area:1/1"><img alt="{html.escape(self.title)}" src="{picture}" '
+            'style="max-width:100%"></div>'
+            f'<div style="grid-area:1/1;background:{self.theme.page}">{frame}</div></div>'
+        )
+
+    def _picture(self) -> str | None:
+        """The still picture as a data URI, or None when dukpy is missing or drawing fails."""
+        from tabsight.render import picture
+
+        if not picture.available():
+            return None
+        try:
+            svg = picture.figure_svg(self.to_dict())
+        except Exception:  # the live chart still shows; the picture is a bonus
+            return None
+        return picture.data_uri(svg) if len(svg) <= PICTURE_MAX_BYTES else None
+
+    def to_svg(self, path: str | Path | None = None, *, width: int = 800) -> str:
+        """The chart as a still SVG picture (title, chart and notes), drawn without a browser.
+
+        Needs dukpy: ``pip install tabsight[static]``. Writes it to ``path`` if given.
+        """
+        from tabsight.render.picture import figure_svg
+
+        svg = figure_svg(self.to_dict(), width=width)
+        if path is not None:
+            Path(path).write_text(svg, encoding="utf-8")
+        return svg
 
     def explain(self) -> str:
         """Every choice tabsight made for this chart, and why, in plain English."""
@@ -119,6 +161,10 @@ class Figure:
         lines += [f"- {d}" for d in self.decisions]
         if self.notes:
             lines += ["", "Notes shown on the chart:"] + [f"- {n}" for n in self.notes]
+        if self.insights:
+            lines += ["", "Insights shown under the chart:"] + [
+                f"- {i['text']}" for i in self.insights
+            ]
         return "\n".join(lines)
 
     def lint(self, *, ignore: Iterable[str] = (), strict: bool = False) -> LintReport:

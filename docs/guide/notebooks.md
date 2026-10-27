@@ -74,6 +74,21 @@ This loads ECharts from jsDelivr instead, pinned by a hash so a changed file is 
 
 ## Reopening a saved notebook
 
-JupyterLab only shows interactive output from cells you ran yourself. When you open a notebook someone else ran, or reopen your own after a restart, it counts as "not trusted" and the charts are blank until you run the cells again or trust the notebook (Command Palette → "Trust Notebook"). This was checked in JupyterLab 4.6. Matplotlib doesn't have this problem because its output is a picture.
+JupyterLab only runs interactive output from cells you ran yourself. When you open a notebook someone else ran, or reopen your own after a restart, it counts as "not trusted", and JupyterLab removes the interactive chart. Notebooks viewed on GitHub don't run JavaScript either.
 
-Notebooks viewed on GitHub don't run JavaScript either, so interactive charts are blank there too. A static image alongside each chart, which would show in both cases, is planned for phase 9.
+Install the `static` extra and every chart also carries a still picture of itself:
+
+```bash
+python -m pip install "tabsight[static]"
+```
+
+The picture sits under the live chart. While you work, the live chart covers it. In a reopened or untrusted notebook the live chart is removed and the picture shows instead of a blank space. Run the cell again, or trust the notebook (Command Palette → "Trust Notebook"), to get the interactive chart back. This was checked in JupyterLab 4.6.
+
+The picture is drawn in Python by ECharts itself, running in dukpy, so it matches the live chart. It adds about 5–100 KB per chart, 0.2 seconds for a map and less for most charts. Pictures over 2 MB are left out. Density maps are drawn on a canvas, so they have no picture. `ts.set_defaults(picture=False)` turns pictures off.
+
+You can also save the picture yourself:
+
+```python
+# not run
+fig.to_svg("sales_by_region.svg")  # title, chart and notes, no browser needed
+```

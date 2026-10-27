@@ -3,7 +3,7 @@
 Rule-based, no LLM, one offline HTML file. See PLAN.md for the roadmap.
 """
 
-from tabsight import geo, warnings
+from tabsight import analytics, geo, warnings
 from tabsight._version import __version__
 from tabsight.accessor import register as _register_accessors
 from tabsight.aggregate import Aggregation, Measure, aggregate, bucket
@@ -14,8 +14,10 @@ from tabsight.colors import ColorRegistry
 from tabsight.figure import Figure
 from tabsight.formats import format_date, format_number
 from tabsight.formulas import CalcField, calc
+from tabsight.insight import Insight, Insights, insights
 from tabsight.io import load
 from tabsight.lint import LintIssue, LintReport
+from tabsight.periods import Comparison, compare
 from tabsight.plotting import plot  # also lets pandas find the backend without the entry point
 from tabsight.profile import Field, Profile, profile
 from tabsight.recommend import Recommendation, Recommendations, recommend
@@ -35,8 +37,11 @@ __all__ = [
     "CheckReport",
     "CleanReport",
     "ColorRegistry",
+    "Comparison",
     "Field",
     "Figure",
+    "Insight",
+    "Insights",
     "LintIssue",
     "LintReport",
     "Measure",
@@ -47,17 +52,20 @@ __all__ = [
     "Theme",
     "__version__",
     "aggregate",
+    "analytics",
     "bucket",
     "calc",
     "chart",
     "check",
     "clean",
+    "compare",
     "config",
     "current",
     "custom_theme",
     "format_date",
     "format_number",
     "geo",
+    "insights",
     "load",
     "plot",
     "profile",

@@ -69,6 +69,11 @@ body {{ margin: 0; background: {theme.page}; color: {theme.text}; font-family: {
 .ts-tt-value {{ font-weight: 600; font-variant-numeric: tabular-nums; }}
 .ts-tt-share {{ margin-left: 8px; color: {theme.text_secondary}; }}
 .ts-tt-note {{ color: {theme.text_secondary}; font-size: 11px; }}
+.ts-insights {{ margin: 10px 4px 0; padding-top: 8px; border-top: 1px solid {theme.grid}; font-size: 13px; }}
+.ts-insights__title {{ margin: 0 0 4px; font-size: 12px; font-weight: 650; color: {theme.text_secondary};
+  text-transform: uppercase; letter-spacing: 0.04em; }}
+.ts-insights ul {{ margin: 0; padding-left: 18px; line-height: 1.55; }}
+.ts-insights__scope {{ margin-left: 4px; font-size: 11px; color: {theme.text_secondary}; }}
 .ts-footer {{ margin-top: 10px; font-size: 11px; color: {theme.text_secondary}; text-align: right; }}
 """
 
@@ -115,6 +120,16 @@ def page(figure: dict[str, Any], theme: Theme, *, cdn: bool = False, lang: str =
     if subtitle:
         head += f'<p class="ts-tile__subtitle">{html.escape(subtitle)}</p>'
     note_html = "".join(f'<p class="ts-note">{html.escape(n)}</p>' for n in notes)
+    found = figure.get("insights") or []
+    if found:
+        note_html += (
+            '<section class="ts-insights" aria-label="Insights"><h2 class="ts-insights__title">Insights</h2><ul>'
+            + "".join(
+                f'<li>{html.escape(i["text"])} <span class="ts-insights__scope">{html.escape(i["scope"])}</span></li>'
+                for i in found
+            )
+            + "</ul></section>"
+        )
     chart_style = f' style="height:{height}px"' if figure["kind"] not in ("kpi", "table") else ""
     return (
         "<!doctype html>\n"

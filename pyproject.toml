@@ -34,6 +34,8 @@ excel = ["openpyxl>=3.1", "defusedxml>=0.7"]
 parquet = ["pyarrow>=15"]
 polars = ["polars>=1.0", "pyarrow>=15"]
 png = ["playwright>=1.45"]
+# dukpy (MIT) runs ECharts in Python to draw still SVG pictures: fig.to_svg() and notebook fallbacks.
+static = ["dukpy>=0.6"]
 docs = [
     "mkdocs>=1.6",
     "mkdocs-material>=9.5",
@@ -50,6 +52,7 @@ dev = [
     "openpyxl>=3.1",
     "defusedxml>=0.7",
     "pyarrow>=15",
+    "dukpy>=0.6",
 ]
 
 [project.scripts]
@@ -109,6 +112,6 @@ strict = true
 files = ["src/tabsight"]
 
 [[tool.mypy.overrides]]
-# Optional readers without type information.
-module = ["openpyxl", "openpyxl.*", "pyarrow", "pyarrow.*", "polars", "polars.*"]
+# Optional extras without type information.
+module = ["openpyxl", "openpyxl.*", "pyarrow", "pyarrow.*", "polars", "polars.*", "dukpy"]
 ignore_missing_imports = true

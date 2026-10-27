@@ -23,7 +23,7 @@ The title was written for you, the regions are sorted largest first, and the axi
 fig.to_html("sales_by_region.html")
 ```
 
-The file is a single page with everything inside it, chart library included, so it opens offline and can be emailed as is. In Jupyter, a figure on the last line of a cell displays itself.
+The file is a single page with everything inside it, chart library included, so it opens offline and can be emailed as is. In Jupyter, a figure on the last line of a cell displays itself. With the `static` extra installed, `fig.to_svg("sales_by_region.svg")` saves a still picture instead, for slides and documents.
 
 ## The everyday kinds
 

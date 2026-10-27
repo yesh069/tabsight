@@ -16,6 +16,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
+import pandas as pd  # noqa: E402
+
 import tabsight as ts  # noqa: E402
 
 OUT = ROOT / "docs" / "assets" / "examples"
@@ -32,6 +34,14 @@ IMAGES: dict[str, dict[str, object]] = {
     "sub-category-share": {"kind": "donut", "x": "Sub_Category", "y": "Sales"},
     "sales-by-state-map": {"kind": "map", "geo": "State", "y": "Sales"},
     "sales-treemap": {"kind": "treemap", "x": ["Category", "Sub_Category"], "y": "Sales"},
+    "sales-forecast": {
+        "kind": "line",
+        "x": "Order_Date",
+        "y": "Sales",
+        "freq": "month",
+        "forecast": 12,
+        "_before": "2018-01-01",  # the sample's one order on 1 Jan 2018 would end the line in a cliff
+    },
     "region-panels": {
         "kind": "stacked_bar",
         "x": "Category",
@@ -50,8 +60,13 @@ def main() -> None:
     orders = ts.load(ROOT / "examples" / "superstore_sample.csv")
     with tempfile.TemporaryDirectory() as tmp, warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        for name, kw in IMAGES.items():
-            fig = ts.chart(orders, **kw)  # type: ignore[arg-type]
+        for name, spec in IMAGES.items():
+            kw = {k: v for k, v in spec.items() if not k.startswith("_")}
+            data_in = orders
+            if "_before" in spec:
+                when = pd.to_datetime(orders["Order_Date"], format="%m/%d/%Y")
+                data_in = orders[when < pd.Timestamp(str(spec["_before"]))]
+            fig = ts.chart(data_in, **kw)  # type: ignore[arg-type]
             data = Path(tmp) / f"{name}.json"
             data.write_text(json.dumps(fig.to_dict()), encoding="utf-8")
             subprocess.run(  # noqa: S603 - fixed local script and paths

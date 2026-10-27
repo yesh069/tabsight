@@ -4,6 +4,19 @@ All notable changes are listed here. The project follows [Semantic Versioning](h
 
 ## Unreleased
 
+### Added (Phase 7: analytics and insights)
+- `ts.insights(df)`: plain-English facts from fixed rules (no LLM): change on the previous period, peak and low, trend direction, seasonality, biggest contributor, concentration, negative segments and outliers. Facts only, never causes; rates change in points; every threshold configurable; each insight tagged with the data it describes. `insights=True` lists them under a chart.
+- `ts.compare(df, y, date)`: year, quarter and month comparisons on the same window shifted back, fiscal-year aware, `as_of=` for "today" (otherwise the latest date in the data, never the clock), `previous_period` with `window=`. A sliver of a new period falls back to the last complete one; no previous data says so instead of +100%. KPI cards take `compare=` and `as_of=`.
+- Analytics pane on charts: `trend=True` (least squares, R² in `explain()`), `forecast=N` (additive Holt-Winters in numpy, `season=`, dashed "Estimate" with a range, needs two full seasons), `ref=` reference lines (mean, median, percentiles, constants), `band=` shaded bands, `outliers=True` (circled, never removed).
+- `ts.analytics`: `linear_trend`, `forecast`, `outliers`, `reference_value` for your own use.
+- Lint rules `weak_trend` and `long_forecast`.
+- Still pictures: `fig.to_svg()` draws a chart (title, chart, notes, insights) to SVG in Python, with ECharts running in dukpy (`pip install tabsight[static]`); no browser or Node.js.
+- Notebooks: with the `static` extra, each chart also carries its picture under the live chart, so a reopened (untrusted) notebook or one viewed on GitHub shows the chart instead of a blank space. `picture=False` turns it off. Checked in JupyterLab 4.6.
+- Docs: "Trends, forecasts and insights" guide.
+
+### Changed
+- Bar charts over dates stay vertical; they no longer switch to horizontal bars when there are many periods.
+
 ### Added (Phase 6: every chart kind, small multiples, notebooks)
 - All 33 chart kinds can now be drawn. New: scatter and bubble (one dot per row, or per category with exact aggregation), histogram (rounded bar widths; `bins=`, `bin_width=`), box plot (Tukey whiskers, outliers), treemap and sunburst (levels from `x`), waterfall (floating bars that can cross zero, total at the end), funnel (share of previous and first stage), Pareto (running share, 80% guide), lollipop, bullet and gauge (`goal=` a number or a column), combo (bars and lines, two axes when units differ), heatmap, calendar heatmap, Sankey (cycles broken safely), density map and flow map.
 - Lines and areas over a number: a real value axis (a sine wave is a curve), thinned with LTTB above 2,000 points.

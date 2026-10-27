@@ -36,7 +36,7 @@ def evil_frame() -> pd.DataFrame:
 
 
 ALLOWED_TAGS = {"html", "head", "meta", "title", "style", "body", "main", "figure", "figcaption",
-                "h1", "p", "div", "script"}  # fmt: skip
+                "h1", "h2", "p", "div", "script", "section", "ul", "li", "span"}  # fmt: skip
 
 
 def _parse(document: str) -> tuple[set[str], list[str]]:
@@ -115,6 +115,7 @@ def test_safe_json_escapes_breakout_characters() -> None:
 def test_notebook_display_is_sandboxed() -> None:
     fig = ts.chart(pd.DataFrame({"g": EVIL[:2], "v": [1.0, 2.0]}), "bar", x="g", y="v")
     html = fig._repr_html_()
+    html = html[html.index("<iframe") :]  # after the still picture, when dukpy is installed
     assert html.startswith('<iframe sandbox="allow-scripts" srcdoc="')
     assert "allow-same-origin" not in html
     assert "<script" not in html.split('srcdoc="', 1)[1]  # the document is attribute-escaped

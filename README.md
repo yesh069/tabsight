@@ -35,7 +35,7 @@ tabsight starts one step earlier. It works out what each column actually is, tel
 </p>
 <p align="center"><sub>Real output from <code>ts.chart</code> on the sample data in this repository, nothing edited by hand.</sub></p>
 
-> **Status:** early development. Phases 0–6 of 10 are done: reading, profiling, checking, cleaning, formatting, exact aggregation, all 33 chart types with small multiples, a chart recommender that explains itself, offline maps of every country's regions, and `df.plot` in notebooks work today. Trend lines, forecasts and plain-English insights are next, then cross-filtering dashboards. See the [roadmap](#roadmap).
+> **Status:** early development. Phases 0–7 of 10 are done: reading, profiling, checking, cleaning, formatting, exact aggregation, all 33 chart types with small multiples, a chart recommender that explains itself, offline maps of every country's regions, `df.plot` in notebooks, trend lines, forecasts, period comparisons and plain-English insights work today. Cross-filtering dashboards are next. See the [roadmap](#roadmap).
 
 ## A first look
 
@@ -187,6 +187,27 @@ United States map (states)
   <img alt="Small multiples: sales by category and segment, one panel per region" src="docs/assets/examples/region-panels.svg" width="49%">
 </p>
 
+**Insights in plain English, from rules, never an LLM.** tabsight states what the numbers show, never guesses why. "Today" is the latest date in the data, so the answer is the same on every machine.
+
+```python
+print(ts.insights(orders, y="Profit", x="Sub_Category", date="Order_Date"))
+```
+
+```text title="Output"
+- Profit is up 109% in 2017 compared with 2016.
+- 2 of 13 Sub Category values have negative Profit: Chairs and Machines.
+- Profit peaked in Jan 2014 ($920.6).
+- Profit was lowest in Jan 2016 (-$828.9).
+```
+
+<p align="center">
+  <img alt="Monthly sales with a 12-month forecast, dashed, with a shaded range" src="docs/assets/examples/sales-forecast.svg" width="70%">
+</p>
+
+Charts take an analytics pane like a BI tool's: `trend=True`, `forecast=6` (Holt-Winters, dashed and labelled "Estimate", with a range), `ref="mean"`, `band=("p25", "p75")` and `outliers=True`. A KPI card compares periods with `compare="previous_year"`.
+
+**Saved notebooks still show their charts.** With `pip install "tabsight[static]"`, each chart also carries a still picture of itself, drawn in Python. A notebook reopened untrusted, or viewed on GitHub, shows the picture where the interactive chart would be blank. `fig.to_svg()` saves the same picture for slides.
+
 ## How it compares
 
 | | tabsight | PyGWalker | Lux | Vizro | Plotly / pyecharts |
@@ -198,6 +219,7 @@ United States map (states)
 | Cross-filtering dashboards | Phase 8 | In the notebook | No | Yes (server) | No |
 | Maps beyond US states and countries | Yes, offline, every country | No | No | Via Plotly | No |
 | Works as pandas' `df.plot` backend | Yes | No | No | No | Plotly: yes |
+| Plain-English insights and forecasts | Yes (rule-based) | No | No | No | No |
 | Needs an LLM | No | No | No | Optional | No |
 
 tabsight is not a drag-and-drop tool or a BI server. If you want to build charts by hand in a notebook, PyGWalker is excellent. If you need logins and a hosted dashboard, Vizro or Superset will suit you better.
@@ -207,7 +229,7 @@ tabsight is not a drag-and-drop tool or a BI server. If you want to build charts
 1. **It never changes your data.** Every function works on a copy, and a test checks this for every public function.
 2. **Every guess has a reason and an override.** You can read why a decision was made and change it in one argument.
 3. **It warns rather than stops,** unless you ask for strict mode.
-4. **Extras are opt-in.** Cleaning, and later forecasts and insights, never run unless asked.
+4. **Extras are opt-in.** Cleaning, forecasts and insights never run unless asked.
 5. **Same input, same output.** No randomness, no clock, no network.
 6. **Private and offline by default.** No telemetry, and nothing is ever downloaded or sent.
 
@@ -248,8 +270,8 @@ The same pages build a documentation website with search and dark mode: `python 
 | 4 | "Show Me" chart recommender with reasons, chart linter, `fig.explain()` | Done |
 | 5 | World maps: countries, states and provinces for every country, cities | Done |
 | 6 | Heatmaps, treemaps, Sankey, scatter, distributions, small multiples; `df.plot` / `df.ts` in notebooks | Done |
-| 7 | Trend lines, forecasts, period comparisons, plain-English insights | Next |
-| 8 | Dashboards with cross-filtering, drill-down and filters | Planned |
+| 7 | Trend lines, forecasts, period comparisons, plain-English insights; charts in saved notebooks | Done |
+| 8 | Dashboards with cross-filtering, drill-down and filters | Next |
 | 9 | `ts.auto(df)` one-line dashboards, command line, web-framework helpers, optional PNG export | Planned |
 | 10 | First release on PyPI | Planned |
 

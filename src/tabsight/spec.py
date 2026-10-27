@@ -161,6 +161,35 @@ def _date(value: Any, what: str) -> str:
     return value
 
 
+_PERCENTILE = re.compile(r"p\d{1,2}")
+
+
+def _ref_one(value: Any, what: str) -> str | float:
+    if isinstance(value, str):
+        if value in ("mean", "median") or _PERCENTILE.fullmatch(value):
+            return value
+        raise InvalidSpecError(
+            f"{what}={safe_repr(value)} must be 'mean', 'median', 'p0'-'p99' or a number"
+        )
+    return _number(value, what)
+
+
+def _ref(value: Any, what: str) -> tuple[str | float, ...]:
+    """One reference line or up to 4: ``"mean"``, ``"median"``, ``"p90"`` or a number."""
+    if isinstance(value, list | tuple):
+        if not 1 <= len(value) <= 4:
+            raise InvalidSpecError(f"{what} takes 1-4 reference lines")
+        return tuple(_ref_one(v, what) for v in value)
+    return (_ref_one(value, what),)
+
+
+def _band(value: Any, what: str) -> tuple[str | float, str | float]:
+    """A shaded band between two references, for example ``("p25", "p75")``."""
+    if not isinstance(value, list | tuple) or len(value) != 2:
+        raise InvalidSpecError(f"{what} must be a pair like ('p25', 'p75') or (100, 200)")
+    return (_ref_one(value[0], what), _ref_one(value[1], what))
+
+
 GEO_NAME_LANGUAGES = (
     "english", "local", "ar", "bn", "de", "el", "en", "es", "fa", "fr", "he", "hi", "hu", "id", "it",
     "ja", "ko", "nl", "pl", "pt", "ru", "sv", "tr", "uk", "ur", "vi", "zh", "zht",
@@ -172,7 +201,10 @@ _OPTIONS: dict[str, Callable[[Any, str], Any]] = {
     "forecast": _int_range(1, 120),
     "season": _int_range(2, 366),
     "insights": _bool,
-    "compare": _choice(("previous_period", "previous_year")),
+    "compare": _choice(("previous_year", "previous_quarter", "previous_month", "previous_period")),
+    "ref": _ref,  # reference lines: "mean", "median", "p90" or a number, or a list of up to 4
+    "band": _band,  # a shaded band between two references
+    "outliers": _bool,
     "fixed": _bool,
     "log": _bool,
     "y_min": _number,

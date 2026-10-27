@@ -102,6 +102,7 @@ nav:
       - Making charts: guide/charts.md
       - More chart types: guide/more-charts.md
       - Small multiples: guide/small-multiples.md
+      - Trends, forecasts and insights: guide/analytics.md
       - Notebooks and df.plot: guide/notebooks.md
       - Choosing a chart: guide/choosing-charts.md
       - Maps: guide/maps.md

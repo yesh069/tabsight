@@ -41,8 +41,11 @@ RULES: dict[str, tuple[str, str]] = {
     "table_truncated": ("info", "a table that shows only some of its rows"),
     "mixed_units": ("info", "measures in different units sharing one axis"),
     "no_data": ("warning", "a chart with nothing to show"),
+    "weak_trend": ("info", "a trend line that explains little of the ups and downs"),
+    "long_forecast": ("warning", "a forecast reaching further ahead than half the history behind it"),
 }  # fmt: skip
 
+WEAK_TREND_R2 = 0.1
 _BARS = ("bar", "hbar", "grouped_bar", "stacked_bar", "stacked100_bar")
 _LINES = ("line", "multi_line", "area", "stacked_area", "sparkline")
 _STACKED = ("stacked_bar", "stacked100_bar", "stacked_area")
@@ -196,6 +199,14 @@ def _check(fig: Figure) -> Iterator[LintIssue]:
         if facts.get("partial_period"):
             yield _issue("incomplete_last_period", "the last period isn't over yet, so it looks lower than it will be",
                          "filter the data to complete periods, or keep the note that the chart already shows")  # fmt: skip
+    weak = [r for r in facts.get("trend_r2", ()) if r < WEAK_TREND_R2]
+    if weak:
+        yield _issue("weak_trend", f"the trend line explains only {min(weak):.0%} of the ups and downs (R² {min(weak):.2f})",
+                     "read it as 'no clear direction', or leave it out", {"trend": False})  # fmt: skip
+    horizon, history = facts.get("forecast"), facts.get("forecast_history")
+    if horizon and history and horizon > history / 2:
+        yield _issue("long_forecast", f"{horizon} periods are estimated from {history}: the far end is mostly guesswork",
+                     f"forecast at most {max(1, history // 2)} periods", {"forecast": max(1, history // 2)})  # fmt: skip
     if kind in _BARS:
         for axis in _axes(option, "value"):
             low = axis.get("min")

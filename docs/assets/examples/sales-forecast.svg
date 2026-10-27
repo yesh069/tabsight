@@ -1,0 +1,91 @@
+<svg width="760" height="360" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full" viewBox="0 0 760 360">
+<rect width="760" height="360" x="0" y="0" fill="#ffffff"></rect>
+<path d="M44.2 312.5L736 312.5" fill="none" pointer-events="visible" stroke="#e9ecef" class="zr0-cls-0"></path>
+<path d="M44.2 258.5L736 258.5" fill="none" pointer-events="visible" stroke="#e9ecef" class="zr0-cls-0"></path>
+<path d="M44.2 203.5L736 203.5" fill="none" pointer-events="visible" stroke="#e9ecef" class="zr0-cls-0"></path>
+<path d="M44.2 149.5L736 149.5" fill="none" pointer-events="visible" stroke="#e9ecef" class="zr0-cls-0"></path>
+<path d="M44.2 94.5L736 94.5" fill="none" pointer-events="visible" stroke="#e9ecef" class="zr0-cls-0"></path>
+<path d="M44.2 40.5L736 40.5" fill="none" pointer-events="visible" stroke="#e9ecef" class="zr0-cls-0"></path>
+<path d="M44.2 312.5L736 312.5" fill="none" pointer-events="visible" stroke="#c9ced6" stroke-linecap="round" class="zr0-cls-0"></path>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" transform="translate(36.2 312.7277)" fill="#5f6670">$0</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" transform="translate(36.2 258.1822)" fill="#5f6670">$2K</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" transform="translate(36.2 203.6366)" fill="#5f6670">$4K</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" transform="translate(36.2 149.0911)" fill="#5f6670">$6K</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" transform="translate(36.2 94.5455)" fill="#5f6670">$8K</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" transform="translate(36.2 40)" fill="#5f6670">$10K</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" transform="matrix(0.866,-0.5,0.5,0.866,44.2,320.7277)" fill="#5f6670">Jan &#39;14</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" transform="matrix(0.866,-0.5,0.5,0.866,79.3763,320.7277)" fill="#5f6670">Apr &#39;14</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" transform="matrix(0.866,-0.5,0.5,0.866,114.5525,320.7277)" fill="#5f6670">Jul &#39;14</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" transform="matrix(0.866,-0.5,0.5,0.866,149.7288,320.7277)" fill="#5f6670">Oct &#39;14</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" transform="matrix(0.866,-0.5,0.5,0.866,184.9051,320.7277)" fill="#5f6670">Jan &#39;15</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" transform="matrix(0.866,-0.5,0.5,0.866,220.0814,320.7277)" fill="#5f6670">Apr &#39;15</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" transform="matrix(0.866,-0.5,0.5,0.866,255.2576,320.7277)" fill="#5f6670">Jul &#39;15</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" transform="matrix(0.866,-0.5,0.5,0.866,290.4339,320.7277)" fill="#5f6670">Oct &#39;15</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" transform="matrix(0.866,-0.5,0.5,0.866,325.6102,320.7277)" fill="#5f6670">Jan &#39;16</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" transform="matrix(0.866,-0.5,0.5,0.866,360.7864,320.7277)" fill="#5f6670">Apr &#39;16</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" transform="matrix(0.866,-0.5,0.5,0.866,395.9627,320.7277)" fill="#5f6670">Jul &#39;16</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" transform="matrix(0.866,-0.5,0.5,0.866,431.139,320.7277)" fill="#5f6670">Oct &#39;16</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" transform="matrix(0.866,-0.5,0.5,0.866,466.3153,320.7277)" fill="#5f6670">Jan &#39;17</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" transform="matrix(0.866,-0.5,0.5,0.866,501.4915,320.7277)" fill="#5f6670">Apr &#39;17</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" transform="matrix(0.866,-0.5,0.5,0.866,536.6678,320.7277)" fill="#5f6670">Jul &#39;17</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" transform="matrix(0.866,-0.5,0.5,0.866,571.8441,320.7277)" fill="#5f6670">Oct &#39;17</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" transform="matrix(0.866,-0.5,0.5,0.866,607.0203,320.7277)" fill="#5f6670">Jan &#39;18</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" transform="matrix(0.866,-0.5,0.5,0.866,642.1966,320.7277)" fill="#5f6670">Apr &#39;18</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" transform="matrix(0.866,-0.5,0.5,0.866,677.3729,320.7277)" fill="#5f6670">Jul &#39;18</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" transform="matrix(0.866,-0.5,0.5,0.866,712.5492,320.7277)" fill="#5f6670">Oct &#39;18</text>
+<g clip-path="url(#zr0-c0)">
+<path d="M607 88.4L618.7 117.3L630.5 123.2L642.2 99.4L653.9 78.9L665.6 98.8L677.4 50.4L689.1 90.9L700.8 99.3L712.5 97.6L724.3 74.6L736 75.8L736 246.9L724.3 245.2L712.5 267.7L700.8 269.1L689.1 260.3L677.4 219.4L665.6 267.4L653.9 247.2L642.2 267.4L630.5 290.9L618.7 284.7L607 255.6Z" fill="#4e79a7" fill-opacity="0.14" class="zr0-cls-0"></path>
+</g>
+<g clip-path="url(#zr0-c1)">
+<path d="M607 255.6L618.7 284.7L630.5 290.9L642.2 267.4L653.9 247.2L665.6 267.4L677.4 219.4L689.1 260.3L700.8 269.1L712.5 267.7L724.3 245.2L736 246.9" fill="none" pointer-events="visible" stroke="#5070dd" stroke-width="2" stroke-opacity="0" stroke-linejoin="bevel" class="zr0-cls-0"></path>
+</g>
+<g clip-path="url(#zr0-c0)">
+<path d="M607 88.4L618.7 117.3L630.5 123.2L642.2 99.4L653.9 78.9L665.6 98.8L677.4 50.4L689.1 90.9L700.8 99.3L712.5 97.6L724.3 74.6L736 75.8" fill="none" pointer-events="visible" stroke="#b6d634" stroke-width="2" stroke-opacity="0" stroke-linejoin="bevel" class="zr0-cls-0"></path>
+</g>
+<g clip-path="url(#zr0-c2)">
+<path d="M44.2 140.2L55.9 216.1L67.7 229.8L79.4 145.3L91.1 91.7L102.8 100.7L114.6 58.2L126.3 187.3L138 148.1L149.7 128.6L161.5 197.6L173.2 109.5L184.9 161.5L196.6 134.7L208.4 142.6L220.1 173.8L231.8 173.1L243.5 205.8L255.3 142.8L267 105.9L278.7 168.1L290.4 179.7L302.2 70.6L313.9 157.5L325.6 80L337.3 196.8L349.1 182.1L360.8 66.7L372.5 165.6L384.2 147.6L396 179.1L407.7 187.6L419.4 158.5L431.1 217.8L442.9 198.3L454.6 131.4L466.3 148.2L478 215.1L489.8 147.5L501.5 205.7L513.2 172L524.9 200.2L536.7 171.4L548.4 218L560.1 157.9L571.8 125L583.6 124.7L595.3 145.3" fill="none" pointer-events="visible" stroke="#4e79a7" stroke-width="2" stroke-linejoin="bevel" class="zr0-cls-2"></path>
+</g>
+<g clip-path="url(#zr0-c3)">
+<path d="M595.3 145.3L607 172L618.7 201L630.5 207L642.2 183.4L653.9 163.1L665.6 183.1L677.4 134.9L689.1 175.6L700.8 184.2L712.5 182.6L724.3 159.9L736 161.4" fill="none" pointer-events="visible" stroke="#4e79a7" stroke-width="2" stroke-dasharray="8,4" stroke-linejoin="bevel" class="zr0-cls-2"></path>
+</g>
+<path d="M-5 -6.5l124.9 0l0 25l-124.9 0Z" transform="translate(5 6.5)" fill="rgb(0,0,0)" fill-opacity="0" stroke="#b7b9be" stroke-width="0" class="zr0-cls-0"></path>
+<path d="M2.5 0L7.5 0A2.5 2.5 0 0 1 10 2.5L10 7.5A2.5 2.5 0 0 1 7.5 10L2.5 10A2.5 2.5 0 0 1 0 7.5L0 2.5A2.5 2.5 0 0 1 2.5 0Z" transform="translate(5 7.5)" fill="#4e79a7" ecmeta_series_index="0" ecmeta_data_index="0" ecmeta_ssr_type="legend" ecmeta_silent="true" class="zr0-cls-0"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" x="15" y="5" transform="translate(5 7.5)" fill="#5f6670">Sales</text>
+<path d="M0 -1l45.1 0l0 12l-45.1 0Z" transform="translate(5 7.5)" fill="none" pointer-events="visible" ecmeta_series_index="0" ecmeta_data_index="0" ecmeta_ssr_type="legend" class="zr0-cls-3"></path>
+<path d="M2.5 0L7.5 0A2.5 2.5 0 0 1 10 2.5L10 7.5A2.5 2.5 0 0 1 7.5 10L2.5 10A2.5 2.5 0 0 1 0 7.5L0 2.5A2.5 2.5 0 0 1 2.5 0Z" transform="translate(58.12 7.5)" fill="#4e79a7" ecmeta_series_index="1" ecmeta_data_index="1" ecmeta_ssr_type="legend" ecmeta_silent="true" class="zr0-cls-0"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" x="15" y="5" transform="translate(58.12 7.5)" fill="#5f6670">Estimate</text>
+<path d="M0 -1l61.8 0l0 12l-61.8 0Z" transform="translate(58.12 7.5)" fill="none" pointer-events="visible" ecmeta_series_index="1" ecmeta_data_index="1" ecmeta_ssr_type="legend" class="zr0-cls-3"></path>
+<defs >
+<clipPath id="zr0-c0">
+<path d="M43 39l695 0l0 274.7l-695 0Z" fill="#000" class="zr0-cls-0"></path>
+</clipPath>
+<clipPath id="zr0-c1">
+<path d="M43 39l695 0l0 274.7l-695 0Z" fill="#000" class="zr0-cls-0"></path>
+</clipPath>
+<clipPath id="zr0-c2">
+<path d="M43 39l695 0l0 274.7l-695 0Z" fill="#000" class="zr0-cls-1"></path>
+</clipPath>
+<clipPath id="zr0-c3">
+<path d="M43 39l695 0l0 274.7l-695 0Z" fill="#000" class="zr0-cls-1"></path>
+</clipPath>
+</defs>
+<style ><![CDATA[
+.zr0-cls-0:hover {
+pointer-events:none;
+}
+.zr0-cls-1:hover {
+cursor:pointer;
+fill:rgba(0,0,0,1);
+}
+.zr0-cls-2:hover {
+cursor:pointer;
+}
+.zr0-cls-3:hover {
+cursor:pointer;
+fill:rgba(0,0,0,0);
+}
+
+]]>
+
+</style>
+</svg>

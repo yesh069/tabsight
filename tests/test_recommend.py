@@ -207,6 +207,25 @@ def _lint_triggers() -> dict[str, Callable[[pd.DataFrame], ts.Figure]]:
         "table_truncated": lambda d: ts.chart(d, "table", x="Order_ID", y="Revenue"),
         "mixed_units": lambda d: ts.chart(d, "line", x="Order_Date", y=["Revenue", "Units"]),
         "no_data": lambda d: ts.chart(d.iloc[0:0], "bar", x="Region", y="Revenue"),
+        "weak_trend": lambda d: ts.chart(
+            pd.DataFrame({"a": [float(i) for i in range(40)], "b": [1.0, 5.0] * 20}),
+            "scatter",
+            x="a",
+            y="b",
+            trend=True,
+        ),
+        "long_forecast": lambda d: ts.chart(
+            pd.DataFrame(
+                {
+                    "Year": pd.date_range("2016-01-01", periods=8, freq="YS"),
+                    "Sales": [float(i) for i in range(8)],
+                }
+            ),
+            "line",
+            x="Year",
+            y="Sales",
+            forecast=6,
+        ),
     }
 
 

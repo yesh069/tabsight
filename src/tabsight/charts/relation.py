@@ -147,6 +147,12 @@ def _row_scatter(frame: pd.DataFrame, ctx: _Context, height: int | None, x: str)
     from tabsight.charts import _pretty
 
     title = f"{_pretty(y)} vs {_pretty(x)}" + (f" by {_pretty(spec.color)}" if spec.color else "")
+    _pane(
+        option,
+        ctx,
+        complete["x"].to_numpy(dtype="float64"),
+        complete["y"].to_numpy(dtype="float64"),
+    )
     return figure(ctx, title, option, height or 460)
 
 
@@ -200,6 +206,10 @@ def _grouped_scatter(frame: pd.DataFrame, ctx: _Context, height: int | None, x: 
     from tabsight.charts import _pretty
 
     title = f"{_pretty(my.label)} vs {_pretty(mx.label)} by {_pretty(x)}"
+    points = np.array([d["value"][:2] for s in series for d in s["data"]], dtype="float64").reshape(
+        -1, 2
+    )
+    _pane(option, ctx, points[:, 0], points[:, 1])
     return figure(ctx, title, option, height or 460)
 
 
@@ -408,6 +418,13 @@ def boxplot(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
 # ---------------------------------------------------------------- lines over a number
 
 
+def _pane(option: dict[str, Any], ctx: _Context, xs: np.ndarray, ys: np.ndarray) -> None:
+    from tabsight.charts import pane
+
+    if pane.asked(ctx):
+        pane.apply_points(option, ctx, kind=ctx.spec.kind, xs=xs, ys=ys)
+
+
 def numeric_lines(frame: pd.DataFrame, ctx: _Context, height: int | None, x: str) -> Figure:
     """Line or area over a number column on a real value axis (a curve, not category labels)."""
     spec = ctx.spec
@@ -460,6 +477,8 @@ def numeric_lines(frame: pd.DataFrame, ctx: _Context, height: int | None, x: str
     ctx.facts.update(x_time=False, x_ordered=True, categories=len(vals), series=len(series),
                      negative=bool((pd.to_numeric(vals[measures[0].label], errors="coerce") < 0).any()),
                      rows=len(vals))  # fmt: skip
+    points = np.array([p for s in series for p in s["data"]], dtype="float64").reshape(-1, 2)
+    _pane(option, ctx, points[:, 0], points[:, 1])
     title = ctx.title(measures, [x])
     if len(vals) == len(work) and len(measures) == 1 and not spec.color and not spec.title:
         from tabsight.charts import _pretty

@@ -82,6 +82,15 @@ def chart(
     source: str | None = None,
     target: str | None = None,
     facet: str | None = None,
+    trend: bool | None = None,
+    forecast: int | None = None,
+    season: int | None = None,
+    ref: str | float | Sequence[str | float] | None = None,
+    band: Sequence[str | float] | None = None,
+    outliers: bool | None = None,
+    insights: bool | None = None,
+    compare: str | None = None,
+    as_of: str | None = None,
 ) -> Figure:
     """Build a chart. ``x`` is what you group by, ``y`` the measure(s), ``color`` splits
     the series. Everything else has a sensible default and can be overridden.
@@ -93,8 +102,22 @@ def chart(
     (``"world"`` or a country such as ``"Ireland"``), ``level`` (country, region, city)
     and ``layer`` (for example ``"nation"`` for the UK) narrow it, ``geo_map`` fixes
     spellings, ``geo_names`` sets the language of place names, and ``lat``/``lon`` place
-    points by coordinates."""
+    points by coordinates.
+
+    Analytics: ``trend=True`` adds a least-squares trend line, ``forecast=6`` estimates
+    the next 6 periods (Holt-Winters, dashed, with a rough range; ``season=`` overrides
+    the season length), ``ref="mean"`` (``"median"``, ``"p90"``, a number, or a list)
+    draws reference lines, ``band=("p25", "p75")`` shades a band, ``outliers=True``
+    circles unusual points, and ``insights=True`` adds plain-English facts under the
+    chart. A KPI takes ``compare="previous_year"`` (or ``"previous_quarter"``,
+    ``"previous_month"``) and ``as_of="2017-12-31"``; "today" is otherwise the latest
+    date in the data."""
     if facet is not None:
+        if any(v for v in (trend, forecast, ref, band, outliers, insights, compare)):
+            raise InvalidSpecError(
+                "trend, forecast, reference lines, outliers, insights and comparisons aren't drawn in "
+                "small multiples yet; draw one chart per value instead"
+            )
         args = {
             k: v
             for k, v in locals().items()
@@ -133,7 +156,9 @@ def chart(
     options: dict[str, Any] = {"freq": freq} if freq else {}
     for key, value in (("map", map), ("level", level), ("layer", layer), ("geo_map", geo_map),
                        ("geo_names", geo_names), ("projection", projection), ("goal", goal),
-                       ("bins", bins), ("bin_width", bin_width)):  # fmt: skip
+                       ("bins", bins), ("bin_width", bin_width), ("trend", trend), ("forecast", forecast),
+                       ("season", season), ("ref", ref), ("band", band), ("outliers", outliers),
+                       ("insights", insights), ("compare", compare), ("as_of", as_of)):  # fmt: skip
         if value is not None:
             options[key] = dict(value) if isinstance(value, Mapping) else value
     spec = ChartSpec(
@@ -153,6 +178,20 @@ def chart(
     ctx.decisions.extend(chosen or [f"{spec.kind.replace('_', ' ')} chart, as asked"])
     ctx.freq_source = freq_source
 
+    from tabsight.charts import pane
+
+    if pane.asked(ctx):
+        pane.check_kind(ctx, spec.kind)
+    if spec.options.get("compare") and spec.kind != "kpi":
+        raise InvalidSpecError("compare= works on KPI cards; for charts, use ts.compare(...)")
+    fig = _draw(frame, ctx, height)
+    if spec.options.get("insights"):
+        fig = _with_insights(fig, frame, ctx)
+    return fig
+
+
+def _draw(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
+    spec = ctx.spec
     if spec.kind in MAP_KINDS:
         from tabsight.charts.maps import map_chart
 
@@ -185,6 +224,32 @@ def chart(
     if spec.kind == "table":
         return _table(frame, ctx, height)
     return _echarts(frame, ctx, height)
+
+
+def _with_insights(fig: Figure, frame: pd.DataFrame, ctx: _Context) -> Figure:
+    """Plain-English facts about exactly the fields this chart shows."""
+    import dataclasses
+
+    from tabsight.insight import insights
+
+    ys = [m["column"] for m in ctx.facts.get("measures", []) if m["column"] in ctx.prof]
+    if not ys:
+        return fig
+    dims = ctx.dims() if ctx.spec.x is not None else []
+    xs = [
+        d
+        for d in [*dims, *([ctx.spec.color] if ctx.spec.color else [])]
+        if ctx.prof[d].role != "time"
+    ]
+    date = next((d for d in dims if ctx.prof[d].role == "time"), None)
+    found = insights(frame, y=ys, x=xs or None, date=date, as_of=ctx.spec.options.get("as_of"),
+                     max_items=4, locale=ctx.locale, prof=ctx.prof) if (xs or date) else None  # fmt: skip
+    items = tuple(i.to_dict() for i in found) if found else ()
+    decision = (f"{len(items)} insight(s) found by fixed rules (facts, never causes), {items[0]['scope']}"
+                if items else "no insight rule found anything worth saying for these fields")  # fmt: skip
+    return dataclasses.replace(
+        fig, insights=items, decisions=(*fig.decisions, decision.rstrip(", "))
+    )
 
 
 def _as_tuple(value: Any) -> Any:
@@ -328,6 +393,12 @@ _AGG_WORDS = {
 }  # fmt: skip
 
 
+def _pane_asked(ctx: _Context) -> bool:
+    from tabsight.charts import pane
+
+    return pane.asked(ctx)
+
+
 def _same_parents(frame: pd.DataFrame, parents: list[str], i: int) -> bool:
     return all(frame[p].iloc[i] == frame[p].iloc[i - 1] for p in parents)
 
@@ -462,10 +533,14 @@ def _echarts(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
             if color or len(measures) > 1:
                 raise InvalidSpecError("a lollipop shows one measure by one column")
             kind = "bar"
-        if kind == "bar" and (
-            max((len(lb) for lb in labels), default=0) > HBAR_LABEL_CHARS
-            or len(labels) > HBAR_CATEGORIES
-        ):
+        if (
+            kind == "bar"
+            and not x_time
+            and (
+                max((len(lb) for lb in labels), default=0) > HBAR_LABEL_CHARS
+                or len(labels) > HBAR_CATEGORIES
+            )
+        ):  # dates always read left to right
             kind = "hbar"
             ctx.notes.append("drawn as horizontal bars so every label can be read")
             ctx.decisions.append(
@@ -488,6 +563,11 @@ def _echarts(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
             {"gap": "a missing period is left as a gap", "zero": "a missing period is drawn as 0",
              "connect": "a missing period is bridged by the line"}[ctx.settings.missing]
         )  # fmt: skip
+    if pane_asked := _pane_asked(ctx):
+        from tabsight.charts import pane
+
+        pane.apply_category(option, ctx, kind=kind, x_values=x_values, grain=grain if x_time else None,
+                            x_time=x_time, partial=result.partial_period)  # fmt: skip
     if color:
         pinned = " (with your pinned colours)" if _colors_pinned(ctx) else ""
         ctx.decisions.append(
@@ -513,6 +593,8 @@ def _echarts(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
                 DataWarning,
             )
     fig_height = height or _build.default_height(kind, len(labels))
+    if pane_asked and ctx.facts.get("forecast"):
+        ctx.facts["categories"] = len(option["xAxis"]["data"])
     return Figure(
         kind=kind,
         spec=spec,
@@ -538,21 +620,65 @@ def _kpi(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
     if ctx.spec.x is not None:
         raise InvalidSpecError("a KPI shows one number; leave x= out")
     m = measures[0]
-    result = aggregate(frame, None, measures, prof=ctx.prof)
-    value = result.values[m.label].iloc[0] if len(result.frame) else None
     label = ctx.spec.title or _pretty(ctx.measure_title(m))
     ctx.describe_format(measures, "; short on the card, in full on hover")
-    kpi = {
-        "label": None,  # the tile title already names the measure
-        "value_text": ctx.fmt(value, m, "compact") or text("no_data"),
-        "value_full": ctx.fmt(value, m, "full"),
-        "detail": ctx.spec.subtitle,
-    }
+    if ctx.spec.options.get("compare"):
+        kpi = _kpi_compare(frame, ctx, m)
+    else:
+        result = aggregate(frame, None, measures, prof=ctx.prof)
+        value = result.values[m.label].iloc[0] if len(result.frame) else None
+        kpi = {
+            "label": None,  # the tile title already names the measure
+            "value_text": ctx.fmt(value, m, "compact") or text("no_data"),
+            "value_full": ctx.fmt(value, m, "full"),
+            "detail": ctx.spec.subtitle,
+        }
     return Figure(
         kind="kpi", spec=ctx.spec, title=label, kpi=kpi, locales=locale_payload([ctx.locale]),
         theme=ctx.theme, height=height or 120, notes=tuple(ctx.notes), decisions=tuple(ctx.decisions),
         facts=ctx.facts,
     )  # fmt: skip
+
+
+def _kpi_compare(frame: pd.DataFrame, ctx: _Context, m: Measure) -> dict[str, Any]:
+    """The current period's value, and its change on the same window one period earlier."""
+    from tabsight.periods import compare
+
+    date = next((f.name for f in ctx.prof.fields if f.role == "time"), None)
+    if date is None:
+        raise InvalidSpecError("compare= needs a date column to tell the periods apart")
+    how = ctx.spec.options["compare"]
+    c = compare(frame, m.column or date, date, compare=how, as_of=ctx.spec.options.get("as_of"), agg=m.agg,
+                locale=ctx.locale, prof=ctx.prof)  # fmt: skip
+    unit = ctx.number_kwargs(m)["unit"]
+    if c.change is None:
+        change = c.note or text("no_previous_period")
+    else:
+        arrow = "▲" if c.change > 0 else ("▼" if c.change < 0 else "■")
+        if unit in ("percent", "pp"):
+            size = format_number(abs(c.change), "pp", "full", locale=ctx.locale, decimals=1,
+                                 percent_scale=ctx.number_kwargs(m).get("percent_scale", "fraction"))  # fmt: skip
+        elif c.pct is not None:
+            size = format_number(abs(c.pct), "percent", "full", locale=ctx.locale, decimals=1)
+        else:
+            size = ctx.fmt(abs(c.change), m, "compact")
+        change = f"{arrow} {size.lstrip('+')} vs {c.previous_label}"
+    ctx.decisions.append(
+        f"the card shows {c.current_label} and compares it with {c.previous_label}: the same window one "
+        f"{'period' if how == 'previous_period' else how.split('_')[1]} earlier, so a period that isn't over "
+        f"is never set against a whole one"
+    )
+    ctx.decisions.append(
+        f"'today' is {c.as_of.date()}: {c.as_of_source}; as_of= changes it, and the computer's clock is never used"
+    )
+    ctx.facts.update(compare=how, as_of=str(c.as_of.date()))
+    detail = f"{c.current_label} · {change}"
+    return {
+        "label": None,
+        "value_text": ctx.fmt(c.current, m, "compact") or text("no_data"),
+        "value_full": f"{ctx.fmt(c.current, m, 'full')} in {c.current_label} (data up to {c.as_of.date()})",
+        "detail": f"{ctx.spec.subtitle} · {detail}" if ctx.spec.subtitle else detail,
+    }
 
 
 def _table(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:

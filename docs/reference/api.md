@@ -44,6 +44,26 @@ Generated from the docstrings in the source code, so it always matches the insta
 
 ::: tabsight.figure.Figure
 
+## Analytics and insights
+
+::: tabsight.insight.insights
+
+::: tabsight.insight.Insights
+
+::: tabsight.insight.Insight
+
+::: tabsight.periods.compare
+
+::: tabsight.periods.Comparison
+
+::: tabsight.analytics.linear_trend
+
+::: tabsight.analytics.forecast
+
+::: tabsight.analytics.outliers
+
+::: tabsight.analytics.reference_value
+
 ## Choosing and checking charts
 
 ::: tabsight.recommend.recommend
