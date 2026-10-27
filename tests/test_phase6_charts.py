@@ -344,3 +344,30 @@ def test_notebook_size_tip(store: pd.DataFrame, monkeypatch: pytest.MonkeyPatch)
         fig._repr_html_()  # only once
     with ts.config(cdn=True):
         assert "cdn.jsdelivr.net" in fig._repr_html_()
+
+
+# ---------------------------------------------------------------- found in a real JupyterLab
+
+
+def test_findings_from_a_real_notebook(store: pd.DataFrame) -> None:
+    # pandas sends bins=10 by default: about 10 bars, not 6 rounded-up ones
+    df = pd.DataFrame({"v": np.linspace(-600, 600, 500)})
+    assert 9 <= len(series(ts.chart(df, "histogram", x="v", bins=10))["data"]) <= 13
+    # monthly dates at notebook width: overlapping date labels may be skipped, categories never
+    line = ts.chart(store, "line", x="Order_Date", y="Sales", freq="month")
+    assert line.option["xAxis"]["axisLabel"]["interval"] == "auto"  # type: ignore[index]
+    assert "labels_skipped" not in line.lint().codes
+    bars = ts.chart(store, "bar", x="Sub_Category", y="Sales")
+    assert bars.option["xAxis"]["axisLabel"]["interval"] == 0  # type: ignore[index]
+    # the wheel scrolls the notebook; dragging pans the map
+    assert ts.chart(store, "map", geo="State", y="Sales").option["geo"]["roam"] == "move"  # type: ignore[index]
+    # notes under a chart get room in the frame, so it doesn't scroll inside
+    import dataclasses
+
+    plain = ts.chart(store, "bar", x="Region", y="Sales")
+    noted = dataclasses.replace(plain, notes=("a long note " * 20,))
+    frame = re.compile(r"width:100%;height:(\d+)px;border:0")
+    assert (
+        int(frame.findall(noted._repr_html_())[0]) - int(frame.findall(plain._repr_html_())[0])
+        >= 66
+    )

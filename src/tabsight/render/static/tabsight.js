@@ -530,11 +530,23 @@
     var aspects = fitAspects(option);
     chart.setOption(option);
     fitMaps(chart, aspects);
-    if (typeof root.addEventListener === "function") {
-      root.addEventListener("resize", function () {
-        chart.resize();
-        fitMaps(chart, aspects);
-      });
+    var refit = function () {
+      chart.resize();
+      fitMaps(chart, aspects);
+    };
+    // Watch the chart's own box, not just the window: a notebook can lay a chart out
+    // while its cell is off screen (width near zero) and give it its real width later.
+    if (typeof root.ResizeObserver === "function") {
+      var last = target.clientWidth + "x" + target.clientHeight;
+      new root.ResizeObserver(function () {
+        var now = target.clientWidth + "x" + target.clientHeight;
+        if (now !== last) {
+          last = now;
+          refit();
+        }
+      }).observe(target);
+    } else if (typeof root.addEventListener === "function") {
+      root.addEventListener("resize", refit);
     }
     return chart;
   }

@@ -72,4 +72,8 @@ ts.set_defaults(cdn=True)
 
 This loads ECharts from jsDelivr instead, pinned by a hash so a changed file is refused. Charts then need the internet to draw.
 
-Notebooks viewed on GitHub don't run JavaScript, so interactive charts show up blank there. Export to an image is planned for phase 9.
+## Reopening a saved notebook
+
+JupyterLab only shows interactive output from cells you ran yourself. When you open a notebook someone else ran, or reopen your own after a restart, it counts as "not trusted" and the charts are blank until you run the cells again or trust the notebook (Command Palette → "Trust Notebook"). This was checked in JupyterLab 4.6. Matplotlib doesn't have this problem because its output is a picture.
+
+Notebooks viewed on GitHub don't run JavaScript either, so interactive charts are blank there too. A static image alongside each chart, which would show in both cases, is planned for phase 9.

@@ -494,7 +494,7 @@ def _geo_component(
     t = ctx.theme
     # layoutSize is set in the browser so the map fits the tile without stretching (see "fit")
     geo: dict[str, Any] = {
-        "map": reg, "roam": True, "scaleLimit": {"min": 1, "max": 20}, "layoutCenter": ["50%", "46%"],
+        "map": reg, "roam": "move",  # drag to pan; the wheel keeps scrolling the page "scaleLimit": {"min": 1, "max": 20}, "layoutCenter": ["50%", "46%"],
         "layoutSize": "90%", "silent": silent, "label": {"show": False}, "select": {"disabled": True},
         "itemStyle": {"areaColor": _NO_DATA["dark" if dark else "light"], "borderColor": t.tile, "borderWidth": 0.6},
         "emphasis": {"label": {"show": False}, "itemStyle": {"borderColor": t.text, "borderWidth": 1.2,

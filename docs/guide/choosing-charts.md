@@ -105,6 +105,7 @@ Sum of Sales by Order Date (multi-line chart)
 - multi line chosen automatically (score 92): one line per Region; next best: stacked area (80)
 - Sales is summed: name suggests money
 - Order_Date is grouped by quarter (to suit the time span) and shown in time order
+- dates are in order, so date labels that would overlap are left out
 - lines are straight between real data points, never smoothed
 - a missing period is left as a gap
 - Region values take colours from the classic10 palette in sorted order, so each value keeps its colour in every chart

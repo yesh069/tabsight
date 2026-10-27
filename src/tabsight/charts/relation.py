@@ -291,7 +291,7 @@ def _bins(
     elif hi == lo:
         return np.array([lo - 0.5, lo + 0.5]), "every value is the same, so there is one bar"
     elif asked:
-        width = _nice((hi - lo) / asked)
+        width = _nearest_nice((hi - lo), asked)
         why = f"about {asked} bars, as asked, with a round bar width"
     else:
         q1, q3 = np.percentile(values, [25, 75])
@@ -314,6 +314,14 @@ def _bins(
         stop += width
     edges = np.arange(start, stop + width / 2, width)
     return edges, f"{why}: {len(edges) - 1} bars"
+
+
+def _nearest_nice(span: float, bars: int) -> float:
+    """The round width (1, 2, 2.5 or 5 times a power of ten) whose bar count is closest to ``bars``."""
+    raw = span / bars
+    power = 10.0 ** math.floor(math.log10(raw))
+    candidates = [step * power * scale for scale in (0.1, 1, 10) for step in (1, 2, 2.5, 5)]
+    return min(candidates, key=lambda w: (abs(span / w - bars), w))
 
 
 def _nice(width: float) -> float:

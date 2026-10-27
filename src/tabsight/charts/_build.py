@@ -67,6 +67,16 @@ def _category_axis(
     }
 
 
+def _dates_may_skip(axis: dict[str, Any], x: str, labels: list[str], ctx: _Context) -> None:
+    """Dates are in order, so a skipped label can't be misread: let ECharts drop the ones
+    that would overlap. Category labels are never skipped (a bar must be named)."""
+    if ctx.prof[x].role != "time" or len(labels) <= 12:
+        return
+    axis["axisLabel"] = {**axis["axisLabel"], "interval": "auto", "hideOverlap": True}
+    ctx.facts["date_labels_thinned"] = True
+    ctx.decisions.append("dates are in order, so date labels that would overlap are left out")
+
+
 def _value_axis(fmt: dict[str, Any], ctx: _Context, *, scale: bool = False) -> dict[str, Any]:
     t = ctx.theme
     return {
@@ -203,6 +213,7 @@ def bars(
             series_fmt[name] = tooltip_fmt
 
     cat = _category_axis(labels, ctx, horizontal=horizontal, gap=True)
+    _dates_may_skip(cat, x, labels, ctx)
     val = _value_axis(axis_fmt, ctx)
     if kind == "stacked100_bar":
         val["max"] = 1
@@ -281,6 +292,7 @@ def lines(
         option["grid"] = {"left": 2, "right": 2, "top": 6, "bottom": 2}
         return option
     option["xAxis"] = _category_axis(labels, ctx, horizontal=False, gap=False)
+    _dates_may_skip(option["xAxis"], x, labels, ctx)
     option["yAxis"] = _value_axis(ctx.js(m0, "compact"), ctx, scale=not area)
     multi = len(series) > 1
     if multi:

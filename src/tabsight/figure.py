@@ -97,12 +97,15 @@ class Figure:
 
                 from tabsight.warnings import TabsightWarning
 
-                warnings.warn(
+                # shown while IPython displays the cell, so no line of user code to point at
+
+                warnings.warn_explicit(
                     "this notebook now holds over 10 MB of charts, because each one carries ECharts so it "
                     "works offline; ts.set_defaults(cdn=True) loads it from the internet instead (pinned by hash)",
-                    TabsightWarning, stacklevel=2,
+                    TabsightWarning, "tabsight", 0,
+
                 )  # fmt: skip
-        extra = 150 if self.kind not in ("kpi", "table") else 260
+        extra = (150 if self.kind not in ("kpi", "table") else 260) + _notes_height(self.notes)
         return srcdoc_iframe(document, self.height + extra)
 
     def explain(self) -> str:
@@ -135,6 +138,11 @@ class Figure:
             raise InvalidSpecError(f"{self.kind} figures have no ECharts option to update")
         _check_patch(patch, 0)
         return dataclasses.replace(self, option=_merge(copy.deepcopy(self.option), patch))
+
+
+def _notes_height(notes: tuple[str, ...]) -> int:
+    """Room for the notes under a chart (about 90 characters a line) so the frame never scrolls."""
+    return sum(22 * (1 + len(n) // 90) for n in notes)
 
 
 def _check_patch(value: Any, depth: int) -> None:

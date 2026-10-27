@@ -81,11 +81,33 @@ def safe_repr(value: Any, limit: int = _MAX_REPR) -> str:
 
 
 def warn(
-    message: str, category: type[TabsightWarning] = TabsightWarning, stacklevel: int = 3
+    message: str, category: type[TabsightWarning] = TabsightWarning, stacklevel: int | None = None
 ) -> None:
-    """Emit a tabsight warning, or raise it as an error when strict mode is on."""
+    """Emit a tabsight warning, or raise it as an error when strict mode is on.
+
+    The warning points at the first line of the caller's own code (outside tabsight and
+    pandas), so in a notebook it names the cell, not a library file."""
     from tabsight.settings import current
 
     if current().strict:
         raise TabsightError(f"{category.__name__}: {message}")
-    _stdlib_warnings.warn(message, category, stacklevel=stacklevel)
+    _stdlib_warnings.warn(message, category, stacklevel=stacklevel or _caller_level())
+
+
+def _caller_level() -> int:
+    import sys
+    from pathlib import Path
+
+    library = [Path(__file__).resolve().parent]
+    pandas = sys.modules.get("pandas")
+    if pandas is not None and getattr(pandas, "__file__", None):
+        library.append(Path(str(pandas.__file__)).resolve().parent)
+    frame = sys._getframe(2)  # the caller of warn()
+    level = 2  # that frame, as a stacklevel for _stdlib_warnings.warn called inside warn()
+    while frame is not None:
+        where = Path(frame.f_code.co_filename).resolve()
+        if not any(root in where.parents for root in library):
+            return level
+        frame = frame.f_back  # type: ignore[assignment]
+        level += 1
+    return 3

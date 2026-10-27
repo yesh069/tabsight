@@ -14,7 +14,13 @@ All notable changes are listed here. The project follows [Semantic Versioning](h
 - The recommender now picks scatter, treemap, heatmap, combo and the others directly; eight labelled cases updated to the chart they always named as ideal.
 - Docs: "More chart types", "Small multiples" and "Notebooks and df.plot" guides; chart kinds reference lists what each kind needs. Gallery shows all 33 kinds and small multiples.
 
-### Fixed (Phase 6)
+### Fixed (Phase 6, found by running a real JupyterLab 4.6)
+- A chart drawn while its notebook cell was off screen stayed squashed: charts now follow their own box size (ResizeObserver), not only the window.
+- `df.plot.hist()` (pandas sends bins=10) drew 6 coarse bars: `bins=` now picks the round width whose bar count is closest.
+- Monthly date axes crowded every label at notebook width: date labels that would overlap are now left out (dates are in order, so this can't mislead; category labels are still never skipped).
+- The notebook frame was too short for notes under a chart and scrolled inside: it now makes room for them.
+- The mouse wheel over a map zoomed the map instead of scrolling the page: maps now pan by dragging and the wheel scrolls.
+- Warnings now point at the line of your own code (the notebook cell), not at a line inside pandas or tabsight.
 - A run of unique numbers (a step, a row number) is a valid number axis for lines and scatter.
 - Shown names: "China" and "United States" instead of Natural Earth's formal names.
 

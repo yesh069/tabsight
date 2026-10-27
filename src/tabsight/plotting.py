@@ -14,13 +14,12 @@ Differences from pandas' own plots, on purpose:
 
 from __future__ import annotations
 
-import warnings
 from typing import Any
 
 import pandas as pd
 
 from tabsight.figure import Figure
-from tabsight.warnings import InvalidSpecError, TabsightWarning, safe_repr
+from tabsight.warnings import InvalidSpecError, TabsightWarning, safe_repr, warn
 
 __all__ = ["KINDS", "plot"]
 
@@ -75,11 +74,7 @@ def plot(data: pd.DataFrame | pd.Series, kind: str = "line", **kwargs: Any) -> F
     if unknown:
         raise InvalidSpecError(f"df.plot got unknown arguments {unknown}")
     if ignored:
-        warnings.warn(
-            f"tabsight ignores matplotlib styling: {', '.join(ignored)}",
-            TabsightWarning,
-            stacklevel=3,
-        )
+        warn(f"tabsight ignores matplotlib styling: {', '.join(ignored)}", TabsightWarning)
     passed = {k: v for k, v in kwargs.items() if k in _OURS or k == "color"}
     one, many = KINDS[kind]
 

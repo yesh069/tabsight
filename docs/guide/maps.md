@@ -137,6 +137,8 @@ print([d["name"] for d in fig.option["series"][0]["data"]])
 - **Antarctica** is left out.
 - **Language.** `geo_names="local"` shows local names (`Bayern`), and a language code (`"hi"`, `"zh"`, `"de"`...) shows that language where Natural Earth has it.
 
+Drag a map to move it around. The mouse wheel keeps scrolling the page rather than zooming the map, so a map in the middle of a notebook or report never traps the scroll.
+
 `fig.explain()` lists which map was chosen and why, along with everything else tabsight decided.
 
 ## Coverage and known gaps

@@ -208,7 +208,7 @@ def _check(fig: Figure) -> Iterator[LintIssue]:
                          "show it as a single number", {"kind": "kpi", "x": None})  # fmt: skip
     for axis in _axes(option, "category"):
         interval = (axis.get("axisLabel") or {}).get("interval", 0)
-        if interval not in (0, None):
+        if interval not in (0, None) and not facts.get("date_labels_thinned"):
             yield _issue("labels_skipped", "some category labels are hidden, so readers can't tell which bar is which",
                          "use horizontal bars", {"kind": "hbar"} if kind == "bar" else None)  # fmt: skip
             break
