@@ -11,6 +11,7 @@ from tabsight.charts import chart
 from tabsight.check import CheckReport, check
 from tabsight.clean import CleanReport, clean
 from tabsight.colors import ColorRegistry
+from tabsight.dashboard import Dashboard
 from tabsight.figure import Figure
 from tabsight.formats import format_date, format_number
 from tabsight.formulas import CalcField, calc
@@ -38,6 +39,7 @@ __all__ = [
     "CleanReport",
     "ColorRegistry",
     "Comparison",
+    "Dashboard",
     "Field",
     "Figure",
     "Insight",

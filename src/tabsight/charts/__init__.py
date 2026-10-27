@@ -314,6 +314,11 @@ class _Context:
                 }
             )
             out.append(Measure(name, agg))
+            fmt = self.number_kwargs(out[-1])
+            unit = fmt.pop("unit")
+            self.facts["measures"][-1].update(
+                full=js_spec(unit, "full", **fmt), compact=js_spec(unit, "compact", **fmt)
+            )
         return out
 
     def describe_format(self, measures: list[Measure], where: str) -> None:
@@ -722,6 +727,9 @@ def _table(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
                 kw["decimals"] = 1  # one setting per column, so the numbers line up
         for i, v in enumerate(shown[m.label]):
             cells[i].append(format_number(v, unit, "full", **kw))
+        ctx.facts.setdefault("column_formats", []).append(
+            js_spec(unit, "full", **kw)
+        )  # for dashboards
     if dims:
         ctx.decisions.append(
             "a parent value is shown once rather than repeated on every row" if len(dims) > 1

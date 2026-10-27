@@ -102,6 +102,12 @@ def map_chart(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
 
     if spec.kind == "choropleth":
         option, maps = _choropleth(target, values_by_id, m, ctx, dark, lang)
+        # Dashboards re-colour the map after filtering: which shape each spelling belongs to.
+        names = maps[0]["names"]
+        ctx.facts["geo_shapes"] = {
+            raw: names[fid] for raw, fid in matched.ids.items() if fid in names
+        }
+        ctx.facts["geo_field"] = geo
     else:
         points = [
             (_point(target, fid), _place_name(target, fid, lang), v)

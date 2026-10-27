@@ -4,6 +4,16 @@ All notable changes are listed here. The project follows [Semantic Versioning](h
 
 ## Unreleased
 
+### Added (Phase 8: dashboards with cross-filtering)
+- `ts.Dashboard(title, data=df, filters=[...])` with `.add(kind, ..., w=)`, `.kpi(...)` and `.insights()`: tiles on a 12-column grid (one column on phones), in one offline HTML file or a notebook.
+- Filters (value lists for categories, month ranges for dates), chips with remove buttons, "Reset all filters", and the view kept in the address (`#f=...`), checked against known values.
+- Cross-filtering: clicking a bar, slice, map region, point or table row filters the other tiles; Ctrl/Shift + click adds values; clicking again removes; the "Other" bar filters to its members; the source tile highlights instead of filtering itself; `action="highlight"` and `"none"` per tile.
+- Exact re-aggregation in the browser (`dashboard.js`) from one shared table of exact parts (sums, counts, minimums, maximums; never raw rows), with top N, Other, sorting, period gaps and `min_group_size` recomputed. Parity tests check the browser against `ts.chart` on the same filtered data.
+- KPI comparisons follow date filters: the filtered months against the same months a period earlier.
+- Tiles that can't be recomputed exactly say "Not affected by filters" and why. CSV download per tile (formula-safe), lazy drawing, every tile drawn before printing.
+- `save()` / `load()` / `bind(new_df)` with strict validation of dashboard files.
+- GitHub Sponsors button in the README, on the docs home page and in `.github/FUNDING.yml`.
+
 ### Added (Phase 7: analytics and insights)
 - `ts.insights(df)`: plain-English facts from fixed rules (no LLM): change on the previous period, peak and low, trend direction, seasonality, biggest contributor, concentration, negative segments and outliers. Facts only, never causes; rates change in points; every threshold configurable; each insight tagged with the data it describes. `insights=True` lists them under a chart.
 - `ts.compare(df, y, date)`: year, quarter and month comparisons on the same window shifted back, fiscal-year aware, `as_of=` for "today" (otherwise the latest date in the data, never the clock), `previous_period` with `window=`. A sliver of a new period falls back to the last complete one; no previous data says so instead of +100%. KPI cards take `compare=` and `as_of=`.

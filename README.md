@@ -17,6 +17,7 @@
   <img alt="pandas 2 and 3" src="https://img.shields.io/badge/pandas-2%20%7C%203-1f3b5c">
   <img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-f28e2b">
   <img alt="Status: early development" src="https://img.shields.io/badge/status-early%20development-f28e2b">
+  <a href="https://github.com/sponsors/yesh069"><img alt="Sponsor yesh069" src="https://img.shields.io/badge/sponsor-%E2%9D%A4-ea4aaa?logo=githubsponsors&logoColor=white"></a>
 </p>
 
 ---
@@ -35,7 +36,7 @@ tabsight starts one step earlier. It works out what each column actually is, tel
 </p>
 <p align="center"><sub>Real output from <code>ts.chart</code> on the sample data in this repository, nothing edited by hand.</sub></p>
 
-> **Status:** early development. Phases 0–7 of 10 are done: reading, profiling, checking, cleaning, formatting, exact aggregation, all 33 chart types with small multiples, a chart recommender that explains itself, offline maps of every country's regions, `df.plot` in notebooks, trend lines, forecasts, period comparisons and plain-English insights work today. Cross-filtering dashboards are next. See the [roadmap](#roadmap).
+> **Status:** early development. Phases 0–7 of 10 are done: reading, profiling, checking, cleaning, formatting, exact aggregation, all 33 chart types with small multiples, a chart recommender that explains itself, offline maps of every country's regions, `df.plot` in notebooks, trend lines, forecasts, period comparisons, plain-English insights and cross-filtering dashboards work today. Drill-down, `ts.auto(df)` and the command line are next. See the [roadmap](#roadmap).
 
 ## A first look
 
@@ -206,6 +207,19 @@ print(ts.insights(orders, y="Profit", x="Sub_Category", date="Order_Date"))
 
 Charts take an analytics pane like a BI tool's: `trend=True`, `forecast=6` (Holt-Winters, dashed and labelled "Estimate", with a range), `ref="mean"`, `band=("p25", "p75")` and `outliers=True`. A KPI card compares periods with `compare="previous_year"`.
 
+**Cross-filtering dashboards in one offline file.** Click a bar and every other tile filters to it, with the numbers re-added exactly in the browser from stored sums and counts, never averages of averages.
+
+```python
+# not run
+dash = (
+    ts.Dashboard("Sales", data=orders, filters=["Region", "Order_Date"])
+    .kpi("Sales", compare="previous_year")
+    .add("map", geo="State", y="Sales")
+    .add("hbar", x="Sub_Category", y="Profit")
+)
+dash.to_html("sales.html")
+```
+
 **Saved notebooks still show their charts.** With `pip install "tabsight[static]"`, each chart also carries a still picture of itself, drawn in Python. A notebook reopened untrusted, or viewed on GitHub, shows the picture where the interactive chart would be blank. `fig.to_svg()` saves the same picture for slides.
 
 ## How it compares
@@ -216,7 +230,7 @@ Charts take an analytics pane like a BI tool's: `trend=True`, `forecast=6` (Holt
 | Understands units and formats them | Yes | No | No | No | Manual |
 | Exact numbers after filtering | Yes | Partly | — | Server-side | — |
 | One offline HTML file | Yes | Limited | No | No (needs a server) | Charts, not dashboards |
-| Cross-filtering dashboards | Phase 8 | In the notebook | No | Yes (server) | No |
+| Cross-filtering dashboards | Yes, offline | In the notebook | No | Yes (server) | No |
 | Maps beyond US states and countries | Yes, offline, every country | No | No | Via Plotly | No |
 | Works as pandas' `df.plot` backend | Yes | No | No | No | Plotly: yes |
 | Plain-English insights and forecasts | Yes (rule-based) | No | No | No | No |
@@ -271,7 +285,7 @@ The same pages build a documentation website with search and dark mode: `python 
 | 5 | World maps: countries, states and provinces for every country, cities | Done |
 | 6 | Heatmaps, treemaps, Sankey, scatter, distributions, small multiples; `df.plot` / `df.ts` in notebooks | Done |
 | 7 | Trend lines, forecasts, period comparisons, plain-English insights; charts in saved notebooks | Done |
-| 8 | Dashboards with cross-filtering, drill-down and filters | Next |
+| 8 | Dashboards with cross-filtering and filters (drill-down still to come) | Mostly done |
 | 9 | `ts.auto(df)` one-line dashboards, command line, web-framework helpers, optional PNG export | Planned |
 | 10 | First release on PyPI | Planned |
 

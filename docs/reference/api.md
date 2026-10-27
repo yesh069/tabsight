@@ -44,6 +44,10 @@ Generated from the docstrings in the source code, so it always matches the insta
 
 ::: tabsight.figure.Figure
 
+## Dashboards
+
+::: tabsight.dashboard.Dashboard
+
 ## Analytics and insights
 
 ::: tabsight.insight.insights
