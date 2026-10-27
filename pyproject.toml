@@ -50,8 +50,8 @@ dev = [
 tabsight = "tabsight.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/tabsight/tabsight"
-Issues = "https://github.com/tabsight/tabsight/issues"
+Homepage = "https://github.com/yesh069/tabsight"
+Issues = "https://github.com/yesh069/tabsight/issues"
 
 [tool.hatch.version]
 path = "src/tabsight/_version.py"
