@@ -262,6 +262,47 @@
   color: #ffffff;
 }
 
+/* Sponsor: a ghost button in GitHub Sponsors pink, with a heart that beats on hover */
+.ts-hero__button--sponsor {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  color: #ffffff;
+  border-color: rgba(219, 97, 162, 0.85);
+  background: rgba(219, 97, 162, 0.08);
+}
+
+.ts-hero__button--sponsor:hover,
+.ts-hero__button--sponsor:focus-visible {
+  background: rgba(219, 97, 162, 0.18);
+  border-color: #db61a2;
+  color: #ffffff;
+}
+
+.ts-hero__heart {
+  fill: none;
+  stroke: #db61a2;
+  stroke-width: 1.6;
+  transition: fill 0.15s;
+}
+
+.ts-hero__button--sponsor:hover .ts-hero__heart,
+.ts-hero__button--sponsor:focus-visible .ts-hero__heart {
+  fill: #db61a2;
+  animation: ts-heartbeat 1s ease-in-out infinite;
+}
+
+@keyframes ts-heartbeat {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.22); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.14); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ts-hero__button--sponsor:hover .ts-hero__heart { animation: none; }
+}
+
 .ts-hero__button:focus-visible {
   outline: 2px solid #ffffff;
   outline-offset: 2px;
