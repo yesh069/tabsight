@@ -907,6 +907,7 @@ Asked for on 27 Oct 2026, after Phase 4, and moved from Phase 9 to Phase 6 at th
 - **`df.ts` accessor.** Registered with `pd.api.extensions.register_dataframe_accessor` when tabsight is imported (no global pandas setting needed): `df.ts.chart(kind, ...)`, one method per drawable kind (`df.ts.bar(...)`), `df.ts.recommend(...)`, `df.ts.profile()`, `df.ts.check()`. A Series accessor covers `s.ts.line()` and friends.
 - **Differences from pandas, kept on purpose and documented.** tabsight aggregates (sum of Sales by Region rather than one bar per row; identical when x is already unique). No `x` uses the index, like pandas. `df.plot()` with no `y` charts every number column only when they share a unit; otherwise it suggests `kind="auto"` with chosen fields.
 - **Notebook size.** Loading the runtime once per notebook (Lab, classic) is the default; VS Code and Colab isolate outputs, so there `cdn=True` is suggested once when a notebook passes about 10 MB of inlined charts.
+- **Built in Phase 6 (27 Oct 2026).** The backend, both accessors, the numeric x-axis and the `cdn` setting with a one-time size tip. **Not built:** loading the runtime once per notebook. Every chart runs in a sandboxed iframe that can't reach the notebook, which is what keeps chart code isolated from it, and sandboxed iframes can't share a script. Sharing one copy would need a JupyterLab extension or a widget package (anywidget); that is a decision for later, not a quiet change to the isolation. Not yet checked by hand in a real JupyterLab, classic Notebook, VS Code or Colab.
 - **Done when.** Tests run the backend and the accessor on pandas 2 and 3; the security tests cover them like `ts.chart`; charts are checked by hand in JupyterLab, classic Notebook, VS Code and Colab; a "Using tabsight in Jupyter" docs page with real output.
 
 ---
@@ -953,7 +954,7 @@ These go in the README to show tabsight is better, with numbers.
 
 ## 20. Build order (each phase is finished and tested before the next)
 
-**Status:** Phase 0 done (27 Oct 2026). Phase 1 done (27 Oct 2026). Phase 2 done (27 Oct 2026). Phase 3 done (27 Oct 2026). Phase 4 done (27 Oct 2026). Phase 5 done (27 Oct 2026); level-2 downloads and custom GeoJSON moved to a follow-up, see section 7.8. Every phase follows `docs/SECURITY_CHECKLIST.md`, and its automated guards run with every test run.
+**Status:** Phase 0 done (27 Oct 2026). Phase 1 done (27 Oct 2026). Phase 2 done (27 Oct 2026). Phase 3 done (27 Oct 2026). Phase 4 done (27 Oct 2026). Phase 5 done (27 Oct 2026); level-2 downloads and custom GeoJSON moved to a follow-up, see section 7.8. Phase 6 done (27 Oct 2026); see section 17.1 for notebook loading. Every phase follows `docs/SECURITY_CHECKLIST.md`, and its automated guards run with every test run.
 
 | Phase | Deliverable | Done when |
 |-------|-------------|-----------|

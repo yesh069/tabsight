@@ -29,14 +29,14 @@ __all__ = ["DRAWN_KINDS", "chart"]
 
 BAR_KINDS = ("bar", "hbar", "grouped_bar", "stacked_bar", "stacked100_bar")
 LINE_KINDS = ("line", "multi_line", "area", "stacked_area", "sparkline")
-MAP_KINDS = ("choropleth", "symbol_map")
-DRAWN_KINDS = (*BAR_KINDS, *LINE_KINDS, "donut", "kpi", "table", *MAP_KINDS)
-_LATER = {
-    "density_map": 6, "flow_map": 6, "treemap": 6, "sunburst": 6,
-    "waterfall": 6, "funnel": 6, "combo": 6, "calendar_heatmap": 6, "sankey": 6, "scatter": 6,
-    "bubble": 6, "heatmap": 6, "histogram": 6, "boxplot": 6, "gauge": 6, "pareto": 6,
-    "lollipop": 6, "bullet": 6,
-}  # fmt: skip
+MAP_KINDS = ("choropleth", "symbol_map", "density_map", "flow_map")
+RELATION_KINDS = ("scatter", "bubble", "histogram", "boxplot")
+PART_KINDS = ("treemap", "sunburst", "waterfall", "funnel", "pareto")
+EXTRA_KINDS = ("bullet", "gauge", "combo")
+GRID_KINDS = ("heatmap", "calendar_heatmap", "sankey")
+DRAWN_KINDS = (*BAR_KINDS, *LINE_KINDS, "donut", "kpi", "table", *MAP_KINDS, *RELATION_KINDS, *PART_KINDS,
+               *EXTRA_KINDS, "lollipop", *GRID_KINDS)  # fmt: skip
+_LATER: dict[str, int] = {}  # every kind can be drawn now
 MAX_TABLE_ROWS = 500
 MAX_DONUT_SLICES = 8
 HBAR_LABEL_CHARS = 16
@@ -75,6 +75,13 @@ def chart(
     geo_map: Mapping[str, str] | None = None,
     geo_names: str | None = None,
     projection: str | None = None,
+    size: str | None = None,
+    goal: float | str | None = None,
+    bins: int | None = None,
+    bin_width: float | None = None,
+    source: str | None = None,
+    target: str | None = None,
+    facet: str | None = None,
 ) -> Figure:
     """Build a chart. ``x`` is what you group by, ``y`` the measure(s), ``color`` splits
     the series. Everything else has a sensible default and can be overridden.
@@ -87,6 +94,15 @@ def chart(
     and ``layer`` (for example ``"nation"`` for the UK) narrow it, ``geo_map`` fixes
     spellings, ``geo_names`` sets the language of place names, and ``lat``/``lon`` place
     points by coordinates."""
+    if facet is not None:
+        args = {
+            k: v
+            for k, v in locals().items()
+            if k not in ("data", "kind", "facet") and v is not None
+        }
+        from tabsight.charts.facets import facet_chart
+
+        return facet_chart(_prepare(as_frame(data))[0], kind, facet, args, chart)
     settings = resolve(locale=locale, currency=currency, palette=palette)
     chosen: list[str] = []
     freq_source = "asked" if freq else None
@@ -98,6 +114,7 @@ def chart(
         recs = recommend(data, x=x, y=y, color=color, prof=prof)
         pick = recs.best
         kind, x, color = pick.kind, pick.spec.x, pick.spec.color
+        y, size = pick.spec.y, size or pick.spec.size
         geo = geo or pick.spec.geo
         top = top if top is not None else pick.spec.top
         sort = sort if sort is not None else pick.spec.sort
@@ -115,12 +132,13 @@ def chart(
     theme_obj = theme if isinstance(theme, Theme) else get_theme(theme or settings.theme)
     options: dict[str, Any] = {"freq": freq} if freq else {}
     for key, value in (("map", map), ("level", level), ("layer", layer), ("geo_map", geo_map),
-                       ("geo_names", geo_names), ("projection", projection)):  # fmt: skip
+                       ("geo_names", geo_names), ("projection", projection), ("goal", goal),
+                       ("bins", bins), ("bin_width", bin_width)):  # fmt: skip
         if value is not None:
             options[key] = dict(value) if isinstance(value, Mapping) else value
     spec = ChartSpec(
         kind, x=_as_tuple(x), y=_as_tuple(y), color=color, agg=agg, sort=_as_tuple(sort), top=top, unit=unit, currency=currency,
-        decimals=decimals, format=format, title=title, subtitle=subtitle, options=options, geo=geo, lat=lat, lon=lon,
+        decimals=decimals, format=format, title=title, subtitle=subtitle, options=options, geo=geo, lat=lat, lon=lon, size=size, source=source, target=target, facet=facet,
     )  # fmt: skip
     if spec.kind in _LATER:
         raise InvalidSpecError(
@@ -139,6 +157,29 @@ def chart(
         from tabsight.charts.maps import map_chart
 
         return map_chart(frame, ctx, height)
+    if spec.kind in RELATION_KINDS:
+        from tabsight.charts import relation
+
+        build = {"scatter": relation.scatter, "bubble": relation.scatter,
+                 "histogram": relation.histogram, "boxplot": relation.boxplot}[spec.kind]  # fmt: skip
+        return build(frame, ctx, height)
+    if spec.kind in PART_KINDS:
+        from tabsight.charts import parts
+
+        build = {"treemap": parts.tree, "sunburst": parts.tree, "waterfall": parts.waterfall,
+                 "funnel": parts.funnel, "pareto": parts.pareto}[spec.kind]  # fmt: skip
+        return build(frame, ctx, height)
+    if spec.kind in EXTRA_KINDS:
+        from tabsight.charts import extra
+
+        build = {"bullet": extra.bullet, "gauge": extra.gauge, "combo": extra.combo}[spec.kind]
+        return build(frame, ctx, height)
+    if spec.kind in GRID_KINDS:
+        from tabsight.charts import grids
+
+        build = {"heatmap": grids.heatmap, "calendar_heatmap": grids.calendar_heatmap,
+                 "sankey": grids.sankey}[spec.kind]  # fmt: skip
+        return build(frame, ctx, height)
     if spec.kind == "kpi":
         return _kpi(frame, ctx, height)
     if spec.kind == "table":
@@ -357,6 +398,11 @@ def _echarts(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
         raise InvalidSpecError(f"a {kind} chart takes one x column; use color= for a second one")
     x = dims[0]
     color = spec.color
+    if kind in LINE_KINDS and kind != "sparkline":
+        from tabsight.charts import relation
+
+        if relation.is_numeric(ctx, frame, x):
+            return relation.numeric_lines(frame, ctx, height, x)
     if (
         kind in ("multi_line", "stacked_area", "stacked_bar", "stacked100_bar", "grouped_bar")
         and not color
@@ -410,7 +456,12 @@ def _echarts(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
             ctx.decisions.append(
                 "drawn as horizontal bars, because negative values can't be slices"
             )
-    elif kind in BAR_KINDS:
+    elif kind in BAR_KINDS or kind == "lollipop":
+        lollipop = kind == "lollipop"
+        if lollipop:
+            if color or len(measures) > 1:
+                raise InvalidSpecError("a lollipop shows one measure by one column")
+            kind = "bar"
         if kind == "bar" and (
             max((len(lb) for lb in labels), default=0) > HBAR_LABEL_CHARS
             or len(labels) > HBAR_CATEGORIES
@@ -422,6 +473,11 @@ def _echarts(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
                 f"{HBAR_LABEL_CHARS} characters would not fit side by side"
             )
         option = _build.bars(values, x, x_values, labels, measures, color, kind, other_x, ctx)
+        if lollipop:
+            from tabsight.charts.extra import lollipop_from_bars
+
+            option = lollipop_from_bars(option, kind == "hbar", ctx)
+            kind = "lollipop"
         ctx.decisions.append("the value axis starts at zero, so bar lengths are honest")
         if color:
             ctx.decisions.append("a missing combination is shown as 0")

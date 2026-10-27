@@ -58,6 +58,14 @@ Generated from the docstrings in the source code, so it always matches the insta
 
 ::: tabsight.render.assets.runtime_js
 
+## Notebooks and df.plot
+
+::: tabsight.plotting.plot
+
+::: tabsight.accessor.DataFrameAccessor
+
+::: tabsight.accessor.SeriesAccessor
+
 ## Maps
 
 ::: tabsight.geo

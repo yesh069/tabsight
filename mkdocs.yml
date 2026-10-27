@@ -100,6 +100,9 @@ nav:
       - Table calculations: guide/table-calculations.md
       - Calculated fields: guide/calculated-fields.md
       - Making charts: guide/charts.md
+      - More chart types: guide/more-charts.md
+      - Small multiples: guide/small-multiples.md
+      - Notebooks and df.plot: guide/notebooks.md
       - Choosing a chart: guide/choosing-charts.md
       - Maps: guide/maps.md
       - Formatting numbers and dates: guide/formatting.md

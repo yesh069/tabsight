@@ -8,7 +8,7 @@ Each was compared with its official list of first-level regions. **Layer** is th
 
 | Country | Layer | Official | Bundled | Notes |
 |---------|-------|---------:|--------:|-------|
-| United States of America (`USA`) | `admin1` | 51 | 51 | 50 states + DC |
+| United States (`USA`) | `admin1` | 51 | 51 | 50 states + DC |
 | India (`IND`) | `admin1` | 36 | 36 | 28 states + 8 union territories |
 | Ireland (`IRL`) | `iso` | 26 | 26 | 26 counties |
 | United Kingdom (`GBR`) | `nation` | 4 | 4 | 4 nations |
@@ -28,7 +28,7 @@ Each was compared with its official list of first-level regions. **Layer** is th
 | South Korea (`KOR`) | `admin1` | 17 | 17 | 17 first-level divisions |
 | Turkey (`TUR`) | `admin1` | 81 | 81 | 81 provinces |
 | Egypt (`EGY`) | `admin1` | 27 | 27 | 27 governorates |
-| People's Republic of China (`CHN`) | `admin1` | 34 | 32 | Hong Kong and Macau are separate countries in Natural Earth |
+| China (`CHN`) | `admin1` | 34 | 32 | Hong Kong and Macau are separate countries in Natural Earth |
 | Australia (`AUS`) | `iso` | 8 | 10 | plus Jervis Bay Territory and Macquarie Island |
 | Mexico (`MEX`) | `admin1` | 32 | 33 | plus one small island group without a code |
 | Netherlands (`NLD`) | `admin1` | 12 | 15 | plus the 3 Caribbean special municipalities |
@@ -88,6 +88,7 @@ Each was compared with its official list of first-level regions. **Layer** is th
 | Central African Republic | `CAF` | 17 | prefecture | admin1 |
 | Chad | `TCD` | 22 | prefecture | admin1 |
 | Chile | `CHL` | 16 | region | admin1 |
+| China | `CHN` | 32 | province | admin1 |
 | Colombia | `COL` | 34 | department | admin1, iso |
 | Comoros | `COM` | 3 | region | admin1 |
 | Cook Islands | `COK` | 11 | region | admin1 |
@@ -207,7 +208,6 @@ Each was compared with its official list of first-level regions. **Layer** is th
 | Panama | `PAN` | 12 | province | admin1 |
 | Papua New Guinea | `PNG` | 20 | province | admin1 |
 | Paraguay | `PRY` | 18 | department | admin1 |
-| People's Republic of China | `CHN` | 32 | province | admin1 |
 | Peru | `PER` | 26 | department | admin1, iso |
 | Philippines | `PHL` | 118 | province | admin1, iso, region |
 | Pitcairn Islands | `PCN` | 1 | region | admin1 |
@@ -272,8 +272,8 @@ Each was compared with its official list of first-level regions. **Layer** is th
 | Ukraine | `UKR` | 25 | region | admin1 |
 | United Arab Emirates | `ARE` | 9 | emirate | admin1 |
 | United Kingdom | `GBR` | 232 | unitary authority | admin1, nation, region |
+| United States | `USA` | 51 | state | admin1 |
 | United States Virgin Islands | `VIR` | 3 | region | admin1 |
-| United States of America | `USA` | 51 | state | admin1 |
 | Uruguay | `URY` | 19 | department | admin1 |
 | Uzbekistan | `UZB` | 14 | region | admin1 |
 | Vanuatu | `VUT` | 6 | province | admin1 |

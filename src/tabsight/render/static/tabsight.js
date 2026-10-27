@@ -209,23 +209,57 @@
     return function (params) {
       var list = Array.isArray(params) ? params : [params];
       if (!list.length) return "";
-      var rows = ['<div class="ts-tt-head">' + escapeHtml(list[0].axisValueLabel || list[0].name) + "</div>"];
+      var head = cfg.x_fmt
+        ? formatNumber(list[0].axisValue, cfg.x_fmt, locales) // lines over a number
+        : list[0].axisValueLabel || list[0].name;
+      var rows = ['<div class="ts-tt-head">' + escapeHtml(head) + "</div>"];
       for (var i = 0; i < list.length; i++) {
         var p = list[i];
-        if (p.value === null || p.value === undefined || p.value === "-") continue;
+        var v = Array.isArray(p.value) ? p.value[p.value.length - 1] : p.value;
+        if (v === null || v === undefined || v === "-") continue;
         var spec = (cfg.series_fmt && cfg.series_fmt[p.seriesName]) || cfg.fmt;
         rows.push(
           '<div class="ts-tt-row">' + marker(p.color) +
             '<span class="ts-tt-name">' + escapeHtml(p.seriesName) + "</span>" +
-            '<span class="ts-tt-value">' + escapeHtml(formatNumber(p.value, spec, locales)) + "</span></div>"
+            '<span class="ts-tt-value">' + escapeHtml(formatNumber(v, spec, locales)) + "</span></div>"
         );
       }
       return rows.join("");
     };
   }
 
+  // The array behind an item: [x, y, size] for scatter, [min, q1, median, q3, max] for a box.
+  function itemArray(p) {
+    if (Array.isArray(p.data)) return p.data;
+    if (p.data && Array.isArray(p.data.value)) return p.data.value;
+    return Array.isArray(p.value) ? p.value : [p.value];
+  }
+
+  function itemHead(p, cfg) {
+    if (p.data && p.data.source !== undefined && p.data.target !== undefined) {
+      return String(p.data.source) + " → " + String(p.data.target); // a Sankey link
+    }
+    if (cfg.path && Array.isArray(p.treePathInfo) && p.treePathInfo.length > 1) {
+      return p.treePathInfo.slice(1).map(function (n) { return n.name; }).join(" › ");
+    }
+    return p.name !== undefined && p.name !== "" ? p.name : p.seriesName;
+  }
+
   function itemTooltip(cfg, locales) {
     return function (p) {
+      if (cfg.fields) {
+        // several values for one item, each with its own label and number format
+        var arr = itemArray(p);
+        var out = '<div class="ts-tt-head">' + escapeHtml(itemHead(p, cfg)) + "</div>";
+        cfg.fields.forEach(function (f) {
+          var v = arr[f.index];
+          if (v === null || v === undefined) return;
+          out += '<div class="ts-tt-row"><span class="ts-tt-name">' + escapeHtml(f.label) + "</span>" +
+            '<span class="ts-tt-value">' + escapeHtml(formatNumber(v, f.fmt, locales)) + "</span></div>";
+        });
+        if (p.data && p.data.note) out += '<div class="ts-tt-row ts-tt-note">' + escapeHtml(p.data.note) + "</div>";
+        return out;
+      }
       var value = Array.isArray(p.value) ? p.value[p.value.length - 1] : p.value;
       if (cfg.no_data && (value === null || value === undefined || value === "-" || value !== value)) {
         // a map region with no row in the data
@@ -233,13 +267,15 @@
           '<div class="ts-tt-row"><span class="ts-tt-value">' + escapeHtml(cfg.no_data) + "</span></div>";
       }
       var html =
-        '<div class="ts-tt-head">' + escapeHtml(p.name) + "</div>" +
-        '<div class="ts-tt-row">' + marker(p.color) +
+        '<div class="ts-tt-head">' + escapeHtml(itemHead(p, cfg)) + "</div>" +
+        '<div class="ts-tt-row">' + marker(typeof p.color === "string" ? p.color : null) +
         '<span class="ts-tt-value">' + escapeHtml(formatNumber(value, cfg.fmt, locales)) + "</span>";
       if (cfg.percent && typeof p.percent === "number") {
         html += '<span class="ts-tt-share">' + escapeHtml(formatNumber(p.percent, cfg.percent_fmt, locales)) + "</span>";
       }
-      return html + "</div>";
+      html += "</div>";
+      if (p.data && p.data.note) html += '<div class="ts-tt-row ts-tt-note">' + escapeHtml(p.data.note) + "</div>";
+      return html;
     };
   }
 
@@ -270,12 +306,33 @@
     if (node.$projection) {
       return projection(node.$projection);
     }
+    if (node.$render) {
+      return RENDERERS[node.$render] || RENDERERS.range;
+    }
     var out = {};
     Object.keys(node).forEach(function (key) {
       out[key] = hydrate(node[key], locales);
     });
     return out;
   }
+
+  // ------------------------------------------------------------- custom marks
+
+  // A bar from value[1] to value[2] at category value[0] (waterfall steps can cross zero,
+  // which stacked bars can't show honestly). Named, so no code ever travels in the data.
+  var RENDERERS = {
+    range: function (params, api) {
+      var lo = api.coord([api.value(0), api.value(1)]);
+      var hi = api.coord([api.value(0), api.value(2)]);
+      var width = api.size([1, 0])[0] * 0.62;
+      var top = Math.min(lo[1], hi[1]);
+      return {
+        type: "rect",
+        shape: { x: lo[0] - width / 2, y: top, width: width, height: Math.max(1, Math.abs(lo[1] - hi[1])), r: 2 },
+        style: api.style(),
+      };
+    },
+  };
 
   // ------------------------------------------------------------- maps
 
@@ -383,18 +440,33 @@
     var geos = Array.isArray(option.geo) ? option.geo : option.geo ? [option.geo] : [];
     return geos.map(function (g) {
       var aspect = g._aspect;
+      var box = g._box; // small multiples: [left %, top px, width %, height px]
       delete g._aspect;
-      return typeof aspect === "number" && aspect > 0 ? aspect : null;
+      delete g._box;
+      return { aspect: typeof aspect === "number" && aspect > 0 ? aspect : null, box: Array.isArray(box) ? box : null };
     });
+  }
+
+  function fitSize(a, w, h) {
+    return Math.max(40, a >= 1 ? Math.min(w, h * a) : Math.min(h, w / a));
   }
 
   function fitMaps(chart, aspects) {
     if (!aspects.length) return;
-    var w = chart.getWidth() - 16;
-    var h = chart.getHeight() - 58;
-    var geo = aspects.map(function (a) {
-      if (!a || w <= 0 || h <= 0) return {};
-      return { layoutSize: Math.max(40, a >= 1 ? Math.min(w, h * a) : Math.min(h, w / a)) };
+    var width = chart.getWidth();
+    var geo = aspects.map(function (f) {
+      if (!f || !f.aspect) return {};
+      if (f.box) {
+        var cw = (width * f.box[2]) / 100 - 12;
+        var ch = f.box[3] - 8;
+        return {
+          layoutCenter: [(width * (f.box[0] + f.box[2] / 2)) / 100, f.box[1] + f.box[3] / 2],
+          layoutSize: fitSize(f.aspect, cw, ch),
+        };
+      }
+      var w = width - 16;
+      var h = chart.getHeight() - 58;
+      return w > 0 && h > 0 ? { layoutSize: fitSize(f.aspect, w, h) } : {};
     });
     chart.setOption({ geo: geo });
   }

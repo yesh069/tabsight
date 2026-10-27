@@ -4,6 +4,20 @@ All notable changes are listed here. The project follows [Semantic Versioning](h
 
 ## Unreleased
 
+### Added (Phase 6: every chart kind, small multiples, notebooks)
+- All 33 chart kinds can now be drawn. New: scatter and bubble (one dot per row, or per category with exact aggregation), histogram (rounded bar widths; `bins=`, `bin_width=`), box plot (Tukey whiskers, outliers), treemap and sunburst (levels from `x`), waterfall (floating bars that can cross zero, total at the end), funnel (share of previous and first stage), Pareto (running share, 80% guide), lollipop, bullet and gauge (`goal=` a number or a column), combo (bars and lines, two axes when units differ), heatmap, calendar heatmap, Sankey (cycles broken safely), density map and flow map.
+- Lines and areas over a number: a real value axis (a sine wave is a curve), thinned with LTTB above 2,000 points.
+- Small multiples: `facet=` draws one panel per value (up to 12) sharing one value scale, one category order, one colour per series and one legend; maps and histograms included.
+- pandas plotting backend: `pd.options.plotting.backend = "tabsight"` makes `df.plot(...)` draw tabsight charts (line, bar, barh, area, pie, scatter, hist, box; `by=`, `stacked=`); matplotlib styling is ignored with one warning.
+- `df.ts` and `series.ts` accessors: one method per chart kind, plus `chart`, `recommend`, `profile`, `check`, `aggregate`.
+- `cdn` setting and a one-time tip when a notebook session passes 10 MB of inlined charts.
+- The recommender now picks scatter, treemap, heatmap, combo and the others directly; eight labelled cases updated to the chart they always named as ideal.
+- Docs: "More chart types", "Small multiples" and "Notebooks and df.plot" guides; chart kinds reference lists what each kind needs. Gallery shows all 33 kinds and small multiples.
+
+### Fixed (Phase 6)
+- A run of unique numbers (a step, a row number) is a valid number axis for lines and scatter.
+- Shown names: "China" and "United States" instead of Natural Earth's formal names.
+
 ### Added (Phase 5: world maps)
 - Maps: `ts.chart(df, "map", geo="County", y="Sales")` (a filled map, `choropleth`) and `"symbol_map"` (circles sized by value, from places or `lat=`/`lon=`).
 - Bundled, offline map data from Natural Earth 5.1.2 (public domain), 3.1 MB: about 240 countries, level-1 regions for every country, and about 7,300 cities, built by `tools/build_geo.py` (mapshaper, TopoJSON, deterministic).

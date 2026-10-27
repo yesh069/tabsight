@@ -31,6 +31,14 @@ IMAGES: dict[str, dict[str, object]] = {
     "category-mix": {"kind": "stacked_bar", "x": "Category", "y": "Sales", "color": "Segment"},
     "sub-category-share": {"kind": "donut", "x": "Sub_Category", "y": "Sales"},
     "sales-by-state-map": {"kind": "map", "geo": "State", "y": "Sales"},
+    "sales-treemap": {"kind": "treemap", "x": ["Category", "Sub_Category"], "y": "Sales"},
+    "region-panels": {
+        "kind": "stacked_bar",
+        "x": "Category",
+        "y": "Sales",
+        "color": "Segment",
+        "facet": "Region",
+    },
 }
 
 
@@ -54,7 +62,7 @@ def main() -> None:
                     str(data),
                     str(OUT / f"{name}.svg"),
                     "760",
-                    "360",
+                    str(fig.height) if "facet" in kw else "360",  # panels need their own height
                 ],
                 check=True,
             )

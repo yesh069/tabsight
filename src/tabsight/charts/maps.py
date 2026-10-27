@@ -20,6 +20,10 @@ import pandas as pd
 
 from tabsight.aggregate import Measure, aggregate
 from tabsight.charts import _build
+from tabsight.charts._common import DIV_DARK, DIV_LIGHT, NO_DATA, POSITIVE, SEQ_DARK, SEQ_LIGHT
+from tabsight.charts._common import is_dark as _is_dark
+from tabsight.charts._common import num as _num
+from tabsight.charts._common import ramp_color as _ramp_color
 from tabsight.figure import Figure
 from tabsight.formats import locale_payload
 from tabsight.geo import detection as gd
@@ -34,12 +38,13 @@ __all__ = ["map_chart"]
 
 GEO_COLUMN = "__tabsight_place"
 MAX_POINTS = 3000
-_SEQ_LIGHT = ["#cadcef", "#9dbde0", "#6c9bcb", "#3f6fa8", "#1f3b5c"]
-_SEQ_DARK = ["#1d3a5c", "#2c5a86", "#3f7fbf", "#6ba6df", "#b6d6f3"]
-_DIV_LIGHT = ["#b4441c", "#e49a6d", "#f2e3c9", "#7fa7d0", "#1f4e8c"]
-_DIV_DARK = ["#e07b4c", "#8b4a2d", "#4d4636", "#2c5a86", "#6ba6df"]
-# "No data" is a plain light grey, clearly apart from the lowest colour of every scale
-_NO_DATA = {"light": "#eceef1", "dark": "#2a2f36"}
+_SEQ_LIGHT, _SEQ_DARK, _DIV_LIGHT, _DIV_DARK, _NO_DATA = (
+    SEQ_LIGHT,
+    SEQ_DARK,
+    DIV_LIGHT,
+    DIV_DARK,
+    NO_DATA,
+)
 _COUNTRY_WORDS = {"country", "countries", "nation", "iso3", "iso2"}
 
 
@@ -49,6 +54,8 @@ def map_chart(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
     dark = _is_dark(ctx.theme.tile)
     lang = opts.get("geo_names", "english")
 
+    if spec.kind == "flow_map":
+        return _flow_map(frame, ctx, height, dark, lang)
     if spec.lat or spec.lon:
         if not (spec.lat and spec.lon):
             raise InvalidSpecError("pass both lat= and lon= for a map of coordinates")
@@ -108,6 +115,8 @@ def map_chart(frame: pd.DataFrame, ctx: _Context, height: int | None) -> Figure:
             else None
         )
         option, maps = _symbols(points, base, m, ctx, dark, lang, insets=target.country == "USA")
+        if spec.kind == "density_map":
+            option = _to_density(option, m, ctx)
     ctx.describe_format(measures, "; in tooltips and the legend")
     ctx.facts.update(
         categories=len(values_by_id), series=1, rows=len(values_by_id),
@@ -325,10 +334,126 @@ def _coordinate_map(frame: pd.DataFrame, ctx: _Context, height: int | None, dark
     option, maps = _symbols(
         points, None, m, ctx, dark, spec.options.get("geo_names", "english"), insets=False
     )
+    if spec.kind == "density_map":
+        option = _to_density(option, m, ctx)
     ctx.describe_format(measures, "; in tooltips")
     ctx.facts.update(categories=len(points), series=1, rows=len(points), x_time=False,
                      negative=any((p[2] or 0) < 0 for p in points))  # fmt: skip
     return _figure(ctx, measures, label or f"{lat}/{lon}", option, maps, height)
+
+
+def _to_density(option: dict[str, Any], m: Measure, ctx: _Context) -> dict[str, Any]:
+    """Replace the circles with a heat layer: where many or big values sit close together glows."""
+    points = option["series"][0]["data"]
+    peak = max((abs(p["value"][2] or 0) for p in points), default=1.0) or 1.0
+    dark = _is_dark(ctx.theme.tile)
+    option["series"] = [{"type": "heatmap", "coordinateSystem": "geo", "geoIndex": 0, "pointSize": 10,
+                         "blurSize": 18, "data": [[*p["value"][:2], abs(p["value"][2] or 0)] for p in points]}]  # fmt: skip
+    heat = (["#3b2f1e", "#9c6a1d", "#f28e2b", "#e5626f", "#ffb3c1"] if dark
+            else ["#fff3d6", "#ffc46b", "#f28e2b", "#d1495b", "#7a1f5c"])  # fmt: skip
+    option["visualMap"] = {"type": "continuous", "seriesIndex": 0, "min": 0, "max": peak, "show": False,
+                           "inRange": {"color": heat}}  # fmt: skip
+    option["tooltip"]["show"] = False  # a heat layer has no single item to describe
+    ctx.decisions[:] = [d for d in ctx.decisions if not d.startswith("circle area")]
+    ctx.decisions.append(
+        "a heat layer: colour builds up where many or large values sit close together"
+    )
+    return option
+
+
+def _flow_map(
+    frame: pd.DataFrame, ctx: _Context, height: int | None, dark: bool, lang: str
+) -> Figure:
+    """Curved lines from a source place to a target place, wider for bigger values."""
+    spec = ctx.spec
+    source, target_col = spec.source, spec.target
+    if not source or not target_col:
+        raise InvalidSpecError(
+            "a flow map needs source=<places> and target=<places> (and y=<measure>)"
+        )
+    for col in (source, target_col):
+        if col not in ctx.prof:
+            raise InvalidSpecError(f"column {safe_repr(col)} not found")
+    both = pd.concat([frame[source], frame[target_col]], ignore_index=True)
+    target = _target(both, source, None, spec.options)
+    matched = gd.match(both, target, overrides=spec.options.get("geo_map"))
+    ctx.decisions.append(f"places are on the {target.label}: {target.reason or 'as asked'}")
+    ctx.notes.extend(matched.notes)
+    _report_unmatched(pd.DataFrame({source: both}), source, matched, ctx)
+
+    def place(v: Any) -> str | None:
+        return matched.ids.get(str(v).strip()) if pd.notna(v) else None
+
+    work = frame.assign(
+        **{"__from": frame[source].map(place), "__to": frame[target_col].map(place)}
+    )
+    work = work[work["__from"].notna() & work["__to"].notna() & (work["__from"] != work["__to"])]
+    measures = ctx.measures() if spec.y is not None else [Measure(None, "count")]
+    m = measures[0]
+    result = aggregate(work, ["__from", "__to"], measures[:1], prof=None, missing="connect").values
+    flows = [
+        (str(a), str(b), _num(v))
+        for a, b, v in zip(result["__from"], result["__to"], result[m.label], strict=True)
+    ]
+    flows = sorted((f for f in flows if f[2] is not None and f[2] > 0), key=lambda f: -(f[2] or 0))
+    if len(flows) > 100:
+        ctx.notes.append(f"showing the 100 largest of {len(flows):,} flows")
+        flows = flows[:100]
+    base: gd.GeoTarget | None = None
+    if target.level == "region":
+        base = target
+    elif target.level == "city" and target.country:
+        base = gd.GeoTarget("region", target.country, "admin1")
+    reg, entry = _shapes(base or gd.GeoTarget("country"), lang)
+    insets = target.country == "USA" and base is not None
+    biggest = max((f[2] or 0 for f in flows), default=1.0) or 1.0
+    color = POSITIVE["dark" if dark else "light"]
+    lines: list[dict[str, Any]] = []
+    ends: dict[str, list[float]] = {}
+    for a, b, v in flows:
+        pa, pb = _point(target, a), _point(target, b)
+        if pa is None or pb is None:
+            continue
+        if insets:
+            pa, pb = _inset_point(pa), _inset_point(pb)
+        na, nb = _place_name(target, a, lang), _place_name(target, b, lang)
+        lines.append({"name": f"{na} \u2192 {nb}", "coords": [pa, pb], "value": v,
+                      "lineStyle": {"width": round(1 + 7 * (v or 0) / biggest, 2)}})  # fmt: skip
+        ends[na], ends[nb] = pa, pb
+    option = _build._base(ctx)
+    option["geo"] = _geo_component(reg, base or gd.GeoTarget("country"), ctx, dark, silent=True)
+    option["series"] = [
+        {"type": "lines", "coordinateSystem": "geo", "geoIndex": 0, "data": lines, "zlevel": 1,
+         "lineStyle": {"color": color, "opacity": 0.55, "curveness": 0.25},
+         "emphasis": {"lineStyle": {"opacity": 0.9}}},
+        {"type": "scatter", "coordinateSystem": "geo", "geoIndex": 0, "symbolSize": 6, "zlevel": 2,
+         "data": [{"name": n, "value": pt} for n, pt in ends.items()], "itemStyle": {"color": color},
+         "label": {"show": len(ends) <= 15, "formatter": "{b}", "position": "right", "fontSize": 10,
+                   "color": ctx.theme.text_secondary}, "tooltip": {"show": False}},
+    ]  # fmt: skip
+    option["tooltip"].update(
+        {
+            "trigger": "item",
+            "formatter": {"$tooltip": {"trigger": "item", "fmt": ctx.js(m, "full")}},
+        }
+    )
+    if base is None:
+        _auto_zoom(option["geo"], list(ends.values()))
+    ctx.decisions.append(f"lines run from {source} to {target_col}; wider means bigger")
+    ctx.describe_format(measures, "; in tooltips")
+    ctx.facts.update(categories=len(lines), series=1, rows=len(lines), x_time=False, negative=False)
+    from tabsight.charts import _pretty
+
+    title = (
+        spec.title
+        or f"{_pretty(ctx.measure_title(m))} from {_pretty(source)} to {_pretty(target_col)}"
+    )
+    return Figure(
+        kind=spec.kind, spec=spec, title=title, subtitle=spec.subtitle, option=option,
+        locales=locale_payload([ctx.locale]), theme=ctx.theme, height=height or 480,
+        notes=tuple(dict.fromkeys(ctx.notes)), decisions=tuple(dict.fromkeys(ctx.decisions)),
+        facts=ctx.facts, maps=(entry,),
+    )  # fmt: skip
 
 
 # ---------------------------------------------------------------- shapes and layout
@@ -516,28 +641,3 @@ def _country_topo(iso3: str) -> dict[str, Any]:
 def _read_topo(name: str) -> dict[str, Any]:
     raw = resources.files("tabsight.geo.data").joinpath(name).read_bytes()
     return json.loads(gzip.decompress(raw).decode("utf-8"))  # type: ignore[no-any-return]
-
-
-def _num(v: Any) -> float | None:
-    try:
-        f = float(v)
-    except (TypeError, ValueError):
-        return None
-    return f if math.isfinite(f) else None
-
-
-def _is_dark(color: str) -> bool:
-    r, g, b = (int(color[i : i + 2], 16) for i in (1, 3, 5))
-    return (0.299 * r + 0.587 * g + 0.114 * b) < 128
-
-
-def _ramp_color(ramp: list[str], t: float) -> str:
-    t = min(1.0, max(0.0, t))
-    pos = t * (len(ramp) - 1)
-    i = min(int(pos), len(ramp) - 2)
-    frac = pos - i
-    a, b = ramp[i], ramp[i + 1]
-    mix = [
-        round(int(a[k : k + 2], 16) * (1 - frac) + int(b[k : k + 2], 16) * frac) for k in (1, 3, 5)
-    ]
-    return "#" + "".join(f"{c:02x}" for c in mix)

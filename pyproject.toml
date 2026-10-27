@@ -59,6 +59,9 @@ tabsight = "tabsight.cli:main"
 Homepage = "https://github.com/yesh069/tabsight"
 Issues = "https://github.com/yesh069/tabsight/issues"
 
+[project.entry-points.pandas_plotting_backends]
+tabsight = "tabsight.plotting"
+
 [tool.hatch.version]
 path = "src/tabsight/_version.py"
 

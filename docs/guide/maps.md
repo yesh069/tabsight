@@ -68,7 +68,7 @@ for values in (
 ```text title="Output"
 Ireland    -> world map (countries)
 Bayern     -> Germany map (states)
-CA         -> United States of America map (states)
+CA         -> United States map (states)
 England    -> United Kingdom map (nations)
 Dublin     -> cities
 ```

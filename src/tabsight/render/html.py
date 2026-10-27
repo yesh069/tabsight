@@ -68,6 +68,7 @@ body {{ margin: 0; background: {theme.page}; color: {theme.text}; font-family: {
 .ts-tt-name {{ flex: 1; padding-right: 12px; }}
 .ts-tt-value {{ font-weight: 600; font-variant-numeric: tabular-nums; }}
 .ts-tt-share {{ margin-left: 8px; color: {theme.text_secondary}; }}
+.ts-tt-note {{ color: {theme.text_secondary}; font-size: 11px; }}
 .ts-footer {{ margin-top: 10px; font-size: 11px; color: {theme.text_secondary}; text-align: right; }}
 """
 

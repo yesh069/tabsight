@@ -461,7 +461,14 @@ def _rules(f: _Fields) -> tuple[list[tuple[str, int, str]], list[tuple[str, str]
         else:
             r.append(("donut", f"{card} slices are far too many to compare"))
         if whole and card >= 8:
-            c.append(("treemap", 72 - penalty, "many parts of a whole: a treemap fits them all"))
+            many = card > MAX_BARS  # past 50, top-20 bars read better than tiny boxes
+            c.append(
+                (
+                    "treemap",
+                    (64 if many else 72) - penalty,
+                    "many parts of a whole: a treemap fits them all",
+                )
+            )
             c.append(
                 (
                     "pareto",
@@ -565,7 +572,12 @@ def _spec_for(kind: str, f: _Fields) -> ChartSpec:
     if kind in ("choropleth", "symbol_map"):
         return ChartSpec(kind, geo=f.cats[0], y=y)
     options = {"freq": f.freq} if f.times and f.freq else {}
-    if kind in ("kpi", "gauge", "scatter", "bubble") and not (f.times or f.cats):
+    if kind in ("scatter", "bubble") and not (f.times or f.cats) and len(ys) >= 2:
+        # one dot per row: the first measure across, the second up (the third sizes bubbles)
+        return ChartSpec(
+            kind, x=ys[0], y=ys[1], size=ys[2] if kind == "bubble" and len(ys) > 2 else None
+        )
+    if kind in ("kpi", "gauge") and not (f.times or f.cats):
         return ChartSpec(kind, y=y)
     if kind == "table":
         dims = tuple(f.times + f.cats)

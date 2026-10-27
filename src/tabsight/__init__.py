@@ -5,6 +5,7 @@ Rule-based, no LLM, one offline HTML file. See PLAN.md for the roadmap.
 
 from tabsight import geo, warnings
 from tabsight._version import __version__
+from tabsight.accessor import register as _register_accessors
 from tabsight.aggregate import Aggregation, Measure, aggregate, bucket
 from tabsight.charts import chart
 from tabsight.check import CheckReport, check
@@ -15,6 +16,7 @@ from tabsight.formats import format_date, format_number
 from tabsight.formulas import CalcField, calc
 from tabsight.io import load
 from tabsight.lint import LintIssue, LintReport
+from tabsight.plotting import plot  # also lets pandas find the backend without the entry point
 from tabsight.profile import Field, Profile, profile
 from tabsight.recommend import Recommendation, Recommendations, recommend
 from tabsight.render.assets import ECHARTS_VERSION, TOPOJSON_CLIENT_VERSION, runtime_js
@@ -57,6 +59,7 @@ __all__ = [
     "format_number",
     "geo",
     "load",
+    "plot",
     "profile",
     "recommend",
     "runtime_js",
@@ -64,3 +67,5 @@ __all__ = [
     "table_calc",
     "warnings",
 ]
+
+_register_accessors()  # df.ts and series.ts

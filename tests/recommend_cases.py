@@ -8,6 +8,9 @@ not copied from tabsight's output; where the two disagreed, the disagreement was
 looked at case by case and the reasoning is in the comment.
 
 The data is synthetic and deterministic so every case is reproducible.
+
+Since Phase 6 every chart kind can be drawn, so ``best`` and ``ideal`` agree; the eight
+cases that used to fall back to a table or bars until a kind existed now expect that kind.
 """
 
 from __future__ import annotations
@@ -77,8 +80,8 @@ CASES: list[tuple[dict[str, object], str, str | None, str]] = [
     ({"y": "Satisfaction_Score"}, "kpi", None, "a single average score"),
     ({"y": "Unit_Price"}, "kpi", None, "a single average price"),
     # --- two measures, nothing to group by
-    ({"y": ["Revenue", "Profit"]}, "table", "scatter", "two totals; how they relate needs rows"),
-    ({"y": ["Units", "Unit_Price"]}, "table", "scatter", "two measures"),
+    ({"y": ["Revenue", "Profit"]}, "scatter", None, "two totals; how they relate needs rows"),
+    ({"y": ["Units", "Unit_Price"]}, "scatter", None, "two measures"),
     # --- a category and a measure
     ({"x": "Region", "y": "Revenue"}, "bar", None, "4 regions, compare totals"),
     ({"x": "Segment", "y": "Revenue"}, "bar", None, "3 segments"),
@@ -133,23 +136,23 @@ CASES: list[tuple[dict[str, object], str, str | None, str]] = [
     ({"x": "Segment", "y": "Satisfaction_Score", "color": "Channel"}, "grouped_bar", None, "averages don't stack"),
     # Label changed after hands-on review: we first said "table, ideally a treemap". One bar
     # per product, coloured by its category, shows all 12 with no empty slots.
-    ({"x": "Category", "y": "Revenue", "color": "Product"}, "stacked_bar", "treemap", "nested: product bars coloured by category"),
+    ({"x": "Category", "y": "Revenue", "color": "Product"}, "treemap", None, "nested: product bars coloured by category"),
     # Label changed after review: we first said "table, ideally a heatmap". Putting the
     # 4 regions in the colours and the 12 products on x gives a readable stacked bar.
     ({"x": "Region", "y": "Revenue", "color": "Product"}, "stacked_bar", None, "swap: products on x, regions as colours"),
-    ({"x": "Country", "y": "Revenue", "color": "Product"}, "table", "heatmap", "a 25 by 12 grid"),
+    ({"x": "Country", "y": "Revenue", "color": "Product"}, "heatmap", None, "a 25 by 12 grid"),
     ({"x": "Product", "y": "Revenue", "color": "Region"}, "stacked_bar", None, "4 colours, 12 bars"),
     ({"x": "Department", "y": "Revenue", "color": "Channel"}, "stacked_bar", None, "2 colours"),
     # --- a category and several measures
     ({"x": "Region", "y": ["Revenue", "Profit"]}, "grouped_bar", None, "same unit side by side"),
     ({"x": "Segment", "y": ["Revenue", "Profit"]}, "grouped_bar", None, "same unit"),
-    ({"x": "Region", "y": ["Revenue", "Units"]}, "table", "combo", "money and counts need two axes"),
-    ({"x": "Product", "y": ["Revenue", "Discount_Rate"]}, "table", "combo", "money and a rate"),
-    ({"x": "Country", "y": ["Revenue", "Profit"]}, "grouped_bar", "scatter", "25 countries: a scatter shows the relation"),
+    ({"x": "Region", "y": ["Revenue", "Units"]}, "combo", None, "money and counts need two axes"),
+    ({"x": "Product", "y": ["Revenue", "Discount_Rate"]}, "combo", None, "money and a rate"),
+    ({"x": "Country", "y": ["Revenue", "Profit"]}, "scatter", None, "25 countries: a scatter shows the relation"),
     # --- a date and several measures
     ({"x": "Order_Date", "y": ["Revenue", "Profit"]}, "line", None, "two money lines"),
     ({"x": "Signup_Date", "y": ["Revenue", "Profit"]}, "line", None, "two money lines by month"),
-    ({"x": "Order_Date", "y": ["Revenue", "Units"]}, "line", "combo", "different units: two axes"),
+    ({"x": "Order_Date", "y": ["Revenue", "Units"]}, "combo", None, "different units: two axes"),
     # --- too many fields
     ({"x": ["Region", "Segment", "Channel"], "y": "Revenue"}, "table", None, "three groupings"),
     ({"x": ["Order_Date", "Signup_Date"], "y": "Revenue"}, "table", None, "two dates"),

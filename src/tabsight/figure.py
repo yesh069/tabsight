@@ -19,6 +19,8 @@ if TYPE_CHECKING:
 __all__ = ["FIGURE_VERSION", "Figure"]
 
 FIGURE_VERSION = 1
+NOTEBOOK_TIP_BYTES = 10_000_000
+_NOTEBOOK = {"bytes": 0, "tipped": 0}  # charts shown in this Python session
 _MAX_PATCH_DEPTH = 20
 
 
@@ -78,9 +80,30 @@ class Figure:
         return document
 
     def _repr_html_(self) -> str:
-        """Jupyter display: the page inside a sandboxed iframe, isolated from the notebook."""
+        """Jupyter display: the page inside a sandboxed iframe, isolated from the notebook.
+
+        Each chart carries its own copy of ECharts (about 1 MB) so it works offline. Once a
+        session has shown about 10 MB of charts, a one-time tip suggests ``ts.set_defaults(cdn=True)``.
+        """
+        from tabsight.settings import current
+
+        cdn = current().cdn
+        document = self.to_html(cdn=cdn)
+        if not cdn:
+            _NOTEBOOK["bytes"] += len(document)
+            if _NOTEBOOK["bytes"] > NOTEBOOK_TIP_BYTES and not _NOTEBOOK["tipped"]:
+                _NOTEBOOK["tipped"] = 1
+                import warnings
+
+                from tabsight.warnings import TabsightWarning
+
+                warnings.warn(
+                    "this notebook now holds over 10 MB of charts, because each one carries ECharts so it "
+                    "works offline; ts.set_defaults(cdn=True) loads it from the internet instead (pinned by hash)",
+                    TabsightWarning, stacklevel=2,
+                )  # fmt: skip
         extra = 150 if self.kind not in ("kpi", "table") else 260
-        return srcdoc_iframe(self.to_html(), self.height + extra)
+        return srcdoc_iframe(document, self.height + extra)
 
     def explain(self) -> str:
         """Every choice tabsight made for this chart, and why, in plain English."""

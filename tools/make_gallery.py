@@ -6,6 +6,7 @@ Usage: python tools/make_gallery.py [output folder]   (default: ./gallery, git-i
 from __future__ import annotations
 
 import html
+import math
 import sys
 import warnings
 from pathlib import Path
@@ -13,29 +14,79 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
+import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
 import tabsight as ts  # noqa: E402
 
 CHARTS: list[tuple[str, str, dict[str, object]]] = [
+    # comparison
     ("bar", "Bars, largest first, values on the bars", {"kind": "bar", "x": "Region", "y": "Sales"}),
-    ("bar-many", "13 categories: labels rotated, none skipped", {"kind": "bar", "x": "Sub_Category", "y": "Profit"}),
     ("hbar", "Horizontal bars", {"kind": "hbar", "x": "City", "y": "Sales"}),
     ("grouped-bar", "Grouped bars", {"kind": "grouped_bar", "x": "Region", "y": "Sales", "color": "Segment"}),
+    ("lollipop", "Lollipop", {"kind": "lollipop", "x": "Sub_Category", "y": "Sales"}),
+    ("bullet", "Bullet: actual against a goal", {"data": "targets", "kind": "bullet", "x": "Rep", "y": "Sales", "goal": "Target"}),
+    # part to whole
     ("stacked-bar", "Stacked bars", {"kind": "stacked_bar", "x": "Category", "y": "Sales", "color": "Region"}),
     ("stacked100-bar", "100% stacked bars", {"kind": "stacked100_bar", "x": "Region", "y": "Sales", "color": "Segment"}),
+    ("donut", "Donut: 7 slices plus a grey Other", {"kind": "donut", "x": "Sub_Category", "y": "Sales"}),
+    ("treemap", "Treemap: category, then sub-category", {"kind": "treemap", "x": ["Category", "Sub_Category"], "y": "Sales"}),
+    ("sunburst", "Sunburst: three levels", {"kind": "sunburst", "x": ["Region", "Category", "Sub_Category"], "y": "Sales"}),
+    ("waterfall", "Waterfall: from revenue to profit", {"data": "bridge", "kind": "waterfall", "x": "Step", "y": "Amount"}),
+    ("funnel", "Funnel with conversion in the tooltip", {"data": "funnel", "kind": "funnel", "x": "Stage", "y": "Users"}),
+    # trend
     ("line", "Monthly line, never smoothed", {"kind": "line", "x": "Order_Date", "y": "Sales", "freq": "month"}),
     ("multi-line", "One line per region (with the incomplete-quarter note)",
      {"kind": "multi_line", "x": "Order_Date", "y": "Sales", "color": "Region", "freq": "quarter"}),
     ("area", "Area", {"kind": "area", "x": "Order_Date", "y": "Profit", "freq": "month"}),
     ("stacked-area", "Stacked area", {"kind": "stacked_area", "x": "Order_Date", "y": "Sales", "color": "Category", "freq": "quarter"}),
+    ("combo", "Combo: bars and a line on two axes", {"kind": "combo", "x": "Order_Date", "y": ["Sales", "Quantity"], "freq": "quarter"}),
     ("sparkline", "Sparkline", {"kind": "sparkline", "x": "Order_Date", "y": "Sales", "freq": "month"}),
-    ("donut", "Donut: 7 slices plus a grey Other", {"kind": "donut", "x": "Sub_Category", "y": "Sales"}),
+    ("calendar", "Calendar heatmap", {"data": "days", "kind": "calendar_heatmap", "x": "Day", "y": "Visits"}),
+    ("sine", "A line over a number: a real value axis", {"data": "sine", "kind": "line", "x": "angle", "y": "sine"}),
+    # flow, relationship, distribution
+    ("sankey", "Sankey: segment to category", {"kind": "sankey", "source": "Segment", "target": "Category", "y": "Sales"}),
+    ("scatter", "Scatter: one dot per order", {"kind": "scatter", "x": "Sales", "y": "Profit", "color": "Category"}),
+    ("bubble", "Bubble: one per sub-category", {"kind": "bubble", "x": "Sub_Category", "y": ["Sales", "Profit", "Quantity"]}),
+    ("heatmap", "Heatmap with diverging colours", {"kind": "heatmap", "x": "Order_Date", "color": "Category", "y": "Profit", "freq": "quarter"}),
+    ("histogram", "Histogram", {"kind": "histogram", "x": "Sales"}),
+    ("boxplot", "Box plot by category", {"kind": "boxplot", "x": "Category", "y": "Profit"}),
+    # ranking and single values
+    ("pareto", "Pareto: bars and the running share", {"kind": "pareto", "x": "Sub_Category", "y": "Sales"}),
     ("kpi", "KPI card", {"kind": "kpi", "y": "Sales"}),
+    ("gauge", "Gauge against a goal", {"kind": "gauge", "y": "Sales", "goal": 300000}),
     ("table", "Table with grouped parents", {"kind": "table", "x": ["Category", "Sub_Category"], "y": ["Sales", "Profit", "Discount"]}),
+    # maps
+    ("choropleth", "Map: US states, found automatically", {"kind": "choropleth", "geo": "State", "y": "Sales"}),
+    ("symbol-map", "Symbol map: cities", {"kind": "symbol_map", "geo": "City", "y": "Sales"}),
+    ("density-map", "Density map", {"kind": "density_map", "geo": "City", "y": "Sales"}),
+    ("flow-map", "Flow map: trade between countries", {"data": "trade", "kind": "flow_map", "source": "Exporter", "target": "Importer", "y": "Value"}),
+    # small multiples and themes
+    ("facet-bars", "Small multiples: one panel per region, one scale", {"kind": "stacked_bar", "x": "Category", "y": "Sales", "color": "Segment", "facet": "Region"}),
+    ("facet-map", "Small multiples of maps", {"kind": "map", "geo": "State", "y": "Sales", "facet": "Category"}),
     ("bar-dark", "Dark theme", {"kind": "stacked_bar", "x": "Category", "y": "Sales", "color": "Region", "theme": "dark"}),
     ("bar-euro", "German locale, euros", {"kind": "bar", "x": "Region", "y": "Sales", "locale": "de_DE", "currency": "EUR"}),
 ]  # fmt: skip
+
+
+def extra_data() -> dict[str, pd.DataFrame]:
+    """Small made-up tables for the kinds the orders sample can't show well."""
+    rng = np.random.default_rng(1)
+    x = np.arange(0, math.pi * 2, 0.05)
+    return {
+        "targets": pd.DataFrame({"Rep": ["Ann", "Bo", "Cy", "Di"], "Sales": [120.0, 95, 70, 140],
+                                 "Target": [100.0, 100, 90, 120]}),
+        "bridge": pd.DataFrame({"Step": ["Revenue", "Cost of sales", "Marketing", "Salaries", "Grants", "Tax"],
+                                "Amount": [1000.0, -420, -180, -350, 60, -45]}),
+        "funnel": pd.DataFrame({"Stage": ["Visited", "Signed up", "Trial", "Paid"], "Users": [12000, 3400, 1500, 420]}),
+        "days": pd.DataFrame({"Day": pd.date_range("2023-01-01", "2024-12-31"),
+                              "Visits": rng.poisson(200, 731) * (1 + 0.3 * np.sin(np.arange(731) / 58))}),
+        "sine": pd.DataFrame({"angle": x, "sine": np.sin(x)}),
+        "trade": pd.DataFrame({"Exporter": ["China", "China", "Germany", "United States", "India", "Brazil"],
+                               "Importer": ["United States", "Germany", "France", "Mexico", "United Kingdom", "China"],
+                               "Value": [500, 220, 180, 260, 90, 150.0]}),
+    }  # fmt: skip
+
 
 HOSTILE = pd.DataFrame(
     {"Region": ["<img src=x onerror=alert(1)>", "</script><script>alert(2)</script>", '"><svg onload=alert(3)>'],
@@ -50,8 +101,11 @@ def main() -> None:
     items = []
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
+        extra = extra_data()
         for slug, caption, kw in CHARTS:
-            fig = ts.chart(orders, **kw)  # type: ignore[arg-type]
+            kw = dict(kw)
+            data = extra[str(kw.pop("data"))] if "data" in kw else orders
+            fig = ts.chart(data, **kw)  # type: ignore[arg-type]
             fig.to_html(out / f"{slug}.html")
             items.append((slug, caption, fig.title))
         hostile = ts.chart(
@@ -80,7 +134,7 @@ a {{ font-weight: 650; color: #1d5fa3; text-decoration: none; }} a:hover {{ text
 span {{ display: block; margin-top: 2px; font-size: 13px; color: #5f6670; }}
 </style></head><body>
 <header><h1>tabsight chart gallery</h1>
-<p>Phase 3 charts on the synthetic sample data ({len(orders):,} orders). Each chart is one offline HTML file.</p></header>
+<p>All 33 chart kinds and small multiples, on the synthetic sample data ({len(orders):,} orders). Each chart is one offline HTML file.</p></header>
 <ul>
 {rows}
 </ul></body></html>

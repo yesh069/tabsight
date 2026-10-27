@@ -71,8 +71,9 @@ def test_recommendations_are_ranked_and_explained() -> None:
     assert scores == sorted(scores, reverse=True)
     assert all(0 <= s <= 100 and r.reason for s, r in zip(scores, recs, strict=True))
     assert recs.best.kind == "bar" and recs.best.available and recs.best.phase is None
-    later = [r for r in recs if not r.available]
-    assert later and all(r.phase is not None for r in later)
+    assert all(
+        r.available and r.phase is None for r in recs
+    )  # since Phase 6 every kind can be drawn
     assert len({r.kind for r in recs}) == len(recs)  # each kind once
     assert recs.best.spec == ts.ChartSpec("bar", x="Region", y="Revenue")
 
@@ -292,12 +293,14 @@ def test_recommend_validates_its_fields() -> None:
 def test_numeric_x_keeps_numeric_order() -> None:
     df, prof = data()
     recs = ts.recommend(df, x="Units", y="Revenue", prof=prof)
-    assert recs[0].kind == "scatter" and recs.best.kind == "bar"
-    assert recs.best.spec.sort == "none" and "donut" in dict(recs.rejected)
-    fig = ts.chart(df, "auto", x="Units", y="Revenue", prof=prof)
+    assert recs.best.kind == "scatter" and recs[1].kind == "bar"
+    assert recs[1].spec.sort == "none" and "donut" in dict(recs.rejected)
+    fig = ts.chart(df, "bar", x="Units", y="Revenue", sort="none", prof=prof)
     labels = fig.option["xAxis"]["data"]
     assert labels == sorted(labels, key=int)
-    assert ts.recommend(df, x="Revenue", y="Units", prof=prof).best.kind == "table"
+    assert (
+        ts.recommend(df, x="Revenue", y="Units", prof=prof).best.kind == "scatter"
+    )  # many numbers: dots, not bars
 
 
 def test_very_many_categories_keep_the_top_bars() -> None:
@@ -319,9 +322,11 @@ def test_nested_fields_draw_child_bars_coloured_by_parent() -> None:
     df, prof = data()
     for x, color in [("Category", "Product"), ("Product", "Category")]:
         recs = ts.recommend(df, x=x, y="Revenue", color=color, prof=prof)
-        assert (recs.best.spec.x, recs.best.spec.color) == ("Product", "Category")
+        assert recs.best.kind == "treemap"
+        bars = next(r for r in recs if r.kind == "stacked_bar")
+        assert (bars.spec.x, bars.spec.color) == ("Product", "Category")
         assert "grouped_bar" in dict(recs.rejected)
-    fig = ts.chart(df, "auto", x="Category", y="Profit", color="Product", prof=prof)
+    fig = ts.chart(df, "stacked_bar", x="Product", y="Profit", color="Category", prof=prof)
     assert fig.facts["one_segment"] and not fig.lint().codes  # negatives, but nothing stacks
 
 

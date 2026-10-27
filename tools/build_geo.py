@@ -71,6 +71,9 @@ COUNTRY_ALIASES = {
     "IND": ["Bharat"], "JPN": ["Nippon", "Nihon"], "CHN": ["Zhongguo", "PRC"], "SAU": ["KSA"],
 }  # fmt: skip
 
+# Shown names where Natural Earth's English name is not the everyday one.
+DISPLAY_NAMES = {"CHN": "China", "USA": "United States"}
+
 # Canonical names when several Natural Earth units share one ISO 3166-2 code.
 # Also fixes Natural Earth's English name where it is misleading (DC's is "Washington").
 ISO_NAMES = {"IE-TA": "Tipperary", "IE-D": "Dublin", "IE-LS": "Laois", "AU-NSW": "New South Wales",
@@ -160,7 +163,7 @@ def _world(node: str, tmp: Path, features: list[dict[str, Any]], names: dict[str
         # ISO codes only: FIPS, World Bank and postal codes collide (FIPS "GB" is Gabon)
         codes = [cid, p.get("ISO_A2"), p.get("ISO_A2_EH"), p.get("ADM0_A3"), p.get("ISO_A3_EH")]
         names["countries"][cid] = {
-            "n": p.get("NAME_EN") or p["NAME"],
+            "n": DISPLAY_NAMES.get(cid) or p.get("NAME_EN") or p["NAME"],
             "iso2": _iso2(p),
             "names": _clean_dict(all_names),
             "alt": _clean_list([*alts, *COUNTRY_ALIASES.get(cid, [])]),

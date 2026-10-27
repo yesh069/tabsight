@@ -126,7 +126,7 @@ def test_text_measures_are_counted(store: pd.DataFrame) -> None:
 
 
 def test_clear_errors(store: pd.DataFrame) -> None:
-    with pytest.raises(InvalidSpecError, match="phase 6"):
+    with pytest.raises(InvalidSpecError, match="source=<column> and target=<column>"):
         ts.chart(store, "sankey", x="State", y="Sales")
     with pytest.raises(InvalidSpecError, match="needs x="):
         ts.chart(store, "bar", y="Sales")

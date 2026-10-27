@@ -20,7 +20,7 @@ Charts for 1 category field, 1 measure:
 
    90  bar             a measure by category: bars, largest first, are easiest to compare
    80  hbar            horizontal bars work too, and suit longer labels
-   50  lollipop        a lighter alternative to bars  (phase 6)
+   50  lollipop        a lighter alternative to bars
    40  table           a table lists exact values
 
 Ruled out:
@@ -45,7 +45,7 @@ print(recs.why_not("line"))
  90  bar        now
  80  hbar       now
  76  donut      now
- 50  lollipop   phase 6
+ 50  lollipop   now
  40  table      now
 best: bar
 a line implies an order between categories; use bars

@@ -45,6 +45,9 @@ class Settings:
     max_size_mb: float = 5.0
     min_group_size: int | None = None
     csv_safe: bool = True
+    cdn: bool = (
+        False  # notebooks: load ECharts from jsDelivr (pinned by hash) instead of inlining it
+    )
 
     def __post_init__(self) -> None:
         _validate(self)
@@ -82,7 +85,7 @@ def _validate(s: Settings) -> None:
             raise bad(name, value, "a lower-case name")
     if s.top is not None and (type(s.top) is not int or not 1 <= s.top <= 1000):
         raise bad("top", s.top, "None or an integer 1-1000")
-    for name in ("strict", "quiet", "csv_safe"):
+    for name in ("strict", "quiet", "csv_safe", "cdn"):
         if not isinstance(getattr(s, name), bool):
             raise bad(name, getattr(s, name), "True or False")
     if not isinstance(s.max_size_mb, int | float) or not 0.1 <= s.max_size_mb <= 1000:

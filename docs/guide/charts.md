@@ -25,9 +25,9 @@ fig.to_html("sales_by_region.html")
 
 The file is a single page with everything inside it, chart library included, so it opens offline and can be emailed as is. In Jupyter, a figure on the last line of a cell displays itself.
 
-## Chart types available now
+## The everyday kinds
 
-Bars: `bar`, `hbar`, `grouped_bar`, `stacked_bar`, `stacked100_bar`. Lines: `line`, `multi_line`, `area`, `stacked_area`, `sparkline`. And `donut`, `kpi` and `table`. Maps, scatter plots, treemaps and the rest of the [33 kinds](../reference/chart-kinds.md) arrive in later phases; asking for one now tells you which.
+This page covers the everyday kinds: bars (`bar`, `hbar`, `grouped_bar`, `stacked_bar`, `stacked100_bar`), lines (`line`, `multi_line`, `area`, `stacked_area`, `sparkline`), `donut`, `kpi` and `table`. Scatter plots, treemaps, waterfalls, Sankey diagrams and the rest of the [33 kinds](../reference/chart-kinds.md) are in [more chart types](more-charts.md), and maps have [their own page](maps.md).
 
 ```python
 monthly = ts.chart(orders, "multi_line", x="Order_Date", y="Sales", color="Region", freq="quarter")

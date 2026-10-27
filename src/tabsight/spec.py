@@ -151,6 +151,10 @@ def _place_map(value: Any, what: str) -> dict[str, str]:
     return out
 
 
+def _goal(value: Any, what: str) -> float | str:
+    return _name(value, what) if isinstance(value, str) else _number(value, what)
+
+
 def _date(value: Any, what: str) -> str:
     if not isinstance(value, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
         raise InvalidSpecError(f"{what} must be a date like '2017-12-31'")
@@ -189,6 +193,10 @@ _OPTIONS: dict[str, Callable[[Any, str], Any]] = {
     "level": _choice(("country", "region", "city")),
     "layer": _name,
     "geo_map": _place_map,
+    "bins": _int_range(2, 200),
+    "bin_width": _number,
+    "goal": _goal,  # a target: a number, or a column holding one per row
+    "total": _bool,  # waterfall: end with a total bar
 }
 
 
