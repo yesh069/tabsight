@@ -4,6 +4,17 @@ All notable changes are listed here. The project follows [Semantic Versioning](h
 
 ## Unreleased
 
+### Added (Phase 9: auto, command line and web apps)
+- `ts.auto(df)`: a whole dashboard from fixed rules on the column profile: KPI cards (money first, compared with the previous year when the dates allow), a line over time at a grain that suits the span, a map when a column holds places, bars by the smallest categories, filters and insights. `dash.decisions` says what was chosen and why; tiles are tried before they are added and the result is fitted under the size limit. Tables without measures count rows.
+- `tabsight` command line (also `python -m tabsight`): `auto`, `chart` (HTML, SVG or PNG), `build` (a saved spec on new data), `serve`, `profile`, `check`, `clean`, `recommend`. Never overwrites its input.
+- Server mode: `dash.server(url)` keeps the data in Python. The page posts its filters and gets back, per tile, a small table from the filtered rows, drawn by the same runtime (parity-tested against the offline page), or for tiles the browser can't recompute, the chart redrawn in Python. No size limit for the page; medians, distinct counts and scatter plots follow every filter. Requests are size-capped, shape-checked and filtered against known values; the page's CSP allows `connect-src` to that one origin only.
+- `ts.web.fastapi_router`, `ts.web.flask_blueprint`, `ts.streamlit`, `ts.web.dash_iframe` and `ts.serve_payload`; `tabsight serve` runs server mode with Python's own HTTP server on 127.0.0.1.
+- `fig.to_png()`: the SVG picture rasterised by resvg-py, no browser needed (`tabsight[png]`, which no longer uses Playwright). New `web` extra.
+
+### Changed
+- The documentation site is built with Zensical, the successor to Material for MkDocs (which reaches end of life on 5 May 2027), from the same `mkdocs.yml`.
+- A dashboard spec file that isn't JSON now raises a clear `InvalidSpecError`.
+
 ### Added (Phase 8 completed)
 - Every aggregated chart kind is recomputed after filtering, each following its Python builder: lollipop, combo, gauge, bullet, funnel, Pareto, waterfall, heatmap, calendar heatmap, treemap, sunburst, Sankey, histogram (bins of all the data), box plot, scatter and bubble by category, lines over a number axis, and symbol, density and flow maps. Medians, distinct counts and box plots are exact from value lists; distinct counts store integer codes, never the values. Only single-row charts (scatter of rows, lat/lon maps) stay static.
 - Trend lines, forecasts, reference lines, bands and outliers are refitted in the browser after filtering (JS ports of `analytics.py` and the analytics pane), and the insights panel is recomputed (change, peak and low, trend, contributor, concentration, losses), tagged "for current filters".

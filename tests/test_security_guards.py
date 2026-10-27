@@ -37,7 +37,9 @@ NETWORK_MODULES = {
     "webbrowser",
 }
 # The only module allowed to touch the network (opt-in level-2 map download, Phase 5).
-NETWORK_ALLOWED = {SRC / "geo" / "download.py"}
+# geo/download.py: the future opt-in map download. localserver.py: `tabsight serve`, which
+# listens on 127.0.0.1 only when the user runs that command.
+NETWORK_ALLOWED = {SRC / "geo" / "download.py", SRC / "localserver.py"}
 # pandas readers that open files or URLs: only tabsight/io.py may call them.
 PANDAS_READERS = {
     "read_csv",

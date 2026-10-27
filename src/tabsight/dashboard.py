@@ -31,7 +31,15 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from tabsight.aggregate import Measure, _numeric, _part_name, _time_values, bucket, build_parts
+from tabsight.aggregate import (
+    ROWS,
+    Measure,
+    _numeric,
+    _part_name,
+    _time_values,
+    bucket,
+    build_parts,
+)
 from tabsight.charts._build import OTHER_COLOR
 from tabsight.charts.maps import MAX_POINTS as MAX_MAP_POINTS
 from tabsight.colors import ColorRegistry, natural_key
@@ -135,6 +143,12 @@ class _Built:
     payload: dict[str, Any]
     figures: list[Figure]
     report: list[str]
+    # What server mode needs to answer later requests (see tabsight.server).
+    tables: dict[str, _SharedTable] = dataclasses.field(default_factory=dict)
+    frames: dict[str, pd.DataFrame] = dataclasses.field(default_factory=dict)
+    view_args: dict[tuple[int, str], dict[str, Any]] = dataclasses.field(default_factory=dict)
+    draw: Any = None
+    colors: dict[str, str] = dataclasses.field(default_factory=dict)
 
 
 class Dashboard:
@@ -184,6 +198,7 @@ class Dashboard:
             get_theme(theme)
         self.tiles: list[dict[str, Any]] = []
         self.insight_count = 0
+        self.decisions: list[str] = []  # why ts.auto chose these tiles
         self.data = None if data is None else as_frame(data)
 
     # ------------------------------------------------------------ building it up
@@ -284,7 +299,11 @@ class Dashboard:
         raw = Path(path).read_bytes()
         if len(raw) > MAX_FILE_BYTES:
             raise InvalidSpecError("dashboard file is too large")
-        return cls.from_dict(json.loads(raw.decode("utf-8")))
+        try:
+            data = json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, ValueError) as e:
+            raise InvalidSpecError(f"{Path(path).name} is not a dashboard file (JSON)") from e
+        return cls.from_dict(data)
 
     def bind(self, data: Any, **datasets: Any) -> Dashboard:
         """The same dashboard on new data. Every column it needs must exist ("did you mean" otherwise).
@@ -372,7 +391,15 @@ class Dashboard:
 
     # ------------------------------------------------------------ the build
 
-    def _build(self) -> _Built:
+    def server(self, url: str) -> Any:
+        """Server mode: the data stays in Python and the page asks ``url`` for each filter
+        change, so large data and every kind of tile stay exact. Returns a
+        :class:`tabsight.server.DashboardServer`; ``ts.web`` has FastAPI and Flask helpers."""
+        from tabsight.server import DashboardServer
+
+        return DashboardServer(self, url)
+
+    def _build(self, server: bool = False) -> _Built:
         if self.data is None:
             raise InvalidSpecError("this dashboard has no data yet: pass data= or call .bind(df)")
         if not self.tiles:
@@ -411,7 +438,7 @@ class Dashboard:
         }
 
         def draw(tile: Mapping[str, Any], colors: Mapping[str, str] | None, theme_obj: Theme,
-                 **override: Any) -> Figure:  # fmt: skip
+                 frame: pd.DataFrame | None = None, **override: Any) -> Figure:  # fmt: skip
             args = {k: v for k, v in tile.items() if k not in LAYOUT_KEYS}
             args.update(override)
             kind = args.pop("kind", "auto")
@@ -419,7 +446,7 @@ class Dashboard:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 return chart(
-                    frames[name],
+                    frames[name] if frame is None else frame,
                     kind,
                     prof=profs[name],
                     colors=colors,
@@ -440,6 +467,7 @@ class Dashboard:
         maps: dict[str, dict[str, Any]] = {}
         report: list[str] = []
         tiles: list[dict[str, Any]] = []
+        view_args: dict[tuple[int, str], dict[str, Any]] = {}
         for i, tile in enumerate(self.tiles):
             name = tile.get("data", MAIN)
             frame, prof, table = frames[name], profs[name], tables[name]
@@ -450,6 +478,7 @@ class Dashboard:
                 frame: pd.DataFrame = frame, i: int = i,
             ) -> dict[str, Any] | None:  # fmt: skip
                 out: dict[str, Any] = {"id": key, "label": label, "themes": {}}
+                view_args[(i, key)] = dict(args)
                 for theme_obj in themes:
                     try:
                         fig = draw({**tile, **args}, pinned, theme_obj)
@@ -495,7 +524,8 @@ class Dashboard:
         if self.insight_count:
             insights, live_insights = _insights_setup(self.insight_count, first, frames[MAIN], profs[MAIN],
                                                       tables[MAIN], settings)  # fmt: skip
-        datasets = {name: t.payload(settings.max_size_mb) for name, t in tables.items()}
+        datasets = {name: t.skeleton() if server else t.payload(settings.max_size_mb)
+                    for name, t in tables.items()}  # fmt: skip
         page = {
             "tabsight_dashboard": DASHBOARD_VERSION,
             "title": self.title,
@@ -530,7 +560,7 @@ class Dashboard:
                 "not_affected": text("not_affected_by", field="{field}"),
             },
         }
-        return _Built(page, [], report)
+        return _Built(page, [], report, tables, frames, view_args, draw, pinned)
 
     def _alternatives(self, tile: Mapping[str, Any], spec: Any, frame: pd.DataFrame, prof: Profile, kind: str,
                       view: Any) -> list[dict[str, Any]]:  # fmt: skip
@@ -738,30 +768,54 @@ class _SharedTable:
                 "values": keys}  # fmt: skip
 
     def payload(self, max_mb: float) -> dict[str, Any]:
+        """The whole shared table, as the offline page holds it."""
+        return self.encode(max_mb=max_mb)
+
+    def encode(self, *, rows: pd.Series | None = None, dims: Sequence[str] | None = None,
+               measures: Sequence[int] | None = None, max_mb: float = 5.0) -> dict[str, Any]:  # fmt: skip
+        """Group the rows (all, or those where ``rows`` is True) by ``dims`` (all by default)
+        and encode the parts of ``measures`` (indexes; all by default) for ``dashboard.js``.
+
+        Server mode sends one small table like this per tile; part names keep their
+        indexes, so the tile's binding reads them unchanged."""
+        dims = list(self.dims) if dims is None else [d for d in self.dims if d in set(dims)]
+        wanted = set(range(len(self.measures))) if measures is None else set(measures)
+        frame = self.frame if rows is None else self.frame[rows]
         # Dimensions get internal names, so a column used both as a category ("Discount" in a
         # table) and as a measure (its median elsewhere) never reads the text keys as numbers.
-        inner = {f"__dim{i}__": col for i, col in enumerate(self.dims)}
-        work = pd.DataFrame({k: self.dims[c] for k, c in inner.items()}, index=self.frame.index)
-        dims = list(self.dims)
-        for m in self.measures:
-            if m.column is None or m.column in work:
+        inner = {f"__dim{i}__": col for i, col in enumerate(dims)}
+        work = pd.DataFrame(
+            {k: self.dims[c].loc[frame.index] for k, c in inner.items()}, index=frame.index
+        )
+        kept: list[Measure] = []
+        for i, m in enumerate(self.measures):
+            if i not in wanted or m.column is None:
+                kept.append(Measure(None, "count"))  # a placeholder keeps the indexes in step
+                continue
+            kept.append(m)
+            if m.column in work:
                 continue
             if m.column.startswith(CODES):
                 source = self.frame[m.column[len(CODES) :]]
                 codes = pd.Series(
                     pd.factorize(source.astype("object").map(_key))[0], index=self.frame.index
                 )
-                work[m.column] = codes.where(source.notna())
+                work[m.column] = codes.where(source.notna()).loc[frame.index]
             else:
-                work[m.column] = _numeric(self.frame[m.column], self.prof[m.column].source)
-        parts = build_parts(work, list(inner), self.measures).rename(columns=inner)
+                work[m.column] = _numeric(frame[m.column], self.prof[m.column].source)
+        parts = build_parts(work, list(inner), kept).rename(columns=inner)
+        names = {
+            _part_name(i, p)
+            for i in wanted
+            for p in ("sum", "count", "min", "max", "values", "wsum", "wtotal")
+        }
         out: dict[str, Any] = {
             "rows": len(parts),
             "dims": {},
             "nums": {},
             "lists": {},
-            "labels": self.labels,
-            "meta": self.meta,
+            "labels": {c: v for c, v in self.labels.items() if c in inner.values()},
+            "meta": {c: v for c, v in self.meta.items() if c in inner.values()},
         }
         for col in dims:
             values = parts[col].astype("object").where(parts[col].notna(), None).tolist()
@@ -769,7 +823,7 @@ class _SharedTable:
             index = {v: i for i, v in enumerate(distinct)}
             out["dims"][col] = {"values": distinct, "codes": [index[v] for v in values]}
         for col in parts.columns:
-            if col in self.dims:
+            if col in dims or (col != ROWS and col not in names):
                 continue
             if col.endswith("_values"):  # medians and distinct counts: the values of each group
                 out["lists"][col] = [
@@ -790,10 +844,21 @@ class _SharedTable:
                 + ", ".join(
                     f"{self.meta[c]['field']} ({len(out['dims'][c]['values']):,})" for c in widest
                 )
-                + ". Use a coarser freq= for dates, fewer filter fields, top= on large categories, or "
-                "ts.set_defaults(max_size_mb=...)"
+                + ". Use a coarser freq= for dates, fewer filter fields, top= on large categories, "
+                "ts.set_defaults(max_size_mb=...), or server mode (dash.server(...))"
             )
         return out
+
+    def skeleton(self) -> dict[str, Any]:
+        """Every dimension's values and labels but no rows: what a server-mode page holds,
+        so it can label filters and check the address bar without the data."""
+        dims = {}
+        for col, keys in self.dims.items():
+            # Hidden helper columns (comparison windows, bins) may hold numbers; NaN means none.
+            values = keys.astype("object").where(keys.notna(), None).tolist()
+            dims[col] = {"values": list(dict.fromkeys(values)), "codes": []}
+        return {"rows": 0, "dims": dims, "nums": {ROWS: []}, "lists": {}, "labels": self.labels,
+                "meta": self.meta, "size_mb": 0}  # fmt: skip
 
 
 # ---------------------------------------------------------------- bindings

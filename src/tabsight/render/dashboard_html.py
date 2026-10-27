@@ -52,6 +52,7 @@ def _dash_css(theme: Theme) -> str:
 .ts-tile__csv:hover, .ts-chip__x:hover, .ts-reset:hover {{ color: {theme.text}; background: {theme.grid}; }}
 .ts-tile__status {{ margin: 4px 4px 0; font-size: 11px; color: {theme.text_secondary}; min-height: 0; }}
 .ts-tile__status:empty {{ display: none; }}
+.ts-dash-tile[aria-busy="true"] .ts-chart {{ opacity: .55; transition: opacity .15s; }}
 .ts-dash-insights {{ margin-top: 14px; }}
 .ts-tile__tools {{ display: flex; align-items: center; gap: 2px; }}
 .ts-tile__kind {{ font: inherit; font-size: 11.5px; color: {theme.text_secondary}; background: {theme.tile};
@@ -70,9 +71,23 @@ span.ts-crumb {{ color: {theme.text}; cursor: default; font-weight: 600; }}
 """
 
 
+def _origin(url: str) -> str:
+    """CSP source for the server-mode address: 'self' for a path, else its origin."""
+    if url.startswith("/"):
+        return "'self'"
+    scheme, rest = url.split("://", 1)
+    return f"{scheme}://{rest.split('/', 1)[0]}"
+
+
 def dashboard_page(
-    payload: dict[str, Any], theme: Theme, *, cdn: bool = False, lang: str = "en"
+    payload: dict[str, Any],
+    theme: Theme,
+    *,
+    cdn: bool = False,
+    lang: str = "en",
+    connect: str | None = None,
 ) -> str:
+    """The page. ``connect`` is server mode's address, the one place the page may send requests."""
     runtime = read_static("tabsight.js")
     dash = read_static("dashboard.js")
     init = (
@@ -105,7 +120,8 @@ def dashboard_page(
         f"script-src {' '.join(script_src)}; "
         "style-src 'unsafe-inline'; "
         "img-src data: blob:; "
-        "base-uri 'none'; form-action 'none'"
+        + (f"connect-src {_origin(connect)}; " if connect else "")
+        + "base-uri 'none'; form-action 'none'"
     )
     title = payload.get("title") or "tabsight dashboard"
     head = f'<h1 class="ts-dash__title">{html.escape(title)}</h1>'

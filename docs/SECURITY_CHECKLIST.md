@@ -8,7 +8,7 @@ Security is built in as each piece is written, not reviewed afterwards. Most ite
 |-------|-------|
 | No `eval`, `exec`, `compile`, `__import__`, `pickle`, `marshal`, `shelve`, `subprocess`, `os.system`, `os.popen`, `input` in `src/` | `tests/test_security_guards.py` (AST scan) |
 | No `.format()` / `.format_map()` called on non-literal strings in `src/` (format-string attacks like `"{0.__class__}"`) | `tests/test_security_guards.py` |
-| No network modules (`urllib`, `http`, `socket`, `requests`, `ftplib`, `smtplib`, …) in `src/`, except the future opt-in `geo/download.py` | `tests/test_security_guards.py` |
+| No network modules (`urllib`, `http`, `socket`, `requests`, `ftplib`, `smtplib`, …) in `src/`, except the future opt-in `geo/download.py` and `localserver.py` (`tabsight serve`, 127.0.0.1 by default) | `tests/test_security_guards.py` |
 | pandas file readers called only in `tabsight/io.py`, which rejects URLs | `tests/test_security_guards.py` + `tests/test_io.py` |
 | Bandit-style lint rules (ruff `S`) | `pyproject.toml`, CI lint job |
 | Known-vulnerable dependencies | `pip-audit` CI job; Dependabot for pip, npm and GitHub Actions |

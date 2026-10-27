@@ -23,7 +23,8 @@ The core package only needs pandas. Extra file formats need extra packages:
 | `parquet` | `pyarrow` (15 or newer) | Reading `.parquet` files. Older pyarrow has a known code-execution flaw (CVE-2023-47248), so tabsight refuses it. |
 | `polars` | `polars`, `pyarrow` | Passing polars DataFrames. |
 | `static` | `dukpy` | Still SVG pictures of charts (`fig.to_svg()`), and the picture a saved notebook shows when it is reopened or viewed on GitHub. dukpy is a small JavaScript engine for Python (MIT licence) with ready-made wheels for every supported Python; no Node.js or browser is needed. |
-| `png` | `playwright` | Saving charts as images (later phase). Playwright downloads its own browser the first time. |
+| `png` | `dukpy`, `resvg-py` | PNG pictures of charts (`fig.to_png()`, `tabsight chart ... -o chart.png`). resvg-py (MIT) turns the SVG picture into pixels; no browser is needed. |
+| `web` | `fastapi`, `flask` | Serving dashboards in [server mode](../guide/web-apps.md) from a web app. Install only the framework you use; `tabsight serve` needs neither. |
 | `dev` | test and lint tools | Working on tabsight itself. |
 
 ```bash

@@ -36,7 +36,7 @@ tabsight starts one step earlier. It works out what each column actually is, tel
 </p>
 <p align="center"><sub>Real output from <code>ts.chart</code> on the sample data in this repository, nothing edited by hand.</sub></p>
 
-> **Status:** early development. Phases 0–7 of 10 are done: reading, profiling, checking, cleaning, formatting, exact aggregation, all 33 chart types with small multiples, a chart recommender that explains itself, offline maps of every country's regions, `df.plot` in notebooks, trend lines, forecasts, period comparisons, plain-English insights and cross-filtering dashboards with drill-down work today. `ts.auto(df)`, the command line and web-framework helpers are next. See the [roadmap](#roadmap).
+> **Status:** early development. Phases 0–9 of 10 are done: reading, profiling, checking, cleaning, formatting, exact aggregation, all 33 chart types with small multiples, a chart recommender that explains itself, offline maps of every country's regions, `df.plot` in notebooks, trend lines, forecasts, period comparisons, plain-English insights and cross-filtering dashboards with drill-down, `ts.auto(df)`, the `tabsight` command line, server mode for web apps and PNG export work today. The first PyPI release is next. See the [roadmap](#roadmap).
 
 ## A first look
 
@@ -220,7 +220,16 @@ dash = (
 dash.to_html("sales.html")
 ```
 
-**Saved notebooks still show their charts.** With `pip install "tabsight[static]"`, each chart also carries a still picture of itself, drawn in Python. A notebook reopened untrusted, or viewed on GitHub, shows the picture where the interactive chart would be blank. `fig.to_svg()` saves the same picture for slides.
+**Or one line, or one command.** `ts.auto(df)` picks the KPIs, a trend, a map, bars and filters from the data with fixed rules, and says why in `dash.decisions`. The `tabsight` command does the same from a file:
+
+```bash
+tabsight auto sales.csv          # writes sales.html
+tabsight serve sales.csv         # server mode on this computer: no size limit, every tile filters
+```
+
+**In your web app.** `dash.server(url)` keeps the data in Python, and the page asks for the numbers it needs as the viewer filters. `ts.web.fastapi_router`, `ts.web.flask_blueprint`, `ts.streamlit` and `ts.web.dash_iframe` wire it up. See [Web apps and server mode](docs/guide/web-apps.md).
+
+**Saved notebooks still show their charts.** With `pip install "tabsight[static]"`, each chart also carries a still picture of itself, drawn in Python. A notebook reopened untrusted, or viewed on GitHub, shows the picture where the interactive chart would be blank. `fig.to_svg()` saves the same picture for slides, and `fig.to_png()` (`tabsight[png]`) saves it as a PNG image.
 
 ## How it compares
 
@@ -273,7 +282,7 @@ The full guide lives in [`docs/`](docs/README.md) and reads directly on GitHub. 
 - User guide: [profiling](docs/guide/profiling.md), [aggregating](docs/guide/aggregating.md), [calculated fields](docs/guide/calculated-fields.md), [charts](docs/guide/charts.md), [choosing a chart](docs/guide/choosing-charts.md), [more chart types](docs/guide/more-charts.md), [small multiples](docs/guide/small-multiples.md), [notebooks and df.plot](docs/guide/notebooks.md), [maps](docs/guide/maps.md), [formatting](docs/guide/formatting.md) and more
 - Reference: [formula functions](docs/reference/formula-functions.md), [locales](docs/reference/locales.md), [chart kinds](docs/reference/chart-kinds.md), [lint rules](docs/reference/lint-rules.md), [map coverage](docs/reference/map-coverage.md)
 
-The same pages build a documentation website with search and dark mode: `python -m pip install -e ".[docs]"`, then `python -m mkdocs serve`.
+The same pages build a documentation website with search and dark mode: `python -m pip install -e ".[docs]"`, then `zensical serve`.
 
 ## Roadmap
 
@@ -286,8 +295,8 @@ The same pages build a documentation website with search and dark mode: `python 
 | 6 | Heatmaps, treemaps, Sankey, scatter, distributions, small multiples; `df.plot` / `df.ts` in notebooks | Done |
 | 7 | Trend lines, forecasts, period comparisons, plain-English insights; charts in saved notebooks | Done |
 | 8 | Dashboards with cross-filtering, filters and drill-down | Done |
-| 9 | `ts.auto(df)` one-line dashboards, command line, web-framework helpers, optional PNG export | Next |
-| 10 | First release on PyPI | Planned |
+| 9 | `ts.auto(df)` one-line dashboards, command line, server mode and web-framework helpers, PNG export | Done |
+| 10 | First release on PyPI | Next |
 
 Every decision behind these phases is in [`PLAN.md`](PLAN.md).
 

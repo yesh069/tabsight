@@ -48,6 +48,22 @@ Generated from the docstrings in the source code, so it always matches the insta
 
 ::: tabsight.dashboard.Dashboard
 
+::: tabsight.auto.auto
+
+## Server mode and web apps
+
+::: tabsight.server.DashboardServer
+
+::: tabsight.web.serve_payload
+
+::: tabsight.web.fastapi_router
+
+::: tabsight.web.flask_blueprint
+
+::: tabsight.web.streamlit
+
+::: tabsight.web.dash_iframe
+
 ## Analytics and insights
 
 ::: tabsight.insight.insights

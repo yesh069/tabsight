@@ -33,13 +33,17 @@ dependencies = ["pandas>=2.2"]
 excel = ["openpyxl>=3.1", "defusedxml>=0.7"]
 parquet = ["pyarrow>=15"]
 polars = ["polars>=1.0", "pyarrow>=15"]
-png = ["playwright>=1.45"]
+# PNG pictures: dukpy draws the SVG, resvg-py (MIT; resvg is Apache-2.0/MIT) turns it into pixels.
+png = ["dukpy>=0.6", "resvg-py>=0.5"]
+# Server mode inside a web app (ts.web); the CLI's `tabsight serve` needs neither.
+web = ["fastapi>=0.110", "flask>=3.0"]
 # dukpy (MIT) runs ECharts in Python to draw still SVG pictures: fig.to_svg() and notebook fallbacks.
 static = ["dukpy>=0.6"]
 docs = [
-    "mkdocs>=1.6",
-    "mkdocs-material>=9.5",
-    "mkdocstrings[python]>=0.26",
+    # Zensical (MIT) builds the site from mkdocs.yml; it replaces Material for MkDocs (end of life 5 May 2027).
+    "zensical>=0.0.73",
+    # mkdocstrings 1.0.7+ works under Zensical; older versions crash with recent pymdown-extensions.
+    "mkdocstrings[python]>=1.0.7",
     "markdown-callouts>=0.4",
 ]
 dev = [
@@ -53,6 +57,10 @@ dev = [
     "defusedxml>=0.7",
     "pyarrow>=15",
     "dukpy>=0.6",
+    "resvg-py>=0.5",
+    "fastapi>=0.110",
+    "httpx>=0.27",
+    "flask>=3.0",
 ]
 
 [project.scripts]
@@ -103,6 +111,8 @@ ignore = ["E501"]
 "tests/test_html_security.py" = ["RUF001"]
 # Tests may use assert and run Node/Python subprocesses with fixed arguments.
 "tests/**" = ["S101", "S603", "S607"]
+# The server-mode tests talk to a local test server they start themselves.
+"tests/test_phase9.py" = ["S310"]
 # The vendor fetcher downloads fixed, pinned https URLs (hash-checked afterwards).
 "tools/fetch_vendor.py" = ["S310"]
 
@@ -113,5 +123,6 @@ files = ["src/tabsight"]
 
 [[tool.mypy.overrides]]
 # Optional extras without type information.
-module = ["openpyxl", "openpyxl.*", "pyarrow", "pyarrow.*", "polars", "polars.*", "dukpy"]
+module = ["openpyxl", "openpyxl.*", "pyarrow", "pyarrow.*", "polars", "polars.*", "dukpy", "resvg_py",
+          "streamlit", "streamlit.*", "dash", "dash.*"]
 ignore_missing_imports = true
