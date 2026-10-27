@@ -40,7 +40,7 @@ See the "Development setup" section in `README.md`.
 
 ## Reporting security problems
 
-Don't open a public issue. Follow [SECURITY.md](SECURITY.md) and use GitHub's private
+Don't open a public issue. Follow [SECURITY.md](https://github.com/yesh069/tabsight/blob/main/SECURITY.md) and use GitHub's private
 vulnerability reporting.
 
 ## Third-party files
