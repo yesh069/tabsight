@@ -12,8 +12,8 @@ tabsight is built in phases. Each phase is finished and tested before the next o
 | 5 | World maps: countries, states/provinces/counties for every country, cities | Done |
 | 6 | Advanced charts: heatmaps, treemaps, Sankey, scatter, distributions, small multiples; numeric x-axis for lines; `df.plot` backend and `df.ts` accessor for notebooks | Done |
 | 7 | Analytics and insights: trend lines, forecasts, comparisons, plain-English insights; still SVG pictures and saved-notebook fallback | Done |
-| 8 | Dashboards: cross-filtering, filters, shareable links, exact re-aggregation in the browser (drill-down and brushing still to come) | Mostly done |
-| 9 | `ts.auto(df)` one-line dashboards, command line, web-framework helpers, optional PNG export | Planned |
+| 8 | Dashboards: cross-filtering, filters, drill-down, brushing, shareable links, exact re-aggregation in the browser for every aggregated chart kind | Done |
+| 9 | `ts.auto(df)` one-line dashboards, command line, web-framework helpers, optional PNG export | Next |
 | 10 | First release on PyPI | Planned |
 
 ## Later (Tier 2)

@@ -54,6 +54,7 @@ function summary(tile, result) {
 const out = cases.filters.map((filters) => {
   const prepared = D.prepare(filters);
   return payload.tiles
+    .map((t) => D.flatTile({ tile: t, view: 0 }, payload.theme.name))
     .filter((t) => t.binding)
     .map((t) => ({ id: t.id, ...summary(t, D.compute(payload, table, t, prepared)) }));
 });

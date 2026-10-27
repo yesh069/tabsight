@@ -36,7 +36,7 @@ tabsight starts one step earlier. It works out what each column actually is, tel
 </p>
 <p align="center"><sub>Real output from <code>ts.chart</code> on the sample data in this repository, nothing edited by hand.</sub></p>
 
-> **Status:** early development. Phases 0–7 of 10 are done: reading, profiling, checking, cleaning, formatting, exact aggregation, all 33 chart types with small multiples, a chart recommender that explains itself, offline maps of every country's regions, `df.plot` in notebooks, trend lines, forecasts, period comparisons, plain-English insights and cross-filtering dashboards work today. Drill-down, `ts.auto(df)` and the command line are next. See the [roadmap](#roadmap).
+> **Status:** early development. Phases 0–7 of 10 are done: reading, profiling, checking, cleaning, formatting, exact aggregation, all 33 chart types with small multiples, a chart recommender that explains itself, offline maps of every country's regions, `df.plot` in notebooks, trend lines, forecasts, period comparisons, plain-English insights and cross-filtering dashboards with drill-down work today. `ts.auto(df)`, the command line and web-framework helpers are next. See the [roadmap](#roadmap).
 
 ## A first look
 
@@ -285,8 +285,8 @@ The same pages build a documentation website with search and dark mode: `python 
 | 5 | World maps: countries, states and provinces for every country, cities | Done |
 | 6 | Heatmaps, treemaps, Sankey, scatter, distributions, small multiples; `df.plot` / `df.ts` in notebooks | Done |
 | 7 | Trend lines, forecasts, period comparisons, plain-English insights; charts in saved notebooks | Done |
-| 8 | Dashboards with cross-filtering and filters (drill-down still to come) | Mostly done |
-| 9 | `ts.auto(df)` one-line dashboards, command line, web-framework helpers, optional PNG export | Planned |
+| 8 | Dashboards with cross-filtering, filters and drill-down | Done |
+| 9 | `ts.auto(df)` one-line dashboards, command line, web-framework helpers, optional PNG export | Next |
 | 10 | First release on PyPI | Planned |
 
 Every decision behind these phases is in [`PLAN.md`](PLAN.md).

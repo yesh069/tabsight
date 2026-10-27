@@ -15,7 +15,7 @@ from typing import Any
 
 from tabsight.render.assets import read_static
 from tabsight.render.html import CDN_ECHARTS, _css, _sha, safe_json
-from tabsight.theme import Theme
+from tabsight.theme import Theme, get_theme
 
 __all__ = ["dashboard_page"]
 
@@ -53,6 +53,16 @@ def _dash_css(theme: Theme) -> str:
 .ts-tile__status {{ margin: 4px 4px 0; font-size: 11px; color: {theme.text_secondary}; min-height: 0; }}
 .ts-tile__status:empty {{ display: none; }}
 .ts-dash-insights {{ margin-top: 14px; }}
+.ts-tile__tools {{ display: flex; align-items: center; gap: 2px; }}
+.ts-tile__kind {{ font: inherit; font-size: 11.5px; color: {theme.text_secondary}; background: {theme.tile};
+  border: 1px solid {theme.border}; border-radius: 5px; padding: 1px 4px; }}
+.ts-theme-toggle {{ font: inherit; font-size: 12.5px; color: {theme.text}; background: {theme.tile};
+  border: 1px solid {theme.border}; border-radius: 6px; padding: 5px 10px; cursor: pointer; margin-left: auto; }}
+.ts-crumbs {{ display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font-size: 12px; margin: 0 4px 4px; }}
+.ts-crumbs:empty {{ display: none; }}
+.ts-crumb {{ font: inherit; color: {theme.accent}; background: none; border: 0; padding: 0; cursor: pointer; }}
+span.ts-crumb {{ color: {theme.text}; cursor: default; font-weight: 600; }}
+.ts-crumb__sep {{ color: {theme.text_secondary}; }}
 :focus-visible {{ outline: 2px solid {theme.accent}; outline-offset: 2px; }}
 @media (max-width: 760px) {{ .ts-dash-tile {{ grid-column: span 12 !important; }} }}
 @media print {{ .ts-filters, .ts-tile__csv, .ts-reset, .ts-chip__x {{ display: none; }}
@@ -81,7 +91,7 @@ def dashboard_page(
     else:
         scripts.append(f"<script>{echarts}</script>")
         script_src.append(f"'{_sha(echarts)}'")
-    if any(t["figure"].get("maps") for t in payload["tiles"]):
+    if payload.get("maps"):
         topojson = read_static("topojson-client.min.js")
         scripts.append(f"<script>{topojson}</script>")
         script_src.append(f"'{_sha(topojson)}'")
@@ -112,6 +122,13 @@ def dashboard_page(
             f'<p class="ts-insights__scope ts-dash-insights__scope">{html.escape(payload["words"]["all_data"])}</p>'
             "</div></div></section>"
         )
+    # One stylesheet per theme; the light/dark toggle switches which one applies.
+    off = ' media="not all"'  # Python 3.11 can't nest the same quotes in an f-string
+    styles = "\n".join(
+        f'<style id="ts-css-{html.escape(name)}"{"" if name == theme.name else off}>'
+        f"{_css(get_theme(name))}{_dash_css(get_theme(name))}</style>"
+        for name in payload.get("themes", [theme.name])
+    )
     return (
         "<!doctype html>\n"
         f'<html lang="{html.escape(lang)}">\n<head>\n<meta charset="utf-8">\n'
@@ -119,7 +136,7 @@ def dashboard_page(
         f'<meta http-equiv="Content-Security-Policy" content="{html.escape(csp)}">\n'
         '<meta name="referrer" content="no-referrer">\n'
         '<meta name="generator" content="tabsight">\n'
-        f"<title>{html.escape(title)}</title>\n<style>{_css(theme)}{_dash_css(theme)}</style>\n</head>\n<body>\n"
+        f"<title>{html.escape(title)}</title>\n{styles}\n</head>\n<body>\n"
         f'<main class="ts-dash">\n<header>{head}</header>\n<div id="ts-dash-root"></div>\n{insights}\n'
         '<p class="ts-footer">Made with tabsight</p>\n</main>\n'
         f'<script type="application/json" id="ts-dashboard">{safe_json(payload)}</script>\n'

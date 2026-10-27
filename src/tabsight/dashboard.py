@@ -53,9 +53,11 @@ MAX_FILE_BYTES = 1_000_000
 FILTER_GRAIN = "month"  # date filters work by month, so a day-level date can't blow up the table
 MAX_FILTER_VALUES = 2000
 
-RAW_KINDS: tuple[
-    str, ...
-] = ()  # kinds that would need single rows (none: scatter rows are checked below)
+MAIN = "main"  # the dashboard's own data; tiles may name other datasets
+LAYOUT_KEYS = ("w", "action", "data")
+MAX_ALTERNATIVES = 2
+DRILL_LEVELS = {"year": ("quarter", "month"), "quarter": ("month",)}
+RAW_KINDS: tuple[str, ...] = ()
 EXACT_AGGS = ("sum", "count", "mean", "min", "max", "countd", "median")
 MAX_LIST_VALUES = 200_000  # medians and distinct counts keep values; above this a tile stays static
 CODES = "__codes:"
@@ -63,10 +65,10 @@ TILE_KEYS = frozenset({
     "kind", "x", "y", "color", "agg", "sort", "top", "freq", "title", "subtitle", "unit", "currency", "decimals",
     "format", "geo", "lat", "lon", "map", "level", "layer", "geo_map", "geo_names", "projection", "size", "goal",
     "bins", "bin_width", "source", "target", "trend", "forecast", "season", "ref", "band", "outliers", "insights",
-    "compare", "as_of", "height", "w", "action",
+    "compare", "as_of", "height", "w", "action", "data",
 })  # fmt: skip
 _TOP_KEYS = frozenset({"tabsight_dashboard", "title", "subtitle", "filters", "tiles", "theme", "locale",
-                       "currency", "palette", "insights"})  # fmt: skip
+                       "currency", "palette", "insights", "theme_toggle", "switch", "drill"})  # fmt: skip
 DEFAULT_WIDTH = {"kpi": 3, "gauge": 3, "bullet": 6, "table": 12, "sparkline": 3}
 GRAINS_FINE_TO_COARSE = ("hour", "day", "week", "month", "quarter", "year")
 
@@ -116,6 +118,8 @@ def _check_tile(tile: Mapping[str, Any]) -> dict[str, Any]:
             + (f"; did you mean {hint[0]!r}?" if hint else "")
         )
     out = {k: _plain(v, f"tile {k}") for k, v in tile.items() if v is not None}
+    if "data" in out and (not isinstance(out["data"], str) or len(out["data"]) > 60):
+        raise InvalidSpecError("tile data must name a dataset")
     if not isinstance(out.get("kind", "auto"), str):
         raise InvalidSpecError("tile kind must be text")
     w = out.get("w")
@@ -155,7 +159,15 @@ class Dashboard:
         locale: str | None = None,
         currency: str | None = None,
         palette: str | None = None,
+        theme_toggle: bool = True,
+        switch: bool = True,
+        drill: bool = True,
     ) -> None:
+        for name, flag in (("theme_toggle", theme_toggle), ("switch", switch), ("drill", drill)):
+            if not isinstance(flag, bool):
+                raise InvalidSpecError(f"{name} must be True or False")
+        self.theme_toggle, self.switch, self.drill = theme_toggle, switch, drill
+        self.datasets: dict[str, pd.DataFrame] = {}
         self.title = _text(title, "title")
         self.subtitle = _text(subtitle, "subtitle") if subtitle is not None else None
         if isinstance(filters, str):
@@ -184,11 +196,29 @@ class Dashboard:
         highlight; ``"none"``)."""
         if len(self.tiles) >= MAX_TILES:
             raise InvalidSpecError(f"a dashboard holds at most {MAX_TILES} tiles")
-        if "data" in chart or "facet" in chart:
+        if "facet" in chart:
             raise InvalidSpecError(
-                "tiles use the dashboard's data, without small multiples, for now"
+                "dashboard tiles don't draw small multiples; add one tile per value"
             )
-        self.tiles.append(_check_tile({"kind": kind, "w": w, "action": action, **chart}))
+        data = chart.pop("data", None)
+        name = chart.pop("data_name", None)
+        if data is not None and not isinstance(data, str):
+            name = (
+                _text(name, "data_name", 60)
+                if name is not None
+                else f"data{len(self.datasets) + 1}"
+            )
+            if name == MAIN:
+                raise InvalidSpecError(f"data_name {MAIN!r} is the dashboard's own data")
+            self.datasets[name] = as_frame(data)
+            data = name
+        elif isinstance(data, str) and data not in self.datasets and data != MAIN:
+            raise InvalidSpecError(
+                f"no dataset called {safe_repr(data)}; pass the DataFrame as data="
+            )
+        self.tiles.append(
+            _check_tile({"kind": kind, "w": w, "action": action, "data": data, **chart})
+        )
         return self
 
     def kpi(self, y: str, *, w: int = 3, **chart: Any) -> Dashboard:
@@ -213,6 +243,9 @@ class Dashboard:
                 out[key] = getattr(self, key)
         if self.insight_count:
             out["insights"] = self.insight_count
+        for key in ("theme_toggle", "switch", "drill"):
+            if not getattr(self, key):
+                out[key] = False
         return out
 
     def save(self, path: str | Path) -> None:
@@ -235,7 +268,8 @@ class Dashboard:
         dash = cls(
             data.get("title", "Dashboard"), subtitle=data.get("subtitle"), filters=data.get("filters", ()),
             theme=data.get("theme"), locale=data.get("locale"), currency=data.get("currency"),
-            palette=data.get("palette"),
+            palette=data.get("palette"), theme_toggle=data.get("theme_toggle", True),
+            switch=data.get("switch", True), drill=data.get("drill", True),
         )  # fmt: skip
         for tile in tiles:
             if not isinstance(tile, Mapping):
@@ -252,10 +286,12 @@ class Dashboard:
             raise InvalidSpecError("dashboard file is too large")
         return cls.from_dict(json.loads(raw.decode("utf-8")))
 
-    def bind(self, data: Any) -> Dashboard:
-        """The same dashboard on new data. Every column it needs must exist ("did you mean" otherwise)."""
+    def bind(self, data: Any, **datasets: Any) -> Dashboard:
+        """The same dashboard on new data. Every column it needs must exist ("did you mean" otherwise).
+
+        Tiles with their own data take it by name: ``bind(orders, targets=new_targets)``."""
         frame = as_frame(data)
-        missing = sorted(self._columns() - set(map(str, frame.columns)))
+        missing = sorted(self._columns(MAIN) - set(map(str, frame.columns)))
         if missing:
             import difflib
 
@@ -266,11 +302,27 @@ class Dashboard:
             )
         out = Dashboard.from_dict(self.to_dict())
         out.data = frame
+        needed = {t.get("data") for t in self.tiles if t.get("data") not in (None, MAIN)}
+        for name in needed:
+            given = datasets.get(str(name), self.datasets.get(str(name)))
+            if given is None:
+                raise InvalidSpecError(
+                    f"tiles use the dataset {safe_repr(name)}: pass it as bind(..., {name}=df)"
+                )
+            extra = as_frame(given)
+            gone = sorted(self._columns(str(name)) - set(map(str, extra.columns)))
+            if gone:
+                raise InvalidSpecError(
+                    f"the dataset {safe_repr(name)} has no column {safe_repr(gone[0])}"
+                )
+            out.datasets[str(name)] = extra
         return out
 
-    def _columns(self) -> set[str]:
-        cols = set(self.filters)
+    def _columns(self, dataset: str = MAIN) -> set[str]:
+        cols = set(self.filters) if dataset == MAIN else set()
         for tile in self.tiles:
+            if (tile.get("data") or MAIN) != dataset:
+                continue
             for key in ("x", "y", "color", "geo", "lat", "lon", "size", "source", "target"):
                 v = tile.get(key)
                 cols |= {v} if isinstance(v, str) else set(v or ())
@@ -329,70 +381,130 @@ class Dashboard:
 
         settings = resolve(locale=self.locale, currency=self.currency, palette=self.palette)
         theme: Theme = get_theme(self.theme or settings.theme)
-        frame, _ = _prepare(self.data)
-        prof = profile(frame, quiet=True)
+        themes = [theme]
+        if self.theme_toggle and theme.name in ("light", "dark"):
+            themes.append(get_theme("dark" if theme.name == "light" else "light"))
+        sources: dict[str, pd.DataFrame] = {MAIN: self.data, **self.datasets}
+        frames: dict[str, pd.DataFrame] = {}
+        profs: dict[str, Profile] = {}
+        tables: dict[str, _SharedTable] = {}
+        for name, df in sources.items():
+            missing_data = [t for t in self.tiles if t.get("data", MAIN) == name]
+            if name != MAIN and not missing_data:
+                continue
+            frames[name], _ = _prepare(df)
+            profs[name] = profile(frames[name], quiet=True)
+            tables[name] = _SharedTable(frames[name], profs[name], settings.fiscal_start, settings.week_start,
+                                        settings.locale)  # fmt: skip
+        for t in self.tiles:
+            if t.get("data", MAIN) not in frames:
+                raise InvalidSpecError(
+                    f"tile data {safe_repr(t.get('data'))} was not given; pass it to bind()"
+                )
         for f in self.filters:
-            if f not in prof:
+            if f not in profs[MAIN]:
                 raise InvalidSpecError(f"filter column {safe_repr(f)} not found")
         common: dict[str, Any] = {
             "locale": self.locale,
             "currency": self.currency,
             "palette": self.palette,
-            "theme": theme,
         }
 
-        def draw(tile: Mapping[str, Any], colors: Mapping[str, str] | None) -> Figure:
-            args = {k: v for k, v in tile.items() if k not in ("w", "action")}
+        def draw(tile: Mapping[str, Any], colors: Mapping[str, str] | None, theme_obj: Theme,
+                 **override: Any) -> Figure:  # fmt: skip
+            args = {k: v for k, v in tile.items() if k not in LAYOUT_KEYS}
+            args.update(override)
             kind = args.pop("kind", "auto")
+            name = tile.get("data", MAIN)
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                return chart(frame, kind, prof=prof, colors=colors, **common, **args)
+                return chart(
+                    frames[name],
+                    kind,
+                    prof=profs[name],
+                    colors=colors,
+                    theme=theme_obj,
+                    **common,
+                    **args,
+                )
 
-        first = [draw(t, None) for t in self.tiles]
+        first = [draw(t, None, theme) for t in self.tiles]
         # One colour per value across the whole dashboard (a region keeps its colour everywhere).
         registry = ColorRegistry(settings.palette)
-        for fig in first:
+        for tile, fig in zip(self.tiles, first, strict=True):
+            name = tile.get("data", MAIN)
             for col in _colour_fields(fig):
-                registry.assign(_labels_of(frame, col, prof))
+                registry.assign(_labels_of(frames[name], col, profs[name]))
         pinned = registry.mapping()
-        figures = [draw(t, pinned) for t in self.tiles]
 
-        table = _SharedTable(
-            frame, prof, settings.fiscal_start, settings.week_start, settings.locale
-        )
-        tiles: list[dict[str, Any]] = []
+        maps: dict[str, dict[str, Any]] = {}
         report: list[str] = []
-        for i, (tile, fig) in enumerate(zip(self.tiles, figures, strict=True)):
-            binding, why = _binding(fig, tile, table, prof, frame, i)
-            entry: dict[str, Any] = {
-                "id": f"t{i}",
-                "w": tile.get("w") or DEFAULT_WIDTH.get(fig.kind, 6),
-                "action": tile.get("action", "filter"),
-                "figure": fig.to_dict(),
-            }
-            if binding is None:
-                entry["static"] = why
-                report.append(f"tile {i + 1} ({fig.kind}) is drawn from all the data: {why}")
-            else:
-                entry["binding"] = binding
-            tiles.append(entry)
-        filters = [table.filter(f) for f in self.filters]
-        payload = table.payload(settings.max_size_mb)
-        insights: list[dict[str, Any]] = []
-        if self.insight_count:
-            from tabsight.insight import insights as find
+        tiles: list[dict[str, Any]] = []
+        for i, tile in enumerate(self.tiles):
+            name = tile.get("data", MAIN)
+            frame, prof, table = frames[name], profs[name], tables[name]
 
-            ys = list(dict.fromkeys(m["column"] for f in figures for m in f.facts.get("measures", ())
-                                    if m["column"] in prof and prof[m["column"]].role == "measure"))  # fmt: skip
-            found = find(
-                frame, y=ys or None, max_items=self.insight_count, locale=settings.locale, prof=prof
-            )
-            insights = [i.to_dict() for i in found]
+            def view(
+                label: str, args: dict[str, Any], key: str, drill: dict[str, Any] | None = None,
+                *, tile: Mapping[str, Any] = tile, table: _SharedTable = table, prof: Profile = prof,
+                frame: pd.DataFrame = frame, i: int = i,
+            ) -> dict[str, Any] | None:  # fmt: skip
+                out: dict[str, Any] = {"id": key, "label": label, "themes": {}}
+                for theme_obj in themes:
+                    try:
+                        fig = draw({**tile, **args}, pinned, theme_obj)
+                    except InvalidSpecError:
+                        return None
+                    payload_fig = fig.to_dict()
+                    for entry in payload_fig.pop("maps", []):
+                        maps.setdefault(entry["name"], entry)
+                    binding, why = _binding(fig, tile, table, prof, frame, f"{i}_{key}")
+                    side: dict[str, Any] = {"figure": payload_fig}
+                    if binding is None:
+                        side["static"] = why
+                    else:
+                        side["binding"] = binding
+                    out["themes"][theme_obj.name] = side
+                    out["kind"] = fig.kind
+                if drill:
+                    out["drill"] = drill
+                return out
+
+            base = view(_kind_label(first[i].kind), {}, "v0")
+            if base is None:
+                raise InvalidSpecError(f"tile {i + 1} could not be drawn")
+            views = [base]
+            side = base["themes"][theme.name]
+            if "static" in side:
+                report.append(
+                    f"tile {i + 1} ({base['kind']}) is drawn from all the data: {side['static']}"
+                )
+            else:
+                spec = first[i].spec
+                if self.switch and base["kind"] not in ("kpi", "table"):
+                    views += self._alternatives(tile, spec, frame, prof, base["kind"], view)
+                if self.drill:
+                    views += _drill_views(tile, spec, prof, side["binding"], view)
+            tiles.append({
+                "id": f"t{i}", "w": tile.get("w") or DEFAULT_WIDTH.get(base["kind"], 6),
+                "action": tile.get("action", "filter"), "data": name, "views": views,
+            })  # fmt: skip
+        filters = [tables[MAIN].filter(f) for f in self.filters]
+        insights: list[dict[str, Any]] = []
+        live_insights: dict[str, Any] | None = None
+        if self.insight_count:
+            insights, live_insights = _insights_setup(self.insight_count, first, frames[MAIN], profs[MAIN],
+                                                      tables[MAIN], settings)  # fmt: skip
+        datasets = {name: t.payload(settings.max_size_mb) for name, t in tables.items()}
         page = {
             "tabsight_dashboard": DASHBOARD_VERSION,
             "title": self.title,
             "subtitle": self.subtitle,
             "theme": theme.to_dict(),
+            "themes": [t.name for t in themes],
+            "theme_explicit": self.theme is not None,
+            "theme_toggle": self.theme_toggle,
+            "theme_css": {t.name: t.to_dict() for t in themes},
             "locales": locale_payload([settings.locale]),
             "unknown": text("unknown"),
             "other": text("other"),
@@ -403,8 +515,11 @@ class Dashboard:
             "other_color": OTHER_COLOR,
             "csv_safe": settings.csv_safe,
             "tiles": tiles,
-            "data": payload,
+            "maps": list(maps.values()),
+            "data": datasets[MAIN],
+            "datasets": {k: v for k, v in datasets.items() if k != MAIN},
             "insights": insights,
+            "live_insights": live_insights,
             "words": {
                 "reset": text("reset_filters"),
                 "all_data": text("based_on_all_data"),
@@ -412,9 +527,36 @@ class Dashboard:
                 "csv": text("download_csv"),
                 "no_data": text("no_data"),
                 "not_filtered": text("filter_not_applied"),
+                "not_affected": text("not_affected_by", field="{field}"),
             },
         }
-        return _Built(page, figures, report)
+        return _Built(page, [], report)
+
+    def _alternatives(self, tile: Mapping[str, Any], spec: Any, frame: pd.DataFrame, prof: Profile, kind: str,
+                      view: Any) -> list[dict[str, Any]]:  # fmt: skip
+        """Up to two other chart types that fit the same fields, for the tile's chart-type menu."""
+        from tabsight.recommend import recommend
+
+        x = spec.geo if kind in ("choropleth", "symbol_map", "density_map") else spec.x
+        if x is None:
+            return []
+        try:
+            recs = recommend(frame, x=x, y=spec.y, color=spec.color, prof=prof)
+        except InvalidSpecError:
+            return []
+        out: list[dict[str, Any]] = []
+        for r in recs:
+            if len(out) >= MAX_ALTERNATIVES:
+                break
+            if not r.available or r.kind == kind or r.kind in ("table", "sparkline", "kpi"):
+                continue
+            args = {"kind": r.kind, "top": r.spec.top, "sort": r.spec.sort}
+            if x is not spec.x:  # a map's places as bars
+                args.update(x=x, geo=None)
+            v = view(_kind_label(r.kind), args, f"a{len(out)}")
+            if v is not None and all("binding" in side for side in v["themes"].values()):
+                out.append(v)
+        return out
 
 
 # ---------------------------------------------------------------- the shared table
@@ -527,6 +669,35 @@ class _SharedTable:
                                                         fiscal_start=self.fiscal_start))  # fmt: skip
         return out
 
+    def future(self, col: str, horizon: int) -> list[str]:
+        """The ``horizon`` periods after the data ends, labelled, for forecasts redrawn after filtering."""
+        from tabsight.analytics import next_periods
+
+        keys = sorted({k for k in self.dims[col] if k is not None})
+        grain = self.meta[col]["grain"]
+        if not keys or grain not in ("year", "quarter", "month", "week", "day", "hour"):
+            return []
+        out = [t.strftime("%Y-%m-%d") for t in next_periods(pd.Timestamp(keys[-1]), grain, horizon)]
+        labels = self.labels[col]
+        for k in out:
+            for style in ("full", "compact"):
+                labels[style].setdefault(k, format_date(pd.Timestamp(k), grain, style, locale=self.locale,
+                                                        fiscal_start=self.fiscal_start))  # fmt: skip
+        return out
+
+    def months_before(self, col: str, n: int) -> str:
+        """Label the ``n`` months before the data starts too (a comparison window may reach back there)."""
+        keys = sorted({k for k in self.dims[col] if k is not None})
+        if keys:
+            start = pd.Timestamp(keys[0])
+            for k in range(1, n + 1):
+                t = start - pd.DateOffset(months=k)
+                for style in ("full", "compact"):
+                    self.labels[col][style].setdefault(
+                        t.strftime("%Y-%m-%d"), format_date(t, "month", style, locale=self.locale)
+                    )
+        return col
+
     def window(self, name: str, keys: pd.Series) -> str:
         self.dims[name] = keys.astype("object")
         self.meta[name] = {"field": name, "grain": None, "title": name, "hidden": True}
@@ -567,7 +738,10 @@ class _SharedTable:
                 "values": keys}  # fmt: skip
 
     def payload(self, max_mb: float) -> dict[str, Any]:
-        work = pd.DataFrame(dict(self.dims), index=self.frame.index)
+        # Dimensions get internal names, so a column used both as a category ("Discount" in a
+        # table) and as a measure (its median elsewhere) never reads the text keys as numbers.
+        inner = {f"__dim{i}__": col for i, col in enumerate(self.dims)}
+        work = pd.DataFrame({k: self.dims[c] for k, c in inner.items()}, index=self.frame.index)
         dims = list(self.dims)
         for m in self.measures:
             if m.column is None or m.column in work:
@@ -580,7 +754,7 @@ class _SharedTable:
                 work[m.column] = codes.where(source.notna())
             else:
                 work[m.column] = _numeric(self.frame[m.column], self.prof[m.column].source)
-        parts = build_parts(work, dims, self.measures)
+        parts = build_parts(work, list(inner), self.measures).rename(columns=inner)
         out: dict[str, Any] = {
             "rows": len(parts),
             "dims": {},
@@ -626,7 +800,7 @@ class _SharedTable:
 
 
 def _binding(fig: Figure, tile: Mapping[str, Any], table: _SharedTable, prof: Profile, frame: pd.DataFrame,
-             i: int) -> tuple[dict[str, Any] | None, str]:  # fmt: skip
+             i: int | str) -> tuple[dict[str, Any] | None, str]:  # fmt: skip
     """How the browser recomputes this tile, or None and the reason it can't exactly."""
     kind, spec, facts = fig.kind, fig.spec, fig.facts
     option = fig.option or {}
@@ -704,7 +878,7 @@ def _binding(fig: Figure, tile: Mapping[str, Any], table: _SharedTable, prof: Pr
                              index=frame.index)  # fmt: skip
             unit = prof[measures[0]["column"]] if measures else None
             b["compare"] = {
-                "how": how, "window": table.window(f"__w{i}", flag), "month": table.dim(date, "month"),
+                "how": how, "window": table.window(f"__w{i}", flag), "month": table.months_before(table.dim(date, "month"), 12),
                 "date_field": date, "current_label": c.current_label, "previous_label": c.previous_label,
                 "shift": {"previous_year": 12, "previous_quarter": 3, "previous_month": 1}[how],
                 "pct_fmt": js_spec("percent", "full", locale=table.locale, decimals=1),
@@ -853,6 +1027,21 @@ def _binding(fig: Figure, tile: Mapping[str, Any], table: _SharedTable, prof: Pr
         b["top"] = 7
     bars = ("bar", "hbar", "grouped_bar", "stacked_bar", "stacked100_bar", "lollipop")
     b["missing"] = "zero" if kind in bars or (kind == "combo" and not time) else resolve().missing
+    pane = {
+        k: spec.options[k]
+        for k in ("trend", "forecast", "season", "ref", "band", "outliers")
+        if spec.options.get(k)
+    }
+    if pane:  # the browser refits these after filtering (charts/pane.py, ported)
+        from tabsight.analytics import SEASONS
+
+        pane["grain"] = grain if time else None
+        pane.setdefault("season", SEASONS.get(grain) if time else None)
+        if pane.get("forecast") and time:
+            b["periods_after"] = table.future(xcol, int(pane["forecast"]))
+        if facts.get("partial_period") and time:  # the data's last period isn't over
+            pane["partial_key"] = max(k for k in table.dims[xcol] if k is not None)
+        b["pane"] = pane
     return b, ""
 
 
@@ -891,7 +1080,7 @@ def _ramps(fig: Figure) -> dict[str, list[str]]:
 
 
 def _histogram_binding(b: dict[str, Any], fig: Figure, table: _SharedTable, frame: pd.DataFrame,
-                       i: int) -> tuple[dict[str, Any] | None, str]:  # fmt: skip
+                       i: int | str) -> tuple[dict[str, Any] | None, str]:  # fmt: skip
     """Bins stay those of all the data, so bars line up while filtering; counts are recomputed."""
     from tabsight.charts.relation import _bins, _numbers
 
@@ -913,6 +1102,150 @@ def _histogram_binding(b: dict[str, Any], fig: Figure, table: _SharedTable, fram
              measures=[{"parts": {"count": "__rows"}, "agg": "count", "label": "Rows"}])  # fmt: skip
     b["click"] = col
     return b, ""
+
+
+def _kind_label(kind: str) -> str:
+    return {"hbar": "Horizontal bars", "kpi": "KPI", "multi_line": "Lines", "stacked100_bar": "100% stacked bars",
+            "choropleth": "Filled map"}.get(kind, kind.replace("_", " ").capitalize())  # fmt: skip
+
+
+def _drill_views(tile: Mapping[str, Any], spec: Any, prof: Profile, binding: Mapping[str, Any],
+                 view: Any) -> list[dict[str, Any]]:  # fmt: skip
+    """Finer levels for double-click drill-down: year > quarter > month, or a hierarchy's child."""
+    out: list[dict[str, Any]] = []
+    if binding.get("shape") not in ("category", "series") or not isinstance(spec.x, str):
+        return out
+    if binding.get("time"):
+        grain = binding["dims"][0].rsplit("|", 1)[-1]
+        for level in DRILL_LEVELS.get(grain, ()):
+            v = view(level.capitalize(), {"freq": level}, f"d{level}", {"level": level})
+            if v is not None:
+                out.append(v)
+        return out
+    child = next((h[1] for h in prof.hierarchies if h[0] == spec.x and len(h) > 1), None)
+    if child is not None:
+        v = view(
+            child.replace("_", " "), {"x": child, "top": None, "sort": None}, "dh", {"level": child}
+        )
+        if v is not None:
+            out.append(v)
+    return out
+
+
+def _insights_setup(count: int, figures: list[Figure], frame: pd.DataFrame, prof: Profile, table: _SharedTable,
+                    settings: Any) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:  # fmt: skip
+    """The insights shown first (Python), and what the browser needs to recompute them after filtering."""
+    from tabsight.insight import MAX_DIMS, MAX_MEASURES, THRESHOLDS, _grain
+    from tabsight.insight import insights as find
+
+    facts = {m["column"]: m for f in figures for m in f.facts.get("measures", ())}
+    ys = [
+        c
+        for c in facts
+        if c in prof and prof[c].role == "measure" and facts[c]["agg"] in ("sum", "mean")
+    ]
+    found = find(frame, y=ys or None, max_items=count, locale=settings.locale, prof=prof)
+    first = [i.to_dict() for i in found]
+    ys = (
+        ys[:MAX_MEASURES]
+        or [f.name for f in prof.fields if f.role == "measure" and f.agg in ("sum", "mean")][
+            :MAX_MEASURES
+        ]
+    )
+    xs = [f.name for f in prof.fields if f.role == "dimension" and 2 <= f.distinct <= 200][
+        :MAX_DIMS
+    ]
+    date = next((f.name for f in prof.fields if f.role == "time"), None)
+    from tabsight.insight import _Words
+
+    words = _Words(prof, settings.locale, settings.currency, settings.fiscal_start)
+    measures = []
+    for y in ys:
+        agg = prof[y].agg if prof[y].agg in ("sum", "mean") else "sum"
+        kw = words.kwargs(Measure(y, agg))
+        unit = kw.pop("unit")
+        measures.append({"label": y, "agg": agg, "parts": table.measure(y, agg), "unit": unit,
+                         "compact": js_spec(unit, "compact", **kw), "full": js_spec(unit, "full", **kw),
+                         "pp": js_spec("pp", "full", locale=settings.locale, decimals=1,
+                                       percent_scale=kw.get("percent_scale", "fraction"))})  # fmt: skip
+    live: dict[str, Any] = {
+        "measures": measures,
+        "dims": [{"col": table.dim(x), "title": x.replace("_", " ")} for x in xs],
+        "max_items": count,
+        "thresholds": THRESHOLDS,
+        "templates": {
+            k: text(k)
+            for k in (
+                "ins_peak",
+                "ins_vs",
+                "ins_low",
+                "ins_trend_up",
+                "ins_trend_down",
+                "ins_change_up",
+                "ins_change_down",
+                "ins_change_flat",
+                "ins_contributor",
+                "ins_concentration",
+                "ins_negative",
+                "ins_and_more",
+            )
+        },
+        "pct": {d: js_spec("percent", "full", locale=settings.locale, decimals=d) for d in (0, 1)},
+        "pct_sign": {
+            d: js_spec("percent", "full", locale=settings.locale, decimals=d, sign=True)
+            for d in (0, 1)
+        },
+        "kept": [i for i in first if i["kind"] in ("seasonality", "outliers")],
+    }
+    if date is not None:
+        dates = _time_values(frame[date], prof, date)
+        if dates.notna().sum() >= 2:
+            grain = _grain(dates)
+            col = table.dim(date, grain)
+            live["date"] = {
+                "col": col,
+                "grain": grain,
+                "periods": table.periods(col),
+                "adj": {
+                    "year": "yearly",
+                    "quarter": "quarterly",
+                    "month": "monthly",
+                    "week": "weekly",
+                    "day": "daily",
+                }[grain],
+            }
+            from tabsight.aggregate import aggregate
+
+            if (
+                ys
+                and aggregate(
+                    frame, [date], [Measure(ys[0], "sum")], freq={date: grain}, prof=prof
+                ).partial_period
+            ):
+                live["date"]["partial_key"] = max(k for k in table.dims[col] if k is not None)
+            from tabsight.periods import compare
+
+            span = int((dates.max() - dates.min()).days)
+            how = "previous_year" if span >= 365 + 31 else "previous_month"
+            try:
+                c = compare(
+                    frame,
+                    ys[0] if ys else date,
+                    date,
+                    compare=how,
+                    prof=prof,
+                    locale=settings.locale,
+                )
+            except InvalidSpecError:
+                c = None
+            if c is not None:
+                day = dates.dt.normalize()
+                flag = pd.Series(np.where((day >= c.start) & (day <= c.end), "cur",
+                                          np.where((day >= c.previous_start) & (day <= c.previous_end), "prev", None)),
+                                 index=frame.index)  # fmt: skip
+                live["change"] = {"window": table.window("__insights", flag), "current": c.current_label,
+                                  "previous": c.previous_label}  # fmt: skip
+    return first, live
 
 
 def _sort_rule(spec: Any, prof: Profile, first: str | None, has_measures: bool) -> str:

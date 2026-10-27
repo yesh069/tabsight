@@ -105,6 +105,15 @@ def _summary(fig: ts.Figure, tile: dict[str, Any]) -> dict[str, Any]:
     return {"labels": cat["data"], "series": series}
 
 
+def _flat(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    """Each tile's first view in the page's theme: {id, figure, binding or static}."""
+    out = []
+    for t in payload["tiles"]:
+        side = t["views"][0]["themes"][payload["theme"]["name"]]
+        out.append({"id": t["id"], **side})
+    return out
+
+
 def _close(a: Any, b: Any) -> bool:
     if a is None or b is None:
         return (a in (None, 0)) and (b in (None, 0))  # a missing bar and a zero bar look the same
@@ -149,8 +158,8 @@ def test_browser_numbers_match_python_after_every_filter(
 ) -> None:
     dash = _dash(orders)
     payload = dash.build()
-    live = {t["id"]: t for t in payload["tiles"] if "binding" in t}
-    assert len(live) == len(TILES), [t.get("static") for t in payload["tiles"]]
+    live = {t["id"]: t for t in _flat(payload) if "binding" in t}
+    assert len(live) == len(TILES), [t.get("static") for t in _flat(payload)]
     results = _node(payload, FILTERS, tmp_path)
     full_as_of = None
     for filters, tiles in zip(FILTERS, results, strict=True):
@@ -218,7 +227,7 @@ def test_only_single_row_charts_stay_static(orders: pd.DataFrame) -> None:
     )
     dash = (ts.Dashboard("Mixed", data=coords).add("scatter", x="Sales", y="Profit")
             .add("symbol_map", lat="lat", lon="lon", y="Sales").add("bar", x="Region", y="Order_ID", agg="countd"))  # fmt: skip
-    tiles = dash.build()["tiles"]
+    tiles = _flat(dash.build())
     assert "single rows" in tiles[0]["static"] and "single rows" in tiles[1]["static"]
     assert "binding" in tiles[2] and "static" not in tiles[2]
     codes = [c for c in dash.build()["data"]["lists"] if c.endswith("_values")]
@@ -256,8 +265,8 @@ def test_one_colour_per_value_across_tiles(orders: pd.DataFrame) -> None:
     dash = (ts.Dashboard("Colours", data=orders).add("stacked_bar", x="Region", y="Sales", color="Segment")
             .add("donut", x="Segment", y="Sales"))  # fmt: skip
     payload = dash.build()
-    bars = payload["tiles"][0]["figure"]["option"]["series"]
-    donut = payload["tiles"][1]["figure"]["option"]["series"][0]["data"]
+    bars = _flat(payload)[0]["figure"]["option"]["series"]
+    donut = _flat(payload)[1]["figure"]["option"]["series"][0]["data"]
     by_name = {d["name"]: d["itemStyle"]["color"] for d in donut}
     for s in bars:
         assert by_name.get(s["name"], payload["colors"].get(s["name"])) == s["itemStyle"]["color"]
@@ -482,9 +491,9 @@ def test_every_other_kind_matches_python_after_filters(
     for tile in MORE_TILES:
         dash.add(**tile)
     payload = dash.build()
-    static = [(t["figure"]["kind"], t["static"]) for t in payload["tiles"] if "static" in t]
+    static = [(t["figure"]["kind"], t["static"]) for t in _flat(payload) if "static" in t]
     assert not static, static
-    deep = [t["id"] for t in payload["tiles"] if t["figure"]["kind"] not in ("kpi", "table", "bar")]
+    deep = [t["id"] for t in _flat(payload) if t["figure"]["kind"] not in ("kpi", "table", "bar")]
     results = _node(payload, MORE_FILTERS, tmp_path, deep=deep)
     for filters, tiles in zip(MORE_FILTERS, results, strict=True):
         for got in tiles:
@@ -510,3 +519,133 @@ def test_every_other_kind_matches_python_after_filters(
                     assert all(
                         _close(a, b) for a, b in zip(got["series"][name], values, strict=True)
                     ), (where, name)
+
+
+# ---------------------------------------------------------------- analytics, insights, views, own data
+
+EXTRA = ROOT / "tests" / "js" / "dashboard_extra.cjs"
+
+
+def _extra(payload: dict[str, Any], tmp: Path, **cases: Any) -> Any:
+    data = tmp / "extra.json"
+    data.write_text(json.dumps({"payload": payload, **cases}), encoding="utf-8")
+    run = subprocess.run(
+        ["node", str(EXTRA), str(STATIC / "tabsight.js"), str(STATIC / "dashboard.js"), str(data)],
+        capture_output=True, text=True, encoding="utf-8", check=True, timeout=120,
+    )  # fmt: skip
+    return json.loads(run.stdout)
+
+
+PANE_FILTERS: list[dict[str, Any]] = [
+    {"Region": {"type": "in", "values": ["West"]}},
+    {"Category": {"type": "in", "values": ["Furniture", "Technology"]}},
+]
+
+
+@pytest.mark.node
+@pytest.mark.skipif(shutil.which("node") is None, reason="Node.js not installed")
+def test_trend_forecast_and_references_follow_filters(orders: pd.DataFrame, tmp_path: Path) -> None:
+    tiles = [
+        {"kind": "line", "x": "Order_Date", "y": "Sales", "freq": "month", "trend": True, "forecast": 6,
+         "ref": ["mean", "p90"], "outliers": True},
+        {"kind": "bar", "x": "Order_Date", "y": "Profit", "freq": "quarter", "trend": True, "band": ["p25", "p75"]},
+        {"kind": "multi_line", "x": "Order_Date", "y": "Quantity", "color": "Category", "freq": "quarter", "forecast": 4},
+    ]  # fmt: skip
+    dash = ts.Dashboard(
+        "Pane", data=orders, filters=["Region", "Category"], switch=False, drill=False
+    )
+    for tile in tiles:
+        dash.add(**tile)
+    payload = dash.build()
+    got = _extra(payload, tmp_path, mode="series", filters=PANE_FILTERS)
+    for filters, figs in zip(PANE_FILTERS, got, strict=True):
+        frame = _apply(orders, filters)
+        for i, series in enumerate(figs):
+            args = dict(tiles[i])
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                fig = ts.chart(frame, args.pop("kind"), colors=payload["colors"], **args)
+            want = [
+                {"name": s["name"], "data": [d.get("value") if isinstance(d, dict) else d for d in s["data"]],
+                 "refs": [d["yAxis"] for d in s["markLine"]["data"]] if s.get("markLine") else None,
+                 "points": [d["coord"] for d in s["markPoint"]["data"]] if s.get("markPoint") else None}
+                for s in json.loads(json.dumps(fig.option))["series"]
+            ]  # fmt: skip
+            _close_deep(series, want, f"tile {i} with {filters}")
+
+
+@pytest.mark.node
+@pytest.mark.skipif(shutil.which("node") is None, reason="Node.js not installed")
+def test_insights_follow_filters(orders: pd.DataFrame, tmp_path: Path) -> None:
+    dash = ts.Dashboard("Insights", data=orders, filters=["Region", "Segment"]).add(
+        "bar", x="Region", y="Sales"
+    )
+    dash.add("bar", x="Category", y="Profit").insights(20)
+    payload = dash.build()
+    live = payload["live_insights"]
+    filters = [
+        {"Region": {"type": "in", "values": ["West"]}},
+        {"Segment": {"type": "in", "values": ["Consumer"]}},
+    ]
+    got = _extra(payload, tmp_path, mode="insights", filters=filters)
+    as_of = str(ts.compare(orders, "Sales", "Order_Date").as_of.date())
+    recomputed = ("change", "peak", "low", "trend", "contributor", "concentration", "negative")
+    xs = [d["col"] for d in live["dims"]]
+    for f, items in zip(filters, got, strict=True):
+        frame = _apply(orders, f)
+        want = ts.insights(frame, y=[m["label"] for m in live["measures"]], x=xs, date="Order_Date",
+                           as_of=as_of, max_items=50)  # fmt: skip
+        mine = {i["text"] for i in items if i["kind"] in recomputed}
+        theirs = {i.text for i in want if i.kind in recomputed}
+        assert mine and mine <= theirs, (f, sorted(mine - theirs))
+
+
+def test_views_drill_levels_and_themes(orders: pd.DataFrame) -> None:
+    dash = (ts.Dashboard("Views", data=orders).add("bar", x="Order_Date", y="Sales", freq="year")
+            .add("bar", x="Category", y="Sales").add("kpi", y="Sales"))  # fmt: skip
+    payload = dash.build()
+    year, cat, kpi = payload["tiles"]
+    assert [v["drill"]["level"] for v in year["views"] if "drill" in v] == ["quarter", "month"]
+    assert any(v.get("drill", {}).get("level") == "Sub_Category" for v in cat["views"])
+    assert (
+        1 <= len([v for v in cat["views"] if "drill" not in v]) - 1 <= 2
+    )  # up to two other chart types
+    assert len(kpi["views"]) == 1
+    assert set(year["views"][0]["themes"]) == {"light", "dark"} and payload["themes"] == [
+        "light",
+        "dark",
+    ]
+    dark = year["views"][0]["themes"]["dark"]["figure"]
+    assert dark["theme"]["name"] == "dark" and "maps" not in dark
+    plain = ts.Dashboard("Plain", data=orders, theme_toggle=False, switch=False, drill=False)
+    p2 = plain.add("bar", x="Category", y="Sales").build()
+    assert p2["themes"] == ["light"] and len(p2["tiles"][0]["views"]) == 1
+    page = dash.to_html()
+    assert (
+        '<style id="ts-css-dark" media="not all">' in page and '<style id="ts-css-light">' in page
+    )
+    with pytest.raises(InvalidSpecError, match="True or False"):
+        ts.Dashboard("x", data=orders, switch="yes")  # type: ignore[arg-type]
+
+
+@pytest.mark.node
+@pytest.mark.skipif(shutil.which("node") is None, reason="Node.js not installed")
+def test_tiles_with_their_own_data(orders: pd.DataFrame, tmp_path: Path) -> None:
+    targets = pd.DataFrame({"Region": ["Central", "East", "South", "West"] * 2, "Year": [2016] * 4 + [2017] * 4,
+                            "Target": [100.0, 200.0, 150.0, 250.0, 110.0, 210.0, 160.0, 260.0]})  # fmt: skip
+    dash = (ts.Dashboard("Own data", data=orders, filters=["Region", "Segment"]).add("bar", x="Region", y="Sales")
+            .add("bar", x="Region", y="Target", data=targets, data_name="targets"))  # fmt: skip
+    payload = dash.build()
+    assert "targets" in payload["datasets"] and payload["tiles"][1]["data"] == "targets"
+    # Region filters both tiles; Segment is not in the targets, so that tile ignores it
+    f = {
+        "Region": {"type": "in", "values": ["East", "West"]},
+        "Segment": {"type": "in", "values": ["Consumer"]},
+    }
+    got = _extra(payload, tmp_path, mode="tile", tile=1, dataset="targets", filters=[f])
+    assert got == {"labels": ["West", "East"], "values": [510.0, 410.0]}
+    saved = ts.Dashboard.from_dict(dash.to_dict())
+    with pytest.raises(InvalidSpecError, match="bind"):
+        saved.bind(orders)
+    again = saved.bind(orders, targets=targets.head(4)).build()
+    assert again["datasets"]["targets"]["rows"] <= 4

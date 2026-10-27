@@ -327,7 +327,7 @@ def _by_category(
     table = result.values.dropna(subset=[m.label])
     if len(table) < 2:
         return []
-    names = [str(v) for v in table[dim]]
+    names = [text("unknown") if pd.isna(v) else str(v) for v in table[dim]]
     values = table[m.label].to_numpy(dtype="float64")
     what, many = w.measure(m), w.name(dim)
     out: list[Insight] = []

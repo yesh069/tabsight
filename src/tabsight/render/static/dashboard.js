@@ -84,7 +84,7 @@
     for (var col in filters) {
       if (!Object.prototype.hasOwnProperty.call(filters, col)) continue;
       var f = filters[col];
-      if (f.mode === "highlight" || col === ignoreCol) continue;
+      if (f.mode === "highlight" || col === ignoreCol || !table.dims[col]) continue;
       if (skip && f.source === skip) continue;
       active.push([col, f]);
     }
@@ -1393,6 +1393,486 @@
     return { option: opt, keys: [] };
   }
 
+  // ------------------------------------------------------------- analytics after filtering
+  // Ports of tabsight/analytics.py and charts/pane.py, so trend lines, forecasts, reference
+  // lines and outliers follow the filters instead of describing all the data.
+
+  var GRID = [0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95];
+  var Z95 = 1.96;
+
+  function finiteList(values) {
+    return values.filter(function (v) {
+      return v !== null && v !== undefined && isFinite(v);
+    });
+  }
+
+  function linearTrend(ys) {
+    var xs = [];
+    var vs = [];
+    ys.forEach(function (y, i) {
+      if (y !== null && y !== undefined && isFinite(y)) {
+        xs.push(i);
+        vs.push(y);
+      }
+    });
+    if (vs.length < 3) return null;
+    var n = vs.length;
+    var mx = xs.reduce(function (a, v) { return a + v; }, 0) / n;
+    var my = vs.reduce(function (a, v) { return a + v; }, 0) / n;
+    var sxy = 0;
+    var sxx = 0;
+    for (var i = 0; i < n; i++) {
+      sxy += (xs[i] - mx) * (vs[i] - my);
+      sxx += (xs[i] - mx) * (xs[i] - mx);
+    }
+    if (!sxx) return null;
+    var slope = sxy / sxx;
+    var intercept = my - slope * mx;
+    var total = 0;
+    var resid = 0;
+    for (var j = 0; j < n; j++) {
+      total += (vs[j] - my) * (vs[j] - my);
+      var f = intercept + slope * xs[j];
+      resid += (vs[j] - f) * (vs[j] - f);
+    }
+    var r2 = total > 0 ? 1 - resid / total : 1;
+    return { slope: slope, intercept: intercept, r2: Math.max(0, Math.min(1, r2)), n: n };
+  }
+
+  function hwRun(y, season, a, b, g) {
+    var level;
+    var trend;
+    var seasonal = [];
+    var start;
+    if (season) {
+      var first = 0;
+      var second = 0;
+      for (var i = 0; i < season; i++) {
+        first += y[i];
+        second += y[i + season];
+      }
+      first /= season;
+      trend = (second / season - first) / season;
+      var middle = (season - 1) / 2;
+      for (var k = 0; k < season; k++) {
+        seasonal.push((y[k] + y[k + season]) / 2 - (first + trend * (k - middle) + (trend * season) / 2));
+      }
+      level = first + trend * (season - 1 - middle);
+      start = season;
+    } else {
+      level = y[0];
+      trend = y[1] - y[0];
+      start = 1;
+    }
+    var residuals = [];
+    for (var t = start; t < y.length; t++) {
+      var s = season ? seasonal[t % season] : 0;
+      residuals.push(y[t] - (level + trend + s));
+      var last = level;
+      level = a * (y[t] - s) + (1 - a) * (level + trend);
+      trend = b * (level - last) + (1 - b) * trend;
+      if (season) seasonal[t % season] = g * (y[t] - level) + (1 - g) * s;
+    }
+    var sse = residuals.reduce(function (acc, r) { return acc + r * r; }, 0);
+    return { sse: sse, residuals: residuals, level: level, trend: trend, seasonal: seasonal };
+  }
+
+  function forecast(ys, horizon, season) {
+    if (ys.some(function (v) { return v === null || !isFinite(v); })) return { error: "a forecast needs a value for every period (no gaps)" };
+    var need = season ? 2 * season : 6;
+    if (ys.length < need) {
+      return { error: "it needs " + (season ? "two full seasons (" + need + " periods)" : need + " periods") + ", and there are " + ys.length };
+    }
+    var best = null;
+    GRID.forEach(function (a) {
+      GRID.forEach(function (b) {
+        (season ? GRID : [0]).forEach(function (g) {
+          var sse = hwRun(ys, season, a, b, g).sse;
+          if (best === null || sse < best[0] - 1e-9 * Math.max(1, best[0])) best = [sse, a, b, g];
+        });
+      });
+    });
+    var a = best[1];
+    var b = best[2];
+    var g = best[3];
+    var run = hwRun(ys, season, a, b, g);
+    var mean = run.residuals.reduce(function (x, v) { return x + v; }, 0) / (run.residuals.length || 1);
+    var sigma = run.residuals.length
+      ? Math.sqrt(run.residuals.reduce(function (x, v) { return x + (v - mean) * (v - mean); }, 0) / run.residuals.length)
+      : 0;
+    var n = ys.length;
+    var values = [];
+    var lower = [];
+    var upper = [];
+    var growth = 0;
+    for (var h = 1; h <= horizon; h++) {
+      var v = run.level + h * run.trend + (season ? run.seasonal[(n + h - 1) % season] : 0);
+      if (h > 1) {
+        var j = h - 1;
+        var c = a * (1 + j * b) + (season && j % season === 0 ? g : 0);
+        growth += c * c;
+      }
+      var spread = Z95 * sigma * Math.sqrt(1 + growth);
+      values.push(v);
+      lower.push(v - spread);
+      upper.push(v + spread);
+    }
+    if (Math.min.apply(null, ys) >= 0 && Math.min.apply(null, lower) < 0) {
+      values = values.map(function (v) { return Math.max(0, v); });
+      lower = lower.map(function (v) { return Math.max(0, v); });
+    }
+    return { values: values, lower: lower, upper: upper };
+  }
+
+  function outlierMask(values, k) {
+    var finite = finiteList(values);
+    var mask = values.map(function () { return false; });
+    if (finite.length < 4) return mask;
+    var sorted = finite.slice().sort(function (x, y) { return x - y; });
+    var q1 = percentile(sorted, 0.25);
+    var q3 = percentile(sorted, 0.75);
+    var fence = k * (q3 - q1);
+    if (!fence) return mask;
+    return values.map(function (v) {
+      return v !== null && isFinite(v) && (v < q1 - fence || v > q3 + fence);
+    });
+  }
+
+  function refValue(values, ref) {
+    if (typeof ref === "number") return ref;
+    var finite = finiteList(values);
+    if (!finite.length) return null;
+    if (ref === "mean") return finite.reduce(function (a, v) { return a + v; }, 0) / finite.length;
+    var sorted = finite.slice().sort(function (x, y) { return x - y; });
+    if (ref === "median") return percentile(sorted, 0.5);
+    return percentile(sorted, parseInt(ref.slice(1), 10) / 100);
+  }
+
+  function refLabel(ref) {
+    if (typeof ref === "number") return "Target";
+    if (ref === "mean") return "Average";
+    if (ref === "median") return "Median";
+    var n = parseInt(ref.slice(1), 10);
+    var suffix = n % 100 >= 11 && n % 100 <= 13 ? "th" : { 1: "st", 2: "nd", 3: "rd" }[n % 10] || "th";
+    return n + suffix + " percentile";
+  }
+
+  // The analytics pane on a recomputed bar or line chart (charts/pane.py apply_category).
+  function applyPane(opt, b, model, table, ctx) {
+    var pane = b.pane;
+    var series = opt.series.filter(function (s) {
+      return (s.type === "bar" || s.type === "line") && String(s.name).indexOf("Other (") !== 0;
+    });
+    if (!series.length) return opt;
+    var cat = b.horizontal ? opt.yAxis : opt.xAxis;
+    var nReal = series[0].data.length;
+    var partial = !!pane.partial_key && model.keys[nReal - 1] === pane.partial_key;
+    var value = function (d) { return d && typeof d === "object" ? d.value : d; };
+    var added = false;
+    var fmt = opt.tooltip && opt.tooltip.formatter && opt.tooltip.formatter.$tooltip;
+    if (pane.forecast && b.time) {
+      var horizon = pane.forecast;
+      var nFit = nReal - (partial ? 1 : 0);
+      var after = (b.periods || []).concat(b.periods_after || []);
+      var last = model.keys[nReal - 1];
+      var at = after.indexOf(last);
+      var extraKeys = at >= 0 ? after.slice(at + 1, at + 1 + horizon - (partial ? 1 : 0)) : [];
+      var drawn = [];
+      var failed = null;
+      series.slice(0, 6).forEach(function (s) {
+        if (failed) return;
+        var fc = forecast(s.data.slice(0, nFit).map(value), horizon, pane.season || null);
+        if (fc.error) failed = fc.error;
+        else drawn.push([s, fc]);
+      });
+      if (failed) {
+        ctx.paneNote = "not enough data for a forecast: " + failed;
+      } else if (drawn.length && extraKeys.length === horizon - (partial ? 1 : 0)) {
+        var style = /\|(month|day)$/.test(b.dims[0]) && cat.data.length > 8 ? "compact" : "full";
+        var labels = table.labels[b.dims[0]] || { full: {}, compact: {} };
+        extraKeys.forEach(function (k) { cat.data.push(labels[style][k] || k); });
+        var total = cat.data.length;
+        opt.series.forEach(function (s) {
+          while (s.data.length < total) s.data.push(null);
+        });
+        var single = drawn.length === 1;
+        var bands = {};
+        drawn.forEach(function (pair) {
+          var s = pair[0];
+          var fc = pair[1];
+          var color = (s.itemStyle && s.itemStyle.color) || "#4e79a7";
+          var name = single ? "Estimate" : s.name + " (estimate)";
+          var data = [];
+          var low = [];
+          var high = [];
+          for (var i = 0; i < total; i++) {
+            data.push(null);
+            low.push(null);
+            high.push(null);
+          }
+          data[nFit - 1] = value(s.data[nFit - 1]);
+          fc.values.forEach(function (v, h) {
+            data[nFit + h] = v;
+            low[nFit + h] = fc.lower[h];
+            high[nFit + h] = fc.upper[h];
+          });
+          opt.series.push(dashed(name, data, color, 2));
+          bands[name] = { low: low, high: high };
+          if (single) {
+            opt.series.push({ type: "line", name: HELPER + "estimate-low", data: low, stack: "ts-band", symbol: "none", lineStyle: { opacity: 0 }, silent: true, z: 1 });
+            opt.series.push({
+              type: "line", name: HELPER + "estimate-range", stack: "ts-band", symbol: "none", lineStyle: { opacity: 0 }, silent: true, z: 1,
+              data: low.map(function (lo, i) { return lo === null ? null : high[i] - lo; }),
+              areaStyle: { color: color, opacity: 0.14 },
+            });
+          }
+        });
+        if (fmt) {
+          fmt.skip = [HELPER + "estimate-low", HELPER + "estimate-range"];
+          fmt.bands = bands;
+          fmt.series_fmt = fmt.series_fmt || {};
+          Object.keys(bands).forEach(function (n) { fmt.series_fmt[n] = fmt.fmt; });
+        }
+        added = true;
+      }
+    }
+    if (pane.trend) {
+      series.slice(0, 6).forEach(function (s) {
+        var ys = s.data.slice(0, nReal).map(value);
+        var fit = linearTrend(ys.slice(0, nReal - (partial ? 1 : 0)));
+        if (!fit) return;
+        var line = [];
+        for (var i = 0; i < nReal; i++) line.push(fit.intercept + fit.slope * i);
+        while (line.length < cat.data.length) line.push(null);
+        var name = series.length === 1 ? "Trend" : s.name + " trend";
+        opt.series.push(dashed(name, line, (s.itemStyle && s.itemStyle.color) || "#4e79a7", 1.5));
+        added = true;
+      });
+    }
+    if (pane.outliers) {
+      series.slice(0, 6).forEach(function (s) {
+        var n = nReal - (partial ? 1 : 0);
+        var ys = s.data.slice(0, n).map(value);
+        var fit = linearTrend(ys);
+        if (!fit) return;
+        var resid = ys.map(function (y, i) { return y === null ? null : y - (fit.intercept + fit.slope * i); });
+        var mask = outlierMask(resid, 1.5);
+        var points = [];
+        mask.forEach(function (m, i) { if (m) points.push({ coord: [i, ys[i]], value: ys[i] }); });
+        if (points.length) {
+          s.markPoint = { symbol: "circle", symbolSize: 13, silent: true, data: points, label: { show: false },
+                          itemStyle: { color: "transparent", borderColor: "#d62728", borderWidth: 2 } };
+        }
+      });
+    }
+    var refs = pane.ref || [];
+    var shown = [];
+    series.forEach(function (s) { s.data.slice(0, nReal).forEach(function (d) { shown.push(value(d)); }); });
+    var axis = b.horizontal ? "xAxis" : "yAxis";
+    var valueAxis = opt[axis] && !Array.isArray(opt[axis]) ? opt[axis] : {};
+    var axisFmt = (valueAxis.axisLabel && valueAxis.axisLabel.formatter && valueAxis.axisLabel.formatter.$fmt) || { unit: "number" };
+    var lines = [];
+    refs.forEach(function (ref) {
+      var v = refValue(shown, ref);
+      if (v === null) return;
+      var label = refLabel(ref);
+      var item = { name: label, label: { formatter: { $label: Object.assign({}, axisFmt, { style: "compact" }), prefix: label + " " }, position: "insideEndTop", color: ctx.textSecondary } };
+      item[axis] = v;
+      lines.push(item);
+    });
+    if (lines.length) series[0].markLine = { symbol: "none", silent: true, data: lines, lineStyle: { type: "dashed", color: ctx.textSecondary, width: 1 } };
+    if (pane.band) {
+      var lo = refValue(shown, pane.band[0]);
+      var hi = refValue(shown, pane.band[1]);
+      if (lo !== null && hi !== null) {
+        var from = {};
+        var to = {};
+        from[axis] = Math.min(lo, hi);
+        to[axis] = Math.max(lo, hi);
+        series[0].markArea = { silent: true, itemStyle: { color: ctx.accent, opacity: 0.08 }, data: [[from, to]] };
+      }
+    }
+    if (added) {
+      opt.legend = opt.legend || { top: 0, left: 0, type: "scroll", icon: "roundRect", itemWidth: 10, itemHeight: 10, textStyle: { color: ctx.textSecondary } };
+      opt.legend.data = opt.series.map(function (s) { return s.name; }).filter(function (n, i, all) {
+        return String(n).charAt(0) !== HELPER && all.indexOf(n) === i;
+      });
+      opt.grid = opt.grid || {};
+      opt.grid.top = Math.max(40, opt.grid.top || 0);
+    }
+    return opt;
+  }
+
+  function dashed(name, data, color, width) {
+    return { type: "line", name: name, data: data, smooth: false, showSymbol: false, symbol: "none",
+             lineStyle: { type: "dashed", width: width, color: color }, itemStyle: { color: color },
+             emphasis: { disabled: true }, z: 3 };
+  }
+
+  // ------------------------------------------------------------- insights after filtering
+  // A port of the rules in tabsight/insight.py that can be recomputed from the shared table:
+  // change on the previous period, peak and low, trend, biggest contributor, concentration
+  // and negative segments. Seasonality and outliers need every row, so they keep the
+  // all-data version and say so.
+
+  function fill(template, params) {
+    return template.replace(/\{([a-z_]{1,30})\}/g, function (m, k) {
+      return params.hasOwnProperty(k) ? String(params[k]) : m;
+    });
+  }
+
+  function sentence(cfg, key, params) {
+    var out = fill(cfg.templates[key], params);
+    return out.charAt(0).toUpperCase() + out.slice(1);
+  }
+
+  function computeInsights(payload, table, filters) {
+    var cfg = payload.live_insights;
+    var tsj = root.tabsight;
+    var loc = payload.locales;
+    var th = cfg.thresholds;
+    var rows = matching(table, filters, null);
+    var minGroup = payload.min_group_size;
+    var found = [];
+    var pct = function (share, sign) {
+      var d = Math.abs(share) < 0.1 ? 1 : 0;
+      return tsj.formatNumber(share, sign ? cfg.pct_sign[d] : cfg.pct[d], loc);
+    };
+    var name = function (s) { return String(s).replace(/_/g, " "); };
+    var measureWord = function (m) {
+      return m.agg === "mean" ? "average " + name(m.label) : name(m.label);
+    };
+    var delta = function (cur, prev, m) {
+      if (m.unit === "percent" || m.unit === "pp") {
+        var out = tsj.formatNumber(cur - prev, m.pp, loc);
+        return /^[-+−]/.test(out) ? out : "+" + out;
+      }
+      return pct(cur / prev - 1, true);
+    };
+    cfg.measures.forEach(function (m) {
+      var what = measureWord(m);
+      if (cfg.date) {
+        var col = cfg.date.col;
+        var grain = cfg.date.grain;
+        var cells = group(table, rows, [col], [m]);
+        var keys = cells.order.map(function (id) { return cells.groups[id].keys[0]; }).filter(function (k) { return k !== null; }).sort();
+        if (cfg.date.partial_key && keys.length > 1 && keys[keys.length - 1] === cfg.date.partial_key) keys.pop();
+        if (keys.length) {
+          var lo = cfg.date.periods.indexOf(keys[0]);
+          var hi = cfg.date.periods.indexOf(keys[keys.length - 1]);
+          if (lo >= 0 && hi >= lo) keys = cfg.date.periods.slice(lo, hi + 1);
+        }
+        var values = keys.map(function (k) {
+          var g = cells.groups[JSON.stringify([k])];
+          if (!g) return m.agg === "sum" ? 0 : null;
+          return finish(g.parts, m, minGroup);
+        });
+        var labels = keys.map(function (k) { return (table.labels[col] || { full: {} }).full[k] || k; });
+        var finite = values.filter(function (v) { return v !== null; });
+        if (values.length >= th.min_periods && finite.length) {
+          var i = 0;
+          var j = 0;
+          values.forEach(function (v, k) {
+            if (v !== null && (values[i] === null || v > values[i])) i = k;
+            if (v !== null && (values[j] === null || v < values[j])) j = k;
+          });
+          var change = "";
+          if (i > 0 && values[i - 1] !== null && values[i - 1] > 0) {
+            change = fill(cfg.templates.ins_vs, { pct: delta(values[i], values[i - 1], m), period: labels[i - 1] });
+          }
+          found.push({ kind: "peak", score: 70, fields: [m.label, col], text: sentence(cfg, "ins_peak",
+            { measure: what, period: labels[i], value: tsj.formatNumber(values[i], m.compact, loc), change: change }) });
+          if (j !== i && values.length >= 6) {
+            found.push({ kind: "low", score: 45, fields: [m.label, col], text: sentence(cfg, "ins_low",
+              { measure: what, period: labels[j], value: tsj.formatNumber(values[j], m.compact, loc) }) });
+          }
+          var fit = linearTrend(values);
+          var mean = finite.reduce(function (a, v) { return a + v; }, 0) / finite.length;
+          if (fit && mean > 0 && fit.r2 >= th.trend_r2) {
+            var per = fit.slope / mean;
+            if (Math.abs(per) >= th.trend_min_change) {
+              found.push({ kind: "trend", score: 60 + 30 * fit.r2, fields: [m.label, col], text: sentence(cfg,
+                per > 0 ? "ins_trend_up" : "ins_trend_down", { grain_adj: cfg.date.adj, measure: what, pct: pct(Math.abs(per)),
+                grain: grain, start: labels[0], end: labels[labels.length - 1] }) });
+            }
+          }
+        }
+      }
+      if (cfg.change) {
+        var only = function (which) {
+          var set = {};
+          set[which] = 1;
+          var f = {};
+          for (var k in filters) f[k] = filters[k];
+          f[cfg.change.window] = { type: "in", set: set, mode: "filter" };
+          var rs = matching(table, f, null);
+          if (!rs.length) return null;
+          var parts = newParts();
+          rs.forEach(function (r) { addRow(table, parts, r, [m]); });
+          return finish(parts, m, minGroup);
+        };
+        var cur = only("cur");
+        var prev = only("prev");
+        if (cur !== null && prev !== null && prev !== 0) {
+          var d = cur - prev;
+          var key = d > 0 ? "ins_change_up" : d < 0 ? "ins_change_down" : "ins_change_flat";
+          var size = delta(cur, prev, m).replace(/^[-+−]/, "");
+          found.push({ kind: "change", score: 90 + Math.min(Math.abs(d / Math.abs(prev)) * 100, 50), fields: [m.label, cfg.change.window],
+            text: sentence(cfg, key, { measure: what, pct: size, current: cfg.change.current, previous: cfg.change.previous }) });
+        }
+      }
+      cfg.dims.forEach(function (dim) {
+        var cells = group(table, rows, [dim.col], [m]);
+        var list = cells.order.map(function (id) {
+          var g = cells.groups[id];
+          return { name: g.keys[0] === null ? payload.unknown : String(g.keys[0]), value: finish(g.parts, m, minGroup) };
+        }).filter(function (r) { return r.value !== null; });
+        list.sort(function (a, c) { return c.value - a.value || naturalCompare(a.name, c.name); });
+        if (list.length < 2) return;
+        var many = dim.title;
+        var total = list.reduce(function (a, r) { return a + r.value; }, 0);
+        var additive = m.agg === "sum" || m.agg === "count";
+        if (additive && total > 0 && list.every(function (r) { return r.value >= 0; })) {
+          var share = list[0].value / total;
+          if (share >= th.contributor && list.length >= 3) {
+            found.push({ kind: "contributor", score: 50 + 30 * share, fields: [m.label, dim.col], name: list[0].name,
+              text: sentence(cfg, "ins_contributor", { name: list[0].name, pct: pct(share), measure: what }) });
+          }
+          var top3 = (list[0].value + list[1].value + (list[2] ? list[2].value : 0)) / total;
+          if (list.length >= th.concentration_min_values && top3 >= th.concentration) {
+            var names = list.slice(0, 3).map(function (r) { return r.name; });
+            found.push({ kind: "concentration", score: 55 + 30 * top3, fields: [m.label, dim.col], name: names.join("|"),
+              text: sentence(cfg, "ins_concentration", { n: 3, dim: many, pct: pct(top3), measure: what,
+                names: names.slice(0, -1).join(", ") + " and " + names[names.length - 1] }) });
+          }
+        }
+        var negative = list.filter(function (r) { return r.value < 0; });
+        if (negative.length && negative.length < list.length) {
+          var shown = negative.slice().sort(function (a, c) { return a.value - c.value; }).slice(0, 3).map(function (r) { return r.name; });
+          var more = negative.length - shown.length;
+          var named = more ? shown.join(", ") + fill(cfg.templates.ins_and_more, { n: more })
+            : shown.length === 1 ? shown[0] : shown.slice(0, -1).join(", ") + " and " + shown[shown.length - 1];
+          found.push({ kind: "negative", score: 75, fields: [m.label, dim.col], name: negative.map(function (r) { return r.name; }).join("|"),
+            text: sentence(cfg, "ins_negative", { k: negative.length, n: list.length, dim: many, measure: what, names: named }) });
+        }
+      });
+    });
+    found = found.concat(cfg.kept.map(function (k) { return { kind: k.kind, score: k.kind === "seasonality" ? 65 : 40, fields: k.fields, text: k.text, allData: true }; }));
+    found.sort(function (a, c) { return c.score - a.score; });
+    var kept = [];
+    var seen = {};
+    var perKind = {};
+    found.forEach(function (item) {
+      var ident = JSON.stringify([item.kind, item.fields.slice(1), item.name || ""]);
+      if ((item.kind === "contributor" || item.kind === "concentration" || item.kind === "negative") && seen[ident]) return;
+      if ((perKind[item.kind] || 0) >= th.max_per_kind) return;
+      seen[ident] = 1;
+      perKind[item.kind] = (perKind[item.kind] || 0) + 1;
+      kept.push(item);
+    });
+    return kept.slice(0, cfg.max_items);
+  }
+
   // ------------------------------------------------------------- one tile, given filters
 
   // Recompute a tile: returns {figure, keys, other} (pure; used by the page and the tests).
@@ -1405,6 +1885,8 @@
       minGroup: payload.min_group_size,
       locales: payload.locales,
       words: payload.words,
+      textSecondary: (fig.theme || payload.theme).text_secondary,
+      accent: (fig.theme || payload.theme).accent,
     };
     var sel = tile.action === "filter" && b.click ? filters[b.click] : null;
     if (sel && sel.source !== tile.id) sel = null;
@@ -1454,7 +1936,8 @@
         ? donut(fig, b, model, labels, payload, sel || hl)
         : cartesian(fig, b, model, labels, payload, sel || hl);
     if (fig.kind === "lollipop") fig.option = lollipop(fig.option, tile.figure.option, b);
-    return { figure: fig, keys: model.keys, other: model.other, labels: labels, series: model.series };
+    if (b.pane && fig.kind !== "donut") fig.option = applyPane(fig.option, b, model, table, ctx);
+    return { figure: fig, keys: model.keys, other: model.other, labels: labels, series: model.series, note: ctx.paneNote };
   }
 
   // Filters as the page holds them (value lists become lookup sets).
@@ -1488,18 +1971,31 @@
     return e;
   }
 
+  // One tile as the recompute code sees it: the chosen view, in the chosen theme.
+  function flatTile(t, themeName) {
+    var view = t.tile.views[t.view];
+    var side = view.themes[themeName] || view.themes[Object.keys(view.themes)[0]];
+    return { id: t.tile.id, action: t.tile.action, figure: side.figure, binding: side.binding || null,
+             static: side.static || null, kind: view.kind };  // prettier-ignore
+  }
+
   function mount(container, payload) {
     var doc = root.document;
     var tsj = root.tabsight;
-    var table = new Table(payload.data);
+    var tables = { main: new Table(payload.data) };
+    Object.keys(payload.datasets || {}).forEach(function (name) {
+      tables[name] = new Table(payload.datasets[name]);
+    });
+    var table = tables.main;
     var state = {}; // col -> {type, values|lo,hi, source, mode}
     var tiles = [];
-    var known = {};
-    payload.filters.forEach(function (f) {
-      known[f.col] = f;
-    });
+    var themes = payload.themes || [payload.theme.name];
+    var themeName = payload.theme.name;
+    if (!payload.theme_explicit && themes.indexOf("dark") >= 0 && root.matchMedia && root.matchMedia("(prefers-color-scheme: dark)").matches) {
+      themeName = "dark";
+    }
+    tsj.registerMaps(payload.maps || []);
 
-    // Header, filter bar and chips
     var bar = el("div", "ts-filters");
     bar.setAttribute("role", "group");
     bar.setAttribute("aria-label", "Filters");
@@ -1511,16 +2007,32 @@
     container.appendChild(grid);
     var controls = {};
 
-    function label(col, key) {
+    function label(col, key, tbl) {
+      tbl = tbl || table;
       if (key === null) return payload.unknown;
       if (key === OTHER_KEY) return payload.other;
-      var l = table.labels[col];
+      var l = tbl.labels[col];
       return l ? l.full[key] || key : String(key);
     }
-    function title(col) {
-      return (table.meta[col] && table.meta[col].title) || col;
+    function title(col, tbl) {
+      tbl = tbl || table;
+      var meta = tbl.meta[col];
+      return (meta && meta.title) || String(col).split("|")[0].replace(/_/g, " ");
     }
 
+    // ---- theme
+    var showToggle = null;
+    function applyTheme() {
+      themes.forEach(function (name) {
+        var css = doc.getElementById("ts-css-" + name);
+        if (css) css.media = name === themeName ? "all" : "not all";
+      });
+      doc.documentElement.setAttribute("data-theme", themeName);
+      if (typeof showToggle === "function") showToggle();
+    }
+    applyTheme();
+
+    // ---- filter bar
     payload.filters.forEach(function (f) {
       var box = el("div", "ts-filter");
       if (f.type === "range") {
@@ -1543,9 +2055,9 @@
           var lo = parseInt(from.value, 10);
           var hi = parseInt(to.value, 10);
           if (lo > hi) {
-            var t = lo;
+            var t2 = lo;
             lo = hi;
-            hi = t;
+            hi = t2;
           }
           if (lo === 0 && hi === f.values.length - 1) delete state[f.col];
           else state[f.col] = { type: "range", lo: f.values[lo], hi: f.values[hi], source: null };
@@ -1568,15 +2080,8 @@
           var row = el("label", "ts-filter__item");
           var cb = el("input");
           cb.type = "checkbox";
-          cb.checked = false;
           cb.addEventListener("change", function () {
-            var chosen = boxes
-              .filter(function (b) {
-                return b.cb.checked;
-              })
-              .map(function (b) {
-                return b.key;
-              });
+            var chosen = boxes.filter(function (x) { return x.cb.checked; }).map(function (x) { return x.key; });
             if (chosen.length) state[f.col] = { type: "in", values: chosen, source: null };
             else delete state[f.col];
             update();
@@ -1592,6 +2097,22 @@
       }
       bar.appendChild(box);
     });
+    if (themes.length > 1 && payload.theme_toggle !== false) {
+      var toggle = el("button", "ts-theme-toggle");
+      toggle.type = "button";
+      showToggle = function () {
+        toggle.textContent = themeName === "dark" ? "☀ Light" : "☾ Dark";
+        toggle.setAttribute("aria-label", themeName === "dark" ? "Switch to the light theme" : "Switch to the dark theme");
+      };
+      showToggle();
+      toggle.addEventListener("click", function () {
+        themeName = themeName === "dark" ? "light" : "dark";
+        applyTheme();
+        showToggle();
+        tiles.forEach(function (t) { if (t.drawn) render(t); });
+      });
+      bar.appendChild(toggle);
+    }
 
     function syncControls() {
       for (var col in controls) {
@@ -1600,20 +2121,22 @@
         if (c.boxes) {
           var set = {};
           if (s && s.type === "in" && !s.source) {
-            s.values.forEach(function (v) {
-              set[v === null ? "\u0000null" : v] = 1;
-            });
+            s.values.forEach(function (v) { set[v === null ? "\u0000null" : v] = 1; });
           }
-          c.boxes.forEach(function (b) {
-            b.cb.checked = set.hasOwnProperty(b.key === null ? "\u0000null" : b.key);
-          });
-          c.summary.textContent = c.filter.title + (s && !s.source ? ": " + s.values.length + " selected" : ": all");
+          c.boxes.forEach(function (x) { x.cb.checked = set.hasOwnProperty(x.key === null ? "\u0000null" : x.key); });
+          c.summary.textContent = c.filter.title + (s && !s.source && s.values ? ": " + s.values.length + " selected" : ": all");
         } else {
           var vals = c.filter.values;
-          c.from.value = String(s && s.type === "range" ? Math.max(0, vals.indexOf(s.lo)) : 0);
-          c.to.value = String(s && s.type === "range" ? Math.max(0, vals.indexOf(s.hi)) : vals.length - 1);
+          c.from.value = String(s && s.type === "range" && !s.source ? Math.max(0, vals.indexOf(s.lo)) : 0);
+          c.to.value = String(s && s.type === "range" && !s.source ? Math.max(0, vals.indexOf(s.hi)) : vals.length - 1);
         }
       }
+    }
+
+    function chipTable(col) {
+      if (table.dims[col]) return table;
+      for (var n in tables) if (tables[n].dims[col]) return tables[n];
+      return table;
     }
 
     function drawChips() {
@@ -1621,19 +2144,18 @@
       var any = false;
       Object.keys(state).forEach(function (col) {
         var s = state[col];
+        var tbl = chipTable(col);
         any = true;
         var text =
           s.type === "range"
-            ? title(col) + ": " + label(col, s.lo) + " – " + label(col, s.hi)
-            : title(col) + ": " + s.values.map(function (v) {
-                return label(col, v);
-              }).join(", ");
+            ? title(col, tbl) + ": " + label(col, s.lo, tbl) + " – " + label(col, s.hi, tbl)
+            : title(col, tbl) + ": " + s.values.map(function (v) { return label(col, v, tbl); }).join(", ");
         if (s.mode === "highlight") text += " (highlight)";
         var chip = el("span", "ts-chip");
         chip.appendChild(el("span", null, text.length > 120 ? text.slice(0, 117) + "…" : text));
         var x = el("button", "ts-chip__x", "×");
         x.type = "button";
-        x.setAttribute("aria-label", "Remove filter " + title(col));
+        x.setAttribute("aria-label", "Remove filter " + title(col, tbl));
         x.addEventListener("click", function () {
           delete state[col];
           update();
@@ -1652,92 +2174,259 @@
       }
     }
 
-    // Tiles
+    // ---- tiles
     payload.tiles.forEach(function (tile) {
-      var fig = tile.figure;
+      var t = { tile: tile, view: 0, drill: [], chart: null, keys: [], other: [], drawn: false, result: null, focus: null, ctrl: false };
+      var first = flatTile(t, themeName).figure;
       var box = el("section", "ts-tile ts-dash-tile");
       box.style.gridColumn = "span " + Math.max(1, Math.min(12, tile.w || 6));
       var head = el("header", "ts-tile__head");
-      head.appendChild(el("h2", "ts-tile__title", fig.title));
-      if (fig.subtitle) head.appendChild(el("p", "ts-tile__subtitle", fig.subtitle));
-      var menu = el("button", "ts-tile__csv", payload.words.csv);
-      menu.type = "button";
-      head.appendChild(menu);
+      t.titleEl = el("h2", "ts-tile__title", first.title);
+      head.appendChild(t.titleEl);
+      var tools = el("div", "ts-tile__tools");
+      var choices = tile.views.map(function (v, i) { return [v, i]; }).filter(function (p) { return !p[0].drill; });
+      if (choices.length > 1) {
+        var pickKind = el("select", "ts-tile__kind");
+        pickKind.setAttribute("aria-label", "Chart type");
+        choices.forEach(function (p) {
+          var o = el("option", null, p[0].label);
+          o.value = String(p[1]);
+          pickKind.appendChild(o);
+        });
+        pickKind.addEventListener("change", function () {
+          t.view = parseInt(pickKind.value, 10);
+          t.drill = [];
+          render(t);
+        });
+        t.pickKind = pickKind;
+        tools.appendChild(pickKind);
+      }
+      var png = el("button", "ts-tile__csv", "PNG");
+      png.type = "button";
+      png.setAttribute("aria-label", "Save " + first.title + " as PNG");
+      png.addEventListener("click", function () { downloadPng(t); });
+      t.png = png;
+      tools.appendChild(png);
+      var csv = el("button", "ts-tile__csv", payload.words.csv);
+      csv.type = "button";
+      csv.addEventListener("click", function () { downloadCsv(t); });
+      tools.appendChild(csv);
+      head.appendChild(tools);
+      if (first.subtitle) head.appendChild(el("p", "ts-tile__subtitle", first.subtitle));
       box.appendChild(head);
       var body = el("div", "ts-tile__body");
-      var target = el("div", "ts-chart");
-      target.setAttribute("role", "img");
-      target.setAttribute("aria-label", fig.title);
-      if (fig.kind !== "kpi" && fig.kind !== "table") target.style.height = fig.height + "px";
-      body.appendChild(target);
-      var notes = el("div", "ts-tile__notes");
-      body.appendChild(notes);
-      var status = el("p", "ts-tile__status");
-      body.appendChild(status);
+      t.crumbs = el("nav", "ts-crumbs");
+      t.crumbs.setAttribute("aria-label", "Drill-down");
+      body.appendChild(t.crumbs);
+      t.target = el("div", "ts-chart");
+      t.target.setAttribute("role", "img");
+      t.target.setAttribute("aria-label", first.title);
+      t.target.addEventListener("pointerdown", function (ev) { t.ctrl = ev.ctrlKey || ev.metaKey; }, true);
+      if (first.kind !== "kpi" && first.kind !== "table") t.target.style.height = first.height + "px"; // no jump when drawn
+      body.appendChild(t.target);
+      t.notes = el("div", "ts-tile__notes");
+      body.appendChild(t.notes);
+      t.status = el("p", "ts-tile__status");
+      body.appendChild(t.status);
       box.appendChild(body);
       grid.appendChild(box);
-      var t = { tile: tile, target: target, notes: notes, status: status, chart: null, keys: [], other: [], drawn: false, result: null };
-      menu.addEventListener("click", function () {
-        downloadCsv(t);
-      });
       tiles.push(t);
     });
 
-    function showNotes(t, filtered) {
+    function tileTable(t) {
+      return tables[t.tile.data || "main"] || table;
+    }
+
+    // Filters for one tile: drill steps apply to it alone; filters on fields its data lacks are skipped.
+    function tileFilters(t) {
+      var tbl = tileTable(t);
+      var out = {};
+      var skipped = [];
+      Object.keys(state).forEach(function (col) {
+        if (tbl.dims[col]) out[col] = state[col];
+        else skipped.push(title(col, chipTable(col)));
+      });
+      t.drill.forEach(function (d) {
+        out[d.col] = { type: "in", values: [d.key], source: null, mode: "filter" };
+      });
+      return { filters: out, skipped: skipped };
+    }
+
+    function drillViews(t) {
+      var out = [];
+      t.tile.views.forEach(function (v, i) { if (v.drill) out.push(i); });
+      return out;
+    }
+
+    function showCrumbs(t) {
+      t.crumbs.textContent = "";
+      if (!t.drill.length) return;
+      var home = el("button", "ts-crumb", "All");
+      home.type = "button";
+      home.addEventListener("click", function () {
+        t.drill = [];
+        t.view = 0;
+        render(t);
+      });
+      t.crumbs.appendChild(home);
+      t.drill.forEach(function (d, i) {
+        t.crumbs.appendChild(el("span", "ts-crumb__sep", "›"));
+        var last = i === t.drill.length - 1;
+        var c = el(last ? "span" : "button", "ts-crumb", d.label);
+        if (!last) {
+          c.type = "button";
+          c.addEventListener("click", function () {
+            t.drill = t.drill.slice(0, i + 1);
+            t.view = drillViews(t)[i];
+            render(t);
+          });
+        }
+        t.crumbs.appendChild(c);
+      });
+    }
+
+    function showNotes(t, flat, filtered, result, skipped) {
       t.notes.textContent = "";
-      var list = t.tile.figure.notes || [];
       if (!filtered) {
-        list.forEach(function (n) {
-          t.notes.appendChild(el("p", "ts-note", n));
-        });
-      } else if (t.other && t.other.length) {
-        t.notes.appendChild(el("p", "ts-note", "Other groups " + t.other.length + " values (filtered)"));
+        (flat.figure.notes || []).forEach(function (n) { t.notes.appendChild(el("p", "ts-note", n)); });
+      } else {
+        if (t.other && t.other.length) t.notes.appendChild(el("p", "ts-note", "Other groups " + t.other.length + " values (filtered)"));
+        if (result && result.note) t.notes.appendChild(el("p", "ts-note", result.note));
       }
-      t.status.textContent = "";
-      if (t.tile.static) {
-        t.status.textContent = Object.keys(state).length ? "Not affected by filters: " + t.tile.static : "";
-      } else if (filtered) {
-        t.status.textContent = payload.words.current;
-      }
+      var status = [];
+      if (flat.static && Object.keys(state).length) status.push("Not affected by filters: " + flat.static);
+      else if (filtered && flat.binding) status.push(payload.words.current);
+      skipped.forEach(function (f) { status.push(payload.words.not_affected.replace("{field}", f)); });
+      t.status.textContent = status.join(" · ");
     }
 
     function render(t) {
-      var tile = t.tile;
-      var filtered = Object.keys(state).length > 0;
-      var fig = tile.figure;
+      var flat = flatTile(t, themeName);
+      var tbl = tileTable(t);
+      var tf = tileFilters(t);
+      var filtered = Object.keys(tf.filters).length > 0;
+      var fig = flat.figure;
       var result = null;
-      if (tile.binding) {
-        result = compute(payload, table, tile, prepare(state));
+      t.titleEl.textContent = fig.title;
+      t.target.setAttribute("aria-label", fig.title);
+      if (t.pickKind) t.pickKind.value = String(t.drill.length ? 0 : t.view);
+      if (flat.binding) {
+        result = compute(payload, tbl, flat, prepare(tf.filters));
         t.keys = result.keys;
         t.other = result.other || [];
         t.result = result;
-        // Unfiltered, the tile shows exactly what Python drew (with any trend or forecast).
-        if (filtered) fig = result.figure;
+        if (filtered) fig = result.figure; // unfiltered, the tile shows exactly what Python drew
       }
-      showNotes(t, filtered && !!tile.binding);
-      if (fig.kind === "kpi" || fig.kind === "table") {
+      showCrumbs(t);
+      showNotes(t, flat, filtered && !!flat.binding, result, tf.skipped);
+      var dom = fig.kind === "kpi" || fig.kind === "table";
+      t.png.hidden = dom;
+      if (dom) {
+        if (t.chart) {
+          t.chart.dispose();
+          t.chart = null;
+        }
+        t.target.style.height = "";
         tsj.render(t.target, fig);
-        if (fig.kind === "table" && tile.binding) bindTable(t);
+        if (fig.kind === "table" && flat.binding) bindTable(t);
         return;
       }
-      var option = tsj.hydrate(fig.option, fig.locales || payload.locales);
+      t.target.style.height = fig.height + "px";
+      var raw = clone(fig.option);
+      var multi = (raw.series || []).filter(function (s) { return String(s.name || "").charAt(0) !== HELPER; }).length > 1;
+      if (multi && raw.legend) {
+        // A legend click highlights its series (PLAN 5.6); that needs series to fade the others.
+        raw.series.forEach(function (s) {
+          if (s.type === "bar" || s.type === "line" || s.type === "scatter") s.emphasis = Object.assign({ focus: "series" }, s.emphasis || {});
+        });
+      }
+      var brushable = flat.binding && flat.binding.time && (fig.kind === "line" || fig.kind === "area" || fig.kind === "multi_line" || fig.kind === "stacked_area");
+      if (brushable) {
+        raw.brush = { xAxisIndex: 0, brushType: "lineX", brushMode: "single", throttleType: "debounce", throttleDelay: 250,
+                      brushStyle: { color: "rgba(78,121,167,0.12)", borderColor: "rgba(78,121,167,0.6)" }, outOfBrush: { colorAlpha: 0.35 } };  // prettier-ignore
+        raw.toolbox = { show: false, feature: { brush: { type: ["lineX"] } } };
+      }
+      var option = tsj.hydrate(raw, fig.locales || payload.locales);
       var aspects = tsj.fitAspects(option);
       if (!t.chart) {
-        tsj.registerMaps(fig.maps);
+        t.target.textContent = "";
         t.chart = root.echarts.init(t.target, null, { renderer: "canvas" });
-        t.chart.on("click", function (p) {
-          onClick(t, p);
-        });
+        t.chart.on("click", function (p) { onClick(t, p); });
+        t.chart.on("dblclick", function (p) { onDrill(t, p); });
+        t.chart.on("legendselectchanged", function (e) { onLegend(t, e); });
+        t.chart.on("brushEnd", function (e) { onBrush(t, e); });
         if (typeof root.ResizeObserver === "function") {
           new root.ResizeObserver(function () {
+            if (!t.chart) return;
             t.chart.resize();
             tsj.fitMaps(t.chart, t.aspects);
           }).observe(t.target);
         }
       }
       t.aspects = aspects;
+      t.focus = null;
       t.chart.setOption(option, { notMerge: true });
       tsj.fitMaps(t.chart, aspects);
+      if (brushable) {
+        t.chart.dispatchAction({ type: "takeGlobalCursor", key: "brush", brushOption: { brushType: "lineX", brushMode: "single" } });
+        var own = state[flat.binding.click];
+        if (own && own.type === "range" && own.source === t.tile.id) {
+          var a = t.keys.indexOf(own.lo);
+          var z = t.keys.indexOf(own.hi);
+          if (a >= 0 && z >= 0) t.chart.dispatchAction({ type: "brush", areas: [{ brushType: "lineX", xAxisIndex: 0, coordRange: [a, z] }] });
+        }
+      }
+    }
+
+    function onLegend(t, e) {
+      if (t.ctrl) return; // Ctrl + click hides the series, as ECharts does
+      t.chart.dispatchAction({ type: "legendSelect", name: e.name });
+      t.chart.dispatchAction({ type: "downplay" });
+      if (t.focus === e.name) {
+        t.focus = null;
+      } else {
+        t.chart.dispatchAction({ type: "highlight", seriesName: e.name });
+        t.focus = e.name;
+      }
+    }
+
+    function onBrush(t, e) {
+      var flat = flatTile(t, themeName);
+      var b = flat.binding;
+      if (!b || !e.areas) return;
+      var col = b.click;
+      if (!e.areas.length) {
+        if (state[col] && state[col].source === t.tile.id) {
+          delete state[col];
+          update();
+        }
+        return;
+      }
+      var range = e.areas[0].coordRange || [];
+      var a = Math.max(0, Math.round(range[0]));
+      var z = Math.min(t.keys.length - 1, Math.round(range[1]));
+      var lo = t.keys[a];
+      var hi = t.keys[z];
+      if (lo === undefined || hi === undefined || lo === OTHER_KEY || hi === OTHER_KEY) return;
+      var cur = state[col];
+      if (cur && cur.type === "range" && cur.lo === lo && cur.hi === hi) return;
+      state[col] = { type: "range", lo: lo, hi: hi, source: t.tile.id, mode: "filter" };
+      update();
+    }
+
+    function onDrill(t, p) {
+      var flat = flatTile(t, themeName);
+      var b = flat.binding;
+      var steps = drillViews(t);
+      var depth = t.drill.length;
+      var atBase = t.view === 0 || (depth && t.view === steps[depth - 1]);
+      if (!b || !atBase || depth >= steps.length || p.dataIndex === undefined) return;
+      var key = t.keys[p.dataIndex];
+      if (key === undefined || key === OTHER_KEY) return;
+      if (state[b.click] && state[b.click].source === t.tile.id) delete state[b.click]; // the double click's clicks
+      t.drill.push({ col: b.click, key: key, label: label(b.click, key, tileTable(t)) });
+      t.view = steps[depth];
+      update();
     }
 
     function bindTable(t) {
@@ -1746,9 +2435,7 @@
       Array.prototype.forEach.call(body.querySelectorAll("tr"), function (tr, i) {
         tr.tabIndex = 0;
         tr.style.cursor = "pointer";
-        var go = function (ev) {
-          pick(t, t.keys[i], ev.ctrlKey || ev.metaKey || ev.shiftKey);
-        };
+        var go = function (ev) { pick(t, t.keys[i], ev.ctrlKey || ev.metaKey || ev.shiftKey); };
         tr.addEventListener("click", go);
         tr.addEventListener("keydown", function (ev) {
           if (ev.key === "Enter" || ev.key === " ") {
@@ -1760,7 +2447,7 @@
     }
 
     function onClick(t, p) {
-      var b = t.tile.binding;
+      var b = flatTile(t, themeName).binding;
       if (!b || !b.click || t.tile.action === "none") return;
       var ev = p.event && p.event.event ? p.event.event : {};
       var add = !!(ev.ctrlKey || ev.metaKey || ev.shiftKey);
@@ -1796,6 +2483,7 @@
         return;
       }
       if (b.shape === "flows" || p.dataIndex === undefined) return;
+      if (String(p.seriesName || "").charAt(0) === HELPER) return;
       var key = t.keys[p.dataIndex];
       if (key === undefined) return;
       if (key === OTHER_KEY) pickMany(t, t.other, add);
@@ -1809,15 +2497,11 @@
     // Click semantics (PLAN 5.6): a click filters to that value; clicking it again removes
     // the filter; Ctrl/Shift + click adds or removes values.
     function pickMany(t, keys, add) {
-      var col = t.tile.binding.click;
+      var col = flatTile(t, themeName).binding.click;
       var mode = t.tile.action === "highlight" ? "highlight" : "filter";
       var cur = state[col];
       var values = cur && cur.type === "in" && cur.source === t.tile.id ? cur.values.slice() : [];
-      var same =
-        values.length === keys.length &&
-        keys.every(function (k) {
-          return values.indexOf(k) >= 0;
-        });
+      var same = values.length === keys.length && keys.every(function (k) { return values.indexOf(k) >= 0; });
       if (add) {
         keys.forEach(function (k) {
           var i = values.indexOf(k);
@@ -1832,8 +2516,32 @@
       update();
     }
 
+    function save(name, href) {
+      var a = el("a");
+      a.href = href;
+      a.download = name;
+      doc.body.appendChild(a);
+      a.click();
+      setTimeout(function () {
+        if (href.indexOf("blob:") === 0) root.URL.revokeObjectURL(href);
+        a.remove();
+      }, 0);
+    }
+
+    function fileName(t, ext) {
+      return (flatTile(t, themeName).figure.title || "tile").replace(/[^\w\- ]+/g, "").slice(0, 60) + ext;
+    }
+
+    function downloadPng(t) {
+      if (!t.chart) return;
+      var bg = (payload.theme_css[themeName] || payload.theme).tile;
+      save(fileName(t, ".png"), t.chart.getDataURL({ type: "png", pixelRatio: 2, backgroundColor: bg }));
+    }
+
     function downloadCsv(t) {
-      var b = t.tile.binding;
+      var flat = flatTile(t, themeName);
+      var b = flat.binding;
+      var tbl = tileTable(t);
       var lines = [];
       var cell = function (v) {
         var s = v === null || v === undefined ? "" : String(v);
@@ -1841,15 +2549,15 @@
         return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
       };
       if (!b) {
-        lines.push(cell("This tile is drawn from all the data; its CSV comes from Python (fig.to_dict())."));
+        lines.push(cell("This tile is drawn from all the data; its numbers are in fig.to_dict() in Python."));
       } else if (t.result && t.result.rows) {
-        lines.push(b.dims.map(title).concat(b.measures.map(function (m) { return m.label; })).map(cell).join(","));
+        lines.push(b.dims.map(function (c) { return title(c, tbl); }).concat(b.measures.map(function (m) { return m.label; })).map(cell).join(","));
         t.result.rows.forEach(function (row) {
-          lines.push(row.keys.map(function (k, i) { return cell(label(b.dims[i], k)); }).concat(row.values.map(cell)).join(","));
+          lines.push(row.keys.map(function (k, i) { return cell(label(b.dims[i], k, tbl)); }).concat(row.values.map(cell)).join(","));
         });
       } else if (t.result && t.result.series) {
-        var head = [title(b.dims[0])];
-        if (b.dims[1]) head.push(title(b.dims[1]));
+        var head = [title(b.dims[0], tbl)];
+        if (b.dims[1]) head.push(title(b.dims[1], tbl));
         head.push(b.measures[0].label);
         lines.push(head.map(cell).join(","));
         t.result.series.forEach(function (s) {
@@ -1861,29 +2569,41 @@
           });
         });
       } else {
-        var fig = t.result ? t.result.figure : t.tile.figure;
+        var fig = t.result ? t.result.figure : flat.figure;
         lines.push(cell(fig.title));
         if (fig.kpi) lines.push(cell(fig.kpi.value_full || fig.kpi.value_text));
       }
       var blob = new root.Blob([lines.join("\r\n") + "\r\n"], { type: "text/csv;charset=utf-8" });
-      var a = el("a");
-      a.href = root.URL.createObjectURL(blob);
-      a.download = (t.tile.figure.title || "tile").replace(/[^\w\- ]+/g, "").slice(0, 60) + ".csv";
-      doc.body.appendChild(a);
-      a.click();
-      setTimeout(function () {
-        root.URL.revokeObjectURL(a.href);
-        a.remove();
-      }, 0);
+      save(fileName(t, ".csv"), root.URL.createObjectURL(blob));
     }
 
-    // The address keeps the filters (#f=...), so a link opens the same view. What it
-    // holds is checked against the table's known values; nothing else is accepted.
+    // ---- insights panel
+    var panel = doc.querySelector(".ts-dash-insights ul");
+    var insightNote = doc.querySelector(".ts-dash-insights__scope");
+    function showInsights() {
+      if (!panel) return;
+      var filtered = Object.keys(state).length > 0;
+      panel.textContent = "";
+      var items = filtered && payload.live_insights ? computeInsights(payload, table, prepare(state)) : null;
+      if (!items) {
+        (payload.insights || []).forEach(function (i) { panel.appendChild(el("li", null, i.text)); });
+        if (insightNote) insightNote.textContent = filtered ? "These describe all the data, not the current filters." : payload.words.all_data;
+        return;
+      }
+      if (!items.length) panel.appendChild(el("li", null, "No clear peak, trend, leader or loss for the current filters."));
+      items.forEach(function (i) {
+        var li = el("li", null, i.text + " ");
+        li.appendChild(el("span", "ts-insights__scope", i.allData ? payload.words.all_data : payload.words.current));
+        panel.appendChild(li);
+      });
+      if (insightNote) insightNote.textContent = "";
+    }
+
+    // ---- the address keeps the filters (#f=...), checked against the table's known values
     function saveHash() {
       try {
-        var cols = Object.keys(state);
-        var text = cols.length ? "#f=" + encodeURIComponent(JSON.stringify(state)) : " ";
-        root.history.replaceState(null, "", text === " " ? root.location.pathname + root.location.search : text);
+        var text = Object.keys(state).length ? "#f=" + encodeURIComponent(JSON.stringify(state)) : null;
+        root.history.replaceState(null, "", text === null ? root.location.pathname + root.location.search : text);
       } catch (e) {
         /* sandboxed frames may not allow it */
       }
@@ -1906,16 +2626,14 @@
       } catch (e) {
         return;
       }
-      state = sanitize(raw, table, payload);
+      state = sanitize(raw, tables, payload);
     }
 
     var lazy = typeof root.IntersectionObserver === "function"
       ? new root.IntersectionObserver(function (entries) {
           entries.forEach(function (e) {
             if (!e.isIntersecting) return;
-            var t = tiles.filter(function (x) {
-              return x.target === e.target;
-            })[0];
+            var t = tiles.filter(function (x) { return x.target === e.target; })[0];
             if (t && !t.drawn) {
               t.drawn = true;
               render(t);
@@ -1924,33 +2642,14 @@
         }, { rootMargin: "200px" })
       : null;
 
-    var insightNote = doc.querySelector(".ts-dash-insights__scope");
-
     function update() {
-      if (insightNote) {
-        insightNote.textContent = Object.keys(state).length
-          ? "These describe all the data, not the current filters."
-          : payload.words.all_data;
-      }
       syncControls();
       drawChips();
       saveHash();
-      tiles.forEach(function (t) {
-        if (t.drawn) render(t);
-      });
+      showInsights();
+      tiles.forEach(function (t) { if (t.drawn) render(t); });
     }
 
-    loadHash();
-    syncControls();
-    drawChips();
-    tiles.forEach(function (t) {
-      if (lazy) lazy.observe(t.target);
-      else {
-        t.drawn = true;
-        render(t);
-      }
-    });
-    // Filter lists close on a click elsewhere or Escape, like a native menu.
     var closeMenus = function (except) {
       Array.prototype.forEach.call(bar.querySelectorAll("details[open]"), function (d) {
         if (d !== except) d.open = false;
@@ -1963,13 +2662,11 @@
     doc.addEventListener("keydown", function (ev) {
       if (ev.key === "Escape") closeMenus(null);
     });
-    // A link pasted into the address bar of an open page applies too.
     root.addEventListener("hashchange", function () {
       var before = JSON.stringify(state);
       loadHash();
       if (JSON.stringify(state) !== before) update();
     });
-    // Before printing, draw every tile so none prints blank.
     root.addEventListener("beforeprint", function () {
       tiles.forEach(function (t) {
         if (!t.drawn) {
@@ -1978,13 +2675,39 @@
         }
       });
     });
+
+    loadHash();
+    syncControls();
+    drawChips();
+    showInsights();
+    tiles.forEach(function (t) {
+      if (lazy) lazy.observe(t.target);
+      else {
+        t.drawn = true;
+        render(t);
+      }
+    });
     var api = {
-      state: function () {
-        return clone(state);
-      },
+      state: function () { return clone(state); },
       set: function (s) {
-        state = sanitize(s, table, payload);
+        state = sanitize(s, tables, payload);
         update();
+      },
+      theme: function (name) {
+        if (name && themes.indexOf(name) >= 0) {
+          themeName = name;
+          applyTheme();
+          tiles.forEach(function (t) { if (t.drawn) render(t); });
+        }
+        return themeName;
+      },
+      view: function (i, v) {
+        tiles[i].view = v;
+        tiles[i].drill = [];
+        render(tiles[i]);
+      },
+      drill: function (i, key) {
+        onDrill(tiles[i], { dataIndex: tiles[i].keys.indexOf(key) });
       },
       tiles: tiles,
     };
@@ -1993,27 +2716,29 @@
   }
 
   // Keep only filters on known columns with known values (address bar input is untrusted).
-  function sanitize(raw, table, payload) {
+  function sanitize(raw, tables, payload) {
     var out = {};
     if (!raw || typeof raw !== "object" || Array.isArray(raw)) return out;
+    if (tables instanceof Table) tables = { main: tables };
     var sources = {};
-    payload.tiles.forEach(function (t) {
-      sources[t.id] = 1;
-    });
+    payload.tiles.forEach(function (t) { sources[t.id] = 1; });
+    var known = function (col) {
+      for (var n in tables) if (tables[n].dims[col]) return tables[n].known(col);
+      return null;
+    };
     for (var col in raw) {
-      if (!Object.prototype.hasOwnProperty.call(raw, col) || !table.dims[col] || col.indexOf("__") === 0) continue;
+      if (!Object.prototype.hasOwnProperty.call(raw, col) || col.indexOf("__") === 0) continue;
+      var values = known(col);
+      if (!values) continue;
       var f = raw[col];
       if (!f || typeof f !== "object") continue;
-      var known = table.known(col);
       var source = typeof f.source === "string" && sources[f.source] ? f.source : null;
       var mode = f.mode === "highlight" ? "highlight" : "filter";
-      if (f.type === "range" && known.indexOf(f.lo) >= 0 && known.indexOf(f.hi) >= 0 && f.lo !== null && f.hi !== null) {
-        out[col] = { type: "range", lo: f.lo, hi: f.hi, source: null, mode: "filter" };
+      if (f.type === "range" && values.indexOf(f.lo) >= 0 && values.indexOf(f.hi) >= 0 && f.lo !== null && f.hi !== null) {
+        out[col] = { type: "range", lo: f.lo, hi: f.hi, source: source, mode: "filter" };
       } else if (f.type === "in" && Array.isArray(f.values)) {
-        var values = f.values.filter(function (v) {
-          return known.indexOf(v) >= 0;
-        });
-        if (values.length) out[col] = { type: "in", values: values, source: source, mode: mode };
+        var kept = f.values.filter(function (v) { return values.indexOf(v) >= 0; });
+        if (kept.length) out[col] = { type: "in", values: kept, source: source, mode: mode };
       }
     }
     return out;
@@ -2021,6 +2746,10 @@
 
   root.tabsightDashboard = {
     mount: mount,
+    computeInsights: computeInsights,
+    flatTile: flatTile,
+    forecast: forecast,
+    linearTrend: linearTrend,
     compute: compute,
     prepare: prepare,
     sanitize: sanitize,

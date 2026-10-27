@@ -4,6 +4,17 @@ All notable changes are listed here. The project follows [Semantic Versioning](h
 
 ## Unreleased
 
+### Added (Phase 8 completed)
+- Every aggregated chart kind is recomputed after filtering, each following its Python builder: lollipop, combo, gauge, bullet, funnel, Pareto, waterfall, heatmap, calendar heatmap, treemap, sunburst, Sankey, histogram (bins of all the data), box plot, scatter and bubble by category, lines over a number axis, and symbol, density and flow maps. Medians, distinct counts and box plots are exact from value lists; distinct counts store integer codes, never the values. Only single-row charts (scatter of rows, lat/lon maps) stay static.
+- Trend lines, forecasts, reference lines, bands and outliers are refitted in the browser after filtering (JS ports of `analytics.py` and the analytics pane), and the insights panel is recomputed (change, peak and low, trend, contributor, concentration, losses), tagged "for current filters".
+- Legend click highlights a series (Ctrl + click hides it); drag across a line chart's dates to filter a range; double-click drills down (year > quarter > month, and detected hierarchies) with breadcrumbs.
+- Per tile: a chart-type menu (up to two other kinds the recommender finds fitting) and PNG export.
+- Light/dark toggle that follows the computer's setting; `theme_toggle=False`, `switch=False`, `drill=False` turn features off.
+- Tiles with their own data: `add(..., data=df, data_name="targets")`; filters apply where the field exists and other tiles say "Not affected by ..."; `bind(df, targets=new_df)`.
+
+### Fixed
+- Python: a missing funnel or Pareto stage was named "nan"; grouped scatter and number-axis lines silently dropped points whose colour value was missing; box plots of an ordered column were sorted by size; category insights named a missing value "nan"; a measure could be recorded twice in a chart's facts.
+
 ### Added (Phase 8: dashboards with cross-filtering)
 - `ts.Dashboard(title, data=df, filters=[...])` with `.add(kind, ..., w=)`, `.kpi(...)` and `.insights()`: tiles on a 12-column grid (one column on phones), in one offline HTML file or a notebook.
 - Filters (value lists for categories, month ranges for dates), chips with remove buttons, "Reset all filters", and the view kept in the address (`#f=...`), checked against known values.

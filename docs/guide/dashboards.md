@@ -40,6 +40,7 @@ In a notebook, a dashboard on the last line of a cell displays itself.
 - `.add(kind, ...)` adds a tile and takes any [`ts.chart`](charts.md) arguments, including `kind="auto"`. `w=` sets its width in columns of a 12-column grid. KPIs default to 3, tables to 12 and everything else to 6. On a phone, every tile takes the full width.
 - `.kpi("Sales")` is a shortcut for a KPI card. `compare="previous_year"` adds the change on last year (see [comparing periods](analytics.md#comparing-periods)).
 - `.insights()` adds a panel of [plain-English insights](analytics.md).
+- `theme_toggle=False`, `switch=False` and `drill=False` turn off the light/dark button, the chart-type menu and drill-down.
 
 Each value keeps one colour in every tile: West is the same colour in the stacked bars as in the donut.
 
@@ -50,7 +51,12 @@ Each value keeps one colour in every tile: West is the same colour in the stacke
 - **See what is filtered.** Each filter shows as a chip with an × to remove it, plus "Reset all filters".
 - **The clicked tile highlights instead of filtering itself**, so you still see what you picked against the rest.
 - **Share the view.** The filters are kept in the page address (`#f=...`), so a copied link opens the same view. This works when the file is hosted somewhere; a `file://` address only works on the computer that has the file.
-- **Download a tile's numbers** as CSV, with the filters applied. Cells that start with `=`, `+`, `-` or `@` are made safe for Excel.
+- **Drag across a line chart's dates** to filter that range; the selection stays drawn on the chart.
+- **Click a legend item** to highlight that series and fade the others; click it again to undo. Ctrl + click hides the series.
+- **Double-click to drill down:** a year opens its quarters, a quarter its months, and a category its sub-categories when tabsight has found that hierarchy (Category → Sub-Category, Region → City). Breadcrumbs above the chart lead back up.
+- **Change a tile's chart type** from its menu. The menu offers up to two other kinds that fit the same fields, chosen by the [recommender](choosing-charts.md).
+- **Switch between light and dark.** The page follows the computer's setting unless you passed `theme=`; the button in the filter bar switches.
+- **Save a tile as PNG**, or **download its numbers as CSV** with the filters applied. In CSVs, cells that start with `=`, `+`, `-` or `@` are made safe for Excel.
 
 A tile with `action="highlight"` only highlights the matching marks elsewhere instead of filtering, and `action="none"` makes it ignore clicks.
 
@@ -72,8 +78,8 @@ print(sorted(c for c in table["dims"] if not c.startswith("__")))
 ```
 
 ```text title="Output"
-1153 grouped rows instead of 1200 orders; 0.047 MB
-['Category', 'Order_Date|month', 'Region', 'Segment', 'State', 'Sub_Category']
+1173 grouped rows instead of 1200 orders; 0.056 MB
+['Category', 'City', 'Order_Date|month', 'Region', 'Segment', 'Ship_Mode', 'State', 'Sub_Category']
 ```
 
 This sample is small, so almost every order is its own group; with thousands of orders per state and month, the table stays the same size while the data grows. Date filters work by month, so a date can't multiply the table by its days. If the table would be larger than `max_size_mb` (5 MB by default), tabsight stops and names the fields with the most values. You can then use a coarser `freq=`, fewer filter fields or `top=`.
@@ -95,7 +101,8 @@ dash2 = (
     .add("bar", x="Region", y="Customer_ID", agg="countd")
 )
 for tile in dash2.build()["tiles"]:
-    print(tile["figure"]["kind"], "-", tile.get("static", "recomputed"))
+    first = tile["views"][0]["themes"]["light"]
+    print(tile["views"][0]["kind"], "-", first.get("static", "recomputed"))
 ```
 
 ```text title="Output"
@@ -112,7 +119,39 @@ When a filter is active, those tiles say "Not affected by filters" and why, so n
 - **Waterfall steps keep their order** from all the data while you filter.
 - **Drawn from all the data:** a scatter of single rows (numbers on both axes), maps placed by `lat=`/`lon=`, and lines with more than 2,000 x values (which are thinned).
 
-Trend lines, forecasts and reference lines are shown while nothing is filtered and hidden when a filter is on, because they describe all the data. The insights panel says the same when filters are active.
+## Trend lines, forecasts and insights after filtering
+
+Trend lines, forecasts, reference lines, bands and circled outliers are refitted to the filtered data, with the same rules as in Python (see [trends, forecasts and insights](analytics.md)). A forecast that has too little history after filtering is replaced by the note "not enough data for a forecast".
+
+The insights panel is recomputed too. Change on the previous period, peaks and lows, trends, biggest contributors, concentration and losses describe the current filters, and each is tagged "for current filters". Seasonality and unusual rows need every row of the data, so they keep the version for all the data and are tagged "based on all data".
+
+Tests run the browser code and Python on the same filtered data and check that the trend lines, forecasts, reference lines and insights match.
+
+## Tiles with their own data
+
+A tile can show another table, for example targets next to actual sales:
+
+```python
+import pandas as pd
+
+targets = pd.DataFrame(
+    {"Region": ["Central", "East", "South", "West"], "Target": [60000, 90000, 50000, 80000]}
+)
+dash3 = (
+    ts.Dashboard("Against target", data=orders, filters=["Region", "Segment"])
+    .add("bar", x="Region", y="Sales")
+    .add("bar", x="Region", y="Target", data=targets, data_name="targets")
+)
+print(sorted(dash3.build()["datasets"]))
+```
+
+```text title="Output"
+['targets']
+```
+
+A filter applies to every tile whose data has that field. Here Region filters both tiles. Segment exists only in the orders, so the targets tile says "Not affected by Segment" instead of looking filtered when it isn't. Joining tables is not done for you.
+
+A saved dashboard remembers the dataset's name; give it new data with `bind(new_orders, targets=new_targets)`.
 
 ## Saving and reusing
 
@@ -141,12 +180,5 @@ ts.Dashboard.load("sales.json").bind(new_orders).to_html("sales_november.html")
 
 ## Not built yet
 
-These parts of the plan come later:
-
-- drill-down, such as year to quarter to month, with breadcrumbs
-- dragging across an axis to filter a range
-- legend clicks that highlight a series
-- tiles with their own data
-- a light/dark toggle in the page
-- switching a tile's chart type, or saving a tile as PNG
-- recomputing insights, trend lines and forecasts in the browser after filtering
+- touch gestures beyond tapping (long-press to filter)
+- server mode, where filtering runs on a server for data too big for one file (Phase 9)
