@@ -227,6 +227,11 @@
   function itemTooltip(cfg, locales) {
     return function (p) {
       var value = Array.isArray(p.value) ? p.value[p.value.length - 1] : p.value;
+      if (cfg.no_data && (value === null || value === undefined || value === "-" || value !== value)) {
+        // a map region with no row in the data
+        return '<div class="ts-tt-head">' + escapeHtml(p.name) + "</div>" +
+          '<div class="ts-tt-row"><span class="ts-tt-value">' + escapeHtml(cfg.no_data) + "</span></div>";
+      }
       var html =
         '<div class="ts-tt-head">' + escapeHtml(p.name) + "</div>" +
         '<div class="ts-tt-row">' + marker(p.color) +
@@ -262,11 +267,136 @@
     if (node.$tooltip) {
       return node.$tooltip.trigger === "item" ? itemTooltip(node.$tooltip, locales) : axisTooltip(node.$tooltip, locales);
     }
+    if (node.$projection) {
+      return projection(node.$projection);
+    }
     var out = {};
     Object.keys(node).forEach(function (key) {
       out[key] = hydrate(node[key], locales);
     });
     return out;
+  }
+
+  // ------------------------------------------------------------- maps
+
+  // Equal Earth (Šavrič, Patterson and Jenny, 2018): an equal-area world projection.
+  var EE = { a1: 1.340264, a2: -0.081106, a3: 0.000893, a4: 0.003796, m: Math.sqrt(3) / 2 };
+  var RAD = Math.PI / 180;
+
+  function equalEarth(point) {
+    var lambda = point[0] * RAD;
+    var theta = Math.asin(EE.m * Math.sin(point[1] * RAD));
+    var t2 = theta * theta;
+    var t6 = t2 * t2 * t2;
+    var x = (lambda * Math.cos(theta)) / (EE.m * (EE.a1 + 3 * EE.a2 * t2 + t6 * (7 * EE.a3 + 9 * EE.a4 * t2)));
+    var y = theta * (EE.a1 + EE.a2 * t2 + t6 * (EE.a3 + EE.a4 * t2));
+    return [x * 100, -y * 100]; // screen y grows downwards
+  }
+
+  function equalEarthInverse(xy) {
+    var x = xy[0] / 100;
+    var y = -xy[1] / 100;
+    var theta = y;
+    for (var i = 0; i < 12; i++) {
+      var t2 = theta * theta;
+      var t6 = t2 * t2 * t2;
+      var fy = theta * (EE.a1 + EE.a2 * t2 + t6 * (EE.a3 + EE.a4 * t2)) - y;
+      var fpy = EE.a1 + 3 * EE.a2 * t2 + t6 * (7 * EE.a3 + 9 * EE.a4 * t2);
+      var step = fy / fpy;
+      theta -= step;
+      if (Math.abs(step) < 1e-9) break;
+    }
+    var t2b = theta * theta;
+    var t6b = t2b * t2b * t2b;
+    var lambda = (EE.m * x * (EE.a1 + 3 * EE.a2 * t2b + t6b * (7 * EE.a3 + 9 * EE.a4 * t2b))) / Math.cos(theta);
+    return [lambda / RAD, Math.asin(Math.sin(theta) / EE.m) / RAD];
+  }
+
+  function mercator(point) {
+    var lat = Math.max(-85, Math.min(85, point[1])) * RAD;
+    return [point[0] * RAD * 100, -Math.log(Math.tan(Math.PI / 4 + lat / 2)) * 100];
+  }
+
+  function mercatorInverse(xy) {
+    return [xy[0] / RAD / 100, (2 * Math.atan(Math.exp(-xy[1] / 100)) - Math.PI / 2) / RAD];
+  }
+
+  // Natural Earth (Šavrič et al., 2011), a compromise projection.
+  function naturalEarth(point) {
+    var lambda = point[0] * RAD;
+    var phi = point[1] * RAD;
+    var p2 = phi * phi;
+    var p4 = p2 * p2;
+    var x = lambda * (0.8707 - 0.131979 * p2 + p4 * (-0.013791 + p4 * (0.003971 * p2 - 0.001529 * p4)));
+    var y = phi * (1.007226 + p2 * (0.015085 + p4 * (-0.044475 + 0.028874 * p2 - 0.005916 * p4)));
+    return [x * 100, -y * 100];
+  }
+
+  function naturalEarthInverse(xy) {
+    var x = xy[0] / 100;
+    var y = -xy[1] / 100;
+    var phi = y;
+    for (var i = 0; i < 25; i++) {
+      var p2 = phi * phi;
+      var p4 = p2 * p2;
+      var fy = phi * (1.007226 + p2 * (0.015085 + p4 * (-0.044475 + 0.028874 * p2 - 0.005916 * p4))) - y;
+      var fpy = 1.007226 + p2 * (0.045255 + p4 * (-0.311325 + 0.259866 * p2 - 0.06507600000000001 * p4));
+      var step = fy / fpy;
+      phi -= step;
+      if (Math.abs(step) < 1e-9) break;
+    }
+    var q2 = phi * phi;
+    var q4 = q2 * q2;
+    var lambda = x / (0.8707 - 0.131979 * q2 + q4 * (-0.013791 + q4 * (0.003971 * q2 - 0.001529 * q4)));
+    return [lambda / RAD, phi / RAD];
+  }
+
+  var PROJECTIONS = {
+    equal_earth: [equalEarth, equalEarthInverse],
+    mercator: [mercator, mercatorInverse],
+    natural: [naturalEarth, naturalEarthInverse],
+  };
+
+  function projection(name) {
+    var pair = PROJECTIONS[name] || PROJECTIONS.equal_earth;
+    return { project: pair[0], unproject: pair[1] };
+  }
+
+  // Shapes arrive as TopoJSON (bundled with tabsight, about 80% smaller than GeoJSON).
+  // Feature names come from the payload, keyed by feature id.
+  function registerMaps(maps) {
+    if (!maps || !maps.length) return;
+    if (typeof root.topojson === "undefined") throw new Error("tabsight: topojson-client is not loaded");
+    maps.forEach(function (m) {
+      if (root.echarts.getMap(m.name)) return;
+      var collection = root.topojson.feature(m.topo, m.topo.objects[m.object]);
+      collection.features.forEach(function (f) {
+        f.properties = { name: String((m.names && m.names[f.id]) || f.id) };
+      });
+      root.echarts.registerMap(m.name, collection);
+    });
+  }
+
+  // A map keeps its true shape: layoutSize is the largest square side that lets a map of
+  // this width/height ratio fit the chart, leaving room for the legend below.
+  function fitAspects(option) {
+    var geos = Array.isArray(option.geo) ? option.geo : option.geo ? [option.geo] : [];
+    return geos.map(function (g) {
+      var aspect = g._aspect;
+      delete g._aspect;
+      return typeof aspect === "number" && aspect > 0 ? aspect : null;
+    });
+  }
+
+  function fitMaps(chart, aspects) {
+    if (!aspects.length) return;
+    var w = chart.getWidth() - 16;
+    var h = chart.getHeight() - 58;
+    var geo = aspects.map(function (a) {
+      if (!a || w <= 0 || h <= 0) return {};
+      return { layoutSize: Math.max(40, a >= 1 ? Math.min(w, h * a) : Math.min(h, w / a)) };
+    });
+    chart.setOption({ geo: geo });
   }
 
   // ------------------------------------------------------------- non-ECharts figures
@@ -322,11 +452,16 @@
     if (figure.kind === "kpi") return renderKpi(target, figure.kpi);
     if (figure.kind === "table") return renderTable(target, figure.table);
     if (typeof root.echarts === "undefined") throw new Error("tabsight: ECharts is not loaded");
+    registerMaps(figure.maps);
     var chart = root.echarts.init(target, null, { renderer: "canvas" });
-    chart.setOption(hydrate(figure.option, figure.locales || {}));
+    var option = hydrate(figure.option, figure.locales || {});
+    var aspects = fitAspects(option);
+    chart.setOption(option);
+    fitMaps(chart, aspects);
     if (typeof root.addEventListener === "function") {
       root.addEventListener("resize", function () {
         chart.resize();
+        fitMaps(chart, aspects);
       });
     }
     return chart;
@@ -338,5 +473,8 @@
     formatNumber: formatNumber,
     escapeHtml: escapeHtml,
     hydrate: hydrate,
+    registerMaps: registerMaps,
+    fitAspects: fitAspects,
+    fitMaps: fitMaps,
   };
 })(typeof window !== "undefined" ? window : globalThis);

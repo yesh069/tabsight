@@ -12,6 +12,7 @@ tabsight produces HTML files that other people open, reads files from many sourc
 | Saved files | Specs, schemas, cleaning decisions and colour registries are validated against allow-lists; unknown keys are rejected; sizes are limited. |
 | HTML output (from Phase 3) | Every data value is escaped; embedded JSON cannot break out of its script tag; CSV downloads are protected from spreadsheet formula injection. |
 | Chart advice (from Phase 4) | Recommendations, `explain()` and lint reports are plain text and are never written into the HTML page. Column names in them are checked against the data first, and unknown names or lint codes are refused with shortened, quoted messages. |
+| Maps (from Phase 5) | Map shapes and names come only from data bundled with tabsight; country file names are checked before any file is opened. Place names from your data are matched against that list and shown as escaped text. The one extra script on a map page (topojson-client, which turns the shapes into drawable form) is pinned by hash like the others. Nothing is downloaded. |
 | Styling | Colours must be hex codes; fonts may only contain safe characters, so CSS cannot be injected. |
 | File formats | Excel only with `defusedxml` (blocks XML bombs); Parquet only with pyarrow 15+ (after CVE-2023-47248); no pickle. |
 | Privacy | `min_group_size` hides small groups; no telemetry; no clock. |

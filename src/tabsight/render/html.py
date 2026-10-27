@@ -93,6 +93,10 @@ def page(figure: dict[str, Any], theme: Theme, *, cdn: bool = False, lang: str =
         echarts = read_static("echarts.min.js")
         scripts.append(f"<script>{echarts}</script>")
         script_src.append(f"'{_sha(echarts)}'")
+    if figure.get("maps"):
+        topojson = read_static("topojson-client.min.js")  # turns the bundled TopoJSON into GeoJSON
+        scripts.append(f"<script>{topojson}</script>")
+        script_src.append(f"'{_sha(topojson)}'")
     scripts.append(f"<script>{runtime}</script>")
     scripts.append(f"<script>{init}</script>")
     csp = (

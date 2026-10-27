@@ -33,3 +33,4 @@ Thumbs.db
 
 # Chart gallery (python tools/make_gallery.py)
 /gallery/
+.geo-build/

@@ -141,11 +141,26 @@ def _calc(value: Any, what: str) -> str:
     )
 
 
+def _place_map(value: Any, what: str) -> dict[str, str]:
+    """{your spelling: place name or code}, as passed to ``geo_map=``."""
+    if not isinstance(value, Mapping) or len(value) > 10_000:
+        raise InvalidSpecError(f"{what} must be an object of up to 10,000 {{value: place}} pairs")
+    out = {}
+    for k, v in value.items():
+        out[_text(k, what)] = _text(v, what)
+    return out
+
+
 def _date(value: Any, what: str) -> str:
     if not isinstance(value, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
         raise InvalidSpecError(f"{what} must be a date like '2017-12-31'")
     return value
 
+
+GEO_NAME_LANGUAGES = (
+    "english", "local", "ar", "bn", "de", "el", "en", "es", "fa", "fr", "he", "hi", "hu", "id", "it",
+    "ja", "ko", "nl", "pl", "pt", "ru", "sv", "tr", "uk", "ur", "vi", "zh", "zht",
+)  # fmt: skip
 
 # Options: allowed keys and their validators.
 _OPTIONS: dict[str, Callable[[Any, str], Any]] = {
@@ -169,9 +184,11 @@ _OPTIONS: dict[str, Callable[[Any, str], Any]] = {
     "negative": _choice(("minus", "parens")),
     "freq": _choice(("year", "quarter", "month", "week", "day", "hour")),
     "projection": _choice(("equal_earth", "mercator", "natural")),
-    "geo_names": _choice(
-        ("english", "local", "en", "de", "fr", "es", "it", "nl", "pt", "zh", "ar", "hi", "ru", "ja")
-    ),
+    "geo_names": _choice(GEO_NAME_LANGUAGES),
+    "map": _text,  # "world" or a country name or code
+    "level": _choice(("country", "region", "city")),
+    "layer": _name,
+    "geo_map": _place_map,
 }
 
 

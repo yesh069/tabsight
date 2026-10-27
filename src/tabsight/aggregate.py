@@ -230,7 +230,9 @@ def combine_parts(
     min_group_size: int | None = None,
 ) -> pd.DataFrame:
     """Re-aggregate parts to ``dims`` and compute the final measure values exactly."""
-    cols = [c for c in parts.columns if c.startswith("__")]
+    cols = [
+        c for c in parts.columns if c.startswith("__") and c not in dims
+    ]  # a user column may start with __ too
     if dims:
         grouped = parts.groupby(list(dims), dropna=False, sort=False, observed=True)
     else:

@@ -29,8 +29,8 @@ The 33 kinds a [`ChartSpec`](../guide/chart-specs.md) accepts. Kinds marked **no
 | | `heatmap` | 6 |
 | Distribution | `histogram` | 6 |
 | | `boxplot` | 6 |
-| Maps | `choropleth` | 5 |
-| | `symbol_map` | 5 |
+| Maps | `choropleth` | **now** |
+| | `symbol_map` | **now** |
 | | `density_map` | 6 |
 | | `flow_map` | 6 |
 | Single value | `kpi` | **now** |

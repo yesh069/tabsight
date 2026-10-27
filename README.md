@@ -35,7 +35,7 @@ tabsight starts one step earlier. It works out what each column actually is, tel
 </p>
 <p align="center"><sub>Real output from <code>ts.chart</code> on the sample data in this repository, nothing edited by hand.</sub></p>
 
-> **Status:** early development. Phases 0–4 of 10 are done: reading, profiling, checking, cleaning, formatting, exact aggregation, the first 13 chart types and a chart recommender that explains itself work today. World maps and cross-filtering dashboards are next. See the [roadmap](#roadmap).
+> **Status:** early development. Phases 0–5 of 10 are done: reading, profiling, checking, cleaning, formatting, exact aggregation, the first 15 chart types, a chart recommender that explains itself, and offline maps of every country's regions work today. Advanced charts and cross-filtering dashboards are next. See the [roadmap](#roadmap).
 
 ## A first look
 
@@ -159,6 +159,23 @@ Ruled out:
 
 A donut of average discounts would show shares of a total that doesn't exist, so it's ruled out. Rules, not a model: the same data always gets the same answer, and the rules are checked against 70 labelled cases.
 
+**Draws maps of any country, offline.** Give it a column of places and it finds the map: countries, the states, provinces or counties of every country, or about 7,300 cities. Names match in about 25 languages and as ISO or postal codes. Ambiguous names like Georgia or Punjab are settled by the other values, and anything that doesn't match is reported with a suggestion, never dropped silently.
+
+<p align="center">
+  <img alt="Sales by US state on a tabsight map, with Alaska and Hawaii as insets" src="docs/assets/examples/sales-by-state-map.svg" width="70%">
+</p>
+
+```python
+for values in (["Bayern", "Hessen", "Sachsen"], ["England", "Scotland", "Wales"], ["CA", "TX", "NY"]):
+    print(ts.geo.detect(values).label)
+```
+
+```text title="Output"
+Germany map (states)
+United Kingdom map (nations)
+United States of America map (states)
+```
+
 ## How it compares
 
 | | tabsight | PyGWalker | Lux | Vizro | Plotly / pyecharts |
@@ -168,7 +185,7 @@ A donut of average discounts would show shares of a total that doesn't exist, so
 | Exact numbers after filtering | Yes | Partly | — | Server-side | — |
 | One offline HTML file | Yes | Limited | No | No (needs a server) | Charts, not dashboards |
 | Cross-filtering dashboards | Phase 8 | In the notebook | No | Yes (server) | No |
-| Maps beyond US states and countries | Phase 5 | No | No | Via Plotly | No |
+| Maps beyond US states and countries | Yes, offline, every country | No | No | Via Plotly | No |
 | Needs an LLM | No | No | No | Optional | No |
 
 tabsight is not a drag-and-drop tool or a BI server. If you want to build charts by hand in a notebook, PyGWalker is excellent. If you need logins and a hosted dashboard, Vizro or Superset will suit you better.
@@ -205,8 +222,8 @@ The full guide lives in [`docs/`](docs/README.md) and reads directly on GitHub. 
 
 - [Quickstart](docs/getting-started/quickstart.md): one file from CSV to chart
 - [How tabsight thinks](docs/getting-started/concepts.md): the ideas behind the defaults
-- User guide: [profiling](docs/guide/profiling.md), [aggregating](docs/guide/aggregating.md), [calculated fields](docs/guide/calculated-fields.md), [charts](docs/guide/charts.md), [choosing a chart](docs/guide/choosing-charts.md), [formatting](docs/guide/formatting.md) and more
-- Reference: [formula functions](docs/reference/formula-functions.md), [locales](docs/reference/locales.md), [chart kinds](docs/reference/chart-kinds.md), [lint rules](docs/reference/lint-rules.md)
+- User guide: [profiling](docs/guide/profiling.md), [aggregating](docs/guide/aggregating.md), [calculated fields](docs/guide/calculated-fields.md), [charts](docs/guide/charts.md), [choosing a chart](docs/guide/choosing-charts.md), [maps](docs/guide/maps.md), [formatting](docs/guide/formatting.md) and more
+- Reference: [formula functions](docs/reference/formula-functions.md), [locales](docs/reference/locales.md), [chart kinds](docs/reference/chart-kinds.md), [lint rules](docs/reference/lint-rules.md), [map coverage](docs/reference/map-coverage.md)
 
 The same pages build a documentation website with search and dark mode: `python -m pip install -e ".[docs]"`, then `python -m mkdocs serve`.
 
@@ -217,8 +234,8 @@ The same pages build a documentation website with search and dark mode: `python 
 | 0–2 | Setup, foundation (reading, profiling, cleaning, formatting), exact aggregation and calculated fields | Done |
 | 3 | Bar, line, area, donut, KPI and table charts as offline HTML | Done |
 | 4 | "Show Me" chart recommender with reasons, chart linter, `fig.explain()` | Done |
-| 5 | World maps: countries, states and provinces for every country, cities | Next |
-| 6 | Heatmaps, treemaps, Sankey, scatter, distributions, small multiples; `df.plot` / `df.ts` in notebooks | Planned |
+| 5 | World maps: countries, states and provinces for every country, cities | Done |
+| 6 | Heatmaps, treemaps, Sankey, scatter, distributions, small multiples; `df.plot` / `df.ts` in notebooks | Next |
 | 7 | Trend lines, forecasts, period comparisons, plain-English insights | Planned |
 | 8 | Dashboards with cross-filtering, drill-down and filters | Planned |
 | 9 | `ts.auto(df)` one-line dashboards, command line, web-framework helpers, optional PNG export | Planned |

@@ -58,6 +58,12 @@ Generated from the docstrings in the source code, so it always matches the insta
 
 ::: tabsight.render.assets.runtime_js
 
+## Maps
+
+::: tabsight.geo
+    options:
+      members: [detect, match, layers, country_code, coverage, version, GeoTarget, GeoMatch]
+
 ## Calculated fields
 
 ::: tabsight.formulas.calc

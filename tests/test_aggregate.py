@@ -331,3 +331,12 @@ def test_ordered_categorical_keeps_its_order() -> None:
     result = aggregate(df, "Priority", "Sales").values
     assert list(result["Priority"]) == ["Low", "Medium", "High"]
     assert list(result["Sales"]) == [4.0, 4.0, 2.0]
+
+
+def test_dimension_names_starting_with_underscores() -> None:
+    # tabsight's own helper columns start with "__"; a user's column may too
+    df = pd.DataFrame({"__id": ["a", "b", "a"], "v": [1.0, 2.0, 3.0]})
+    assert aggregate(df, "__id", "v").values.to_dict("list") == {
+        "__id": ["a", "b"],
+        "v": [4.0, 2.0],
+    }

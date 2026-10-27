@@ -30,6 +30,7 @@ IMAGES: dict[str, dict[str, object]] = {
     },
     "category-mix": {"kind": "stacked_bar", "x": "Category", "y": "Sales", "color": "Segment"},
     "sub-category-share": {"kind": "donut", "x": "Sub_Category", "y": "Sales"},
+    "sales-by-state-map": {"kind": "map", "geo": "State", "y": "Sales"},
 }
 
 

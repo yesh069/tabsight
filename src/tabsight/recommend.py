@@ -394,6 +394,17 @@ def _rules(f: _Fields) -> tuple[list[tuple[str, int, str]], list[tuple[str, str]
                 c.append(("table", 40, "a table lists exact values"))
             r.append(("donut", f"{d} is a number, not a set of parts"))
             return c, r
+        place = None if is_id or card < 2 else _place(f, d)  # one place is a number, not a map
+        if place is not None and place.level in ("country", "region"):
+            c.append(("choropleth", 93, f"{d} holds places ({place.label}): a map shows where"))
+        elif place is not None:
+            c.append(
+                (
+                    "symbol_map",
+                    85,
+                    f"{d} holds cities: circles on a map show where, bars compare better",
+                )
+            )
         if is_id:
             c.append(
                 (
@@ -541,9 +552,18 @@ def _rules(f: _Fields) -> tuple[list[tuple[str, int, str]], list[tuple[str, str]
     return c, r
 
 
+def _place(f: _Fields, column: str) -> Any:
+    """The map a column belongs on, or None (column values are looked up offline)."""
+    from tabsight.geo.detection import SUGGEST_SHARE, detect
+
+    return detect(f.frame[column], name=column, min_share=SUGGEST_SHARE)
+
+
 def _spec_for(kind: str, f: _Fields) -> ChartSpec:
     ys = [m.column for m in f.measures if m.column]
     y: str | tuple[str, ...] | None = (ys[0] if len(ys) == 1 else tuple(ys)) if ys else None
+    if kind in ("choropleth", "symbol_map"):
+        return ChartSpec(kind, geo=f.cats[0], y=y)
     options = {"freq": f.freq} if f.times and f.freq else {}
     if kind in ("kpi", "gauge", "scatter", "bubble") and not (f.times or f.cats):
         return ChartSpec(kind, y=y)

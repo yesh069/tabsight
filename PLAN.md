@@ -500,6 +500,14 @@ A dashboard about Ireland embeds only the Ireland shapes. Shapes are stored as T
 ### 7.7 Street-level background maps
 Street or satellite backgrounds (OpenStreetMap tiles) need a network connection, so they are **not** included by default. They are a possible later option, opt-in only.
 
+
+### 7.8 Decisions made while building Phase 5
+- **Layers.** Each country file holds several layers from the same borders (TopoJSON shares the arcs, so they cost little): Natural Earth's level 1 (`admin1`), an `iso` layer where several units share one ISO code (Ireland's 26 counties), and groupings people use (UK nations and regions; French, Italian, Spanish and Philippine regions). Detection picks the layer the values fill best.
+- **Size.** All map data is 3.1 MB compressed (the whole package is 5 MB), far under the 15 MB limit, so there is no separate `tabsight-geo` package.
+- **Detection guards.** Generic words (North, East, Central...), single letters and bare numbers never choose a map; the recommender needs 80% of values to be places, an explicit map chart 50% (the rest are reported).
+- **Country ids** use ISO_A3, then ADM0_A3, never ISO_A3_EH (Australia's territories carry "AUS" there). Only ISO codes are matched for countries (FIPS "GB" is Gabon).
+- **Not built yet, moved to a follow-up:** the opt-in level-2 download (it is tabsight's only network feature and deserves its own review: HTTPS to one fixed host, size limits, a local cache, credits) and custom GeoJSON (a new file input that needs its own validation). Profile does not tag geo columns yet; detection runs when a map or recommendation needs it.
+
 ---
 
 ## 8. How people will use it
@@ -945,7 +953,7 @@ These go in the README to show tabsight is better, with numbers.
 
 ## 20. Build order (each phase is finished and tested before the next)
 
-**Status:** Phase 0 done (27 Oct 2026). Phase 1 done (27 Oct 2026). Phase 2 done (27 Oct 2026). Phase 3 done (27 Oct 2026). Phase 4 done (27 Oct 2026). Every phase follows `docs/SECURITY_CHECKLIST.md`, and its automated guards run with every test run.
+**Status:** Phase 0 done (27 Oct 2026). Phase 1 done (27 Oct 2026). Phase 2 done (27 Oct 2026). Phase 3 done (27 Oct 2026). Phase 4 done (27 Oct 2026). Phase 5 done (27 Oct 2026); level-2 downloads and custom GeoJSON moved to a follow-up, see section 7.8. Every phase follows `docs/SECURITY_CHECKLIST.md`, and its automated guards run with every test run.
 
 | Phase | Deliverable | Done when |
 |-------|-------------|-----------|

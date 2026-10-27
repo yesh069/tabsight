@@ -4,6 +4,21 @@ All notable changes are listed here. The project follows [Semantic Versioning](h
 
 ## Unreleased
 
+### Added (Phase 5: world maps)
+- Maps: `ts.chart(df, "map", geo="County", y="Sales")` (a filled map, `choropleth`) and `"symbol_map"` (circles sized by value, from places or `lat=`/`lon=`).
+- Bundled, offline map data from Natural Earth 5.1.2 (public domain), 3.1 MB: about 240 countries, level-1 regions for every country, and about 7,300 cities, built by `tools/build_geo.py` (mapshaper, TopoJSON, deterministic).
+- Extra layers people use: UK nations and regions, French, Italian, Spanish and Philippine regions, and Ireland's 26 official counties.
+- `ts.geo`: `detect`, `match`, `layers`, `country_code`, `coverage`, `version`. Matching on English, local and about 25 other languages' names, everyday names (UK, Holland, Éire), ISO codes and US postal codes; ignores case, accents, punctuation and words like "County".
+- Map detection: the world, a country's regions, or cities; names at two levels (Georgia, Luxembourg, Punjab) settled by the other values, then a country column, then a note. Words like North/East/Central never choose a map on their own.
+- Unmatched places are listed with "did you mean", shown on the chart and raised as a `DataWarning`; `geo_map=` fixes spellings. Rows are tagged with their region and aggregated exactly, so "Cork" and "Co. Cork" make one county.
+- Equal Earth projection for the world (Mercator and Natural Earth on request), auto zoom to the data, dots for tiny countries, Alaska and Hawaii insets, "No data" in grey, diverging colours for negative values, place names in other languages (`geo_names=`).
+- Maps keep their true shape at any size; only the needed shapes go into the page.
+- The recommender suggests a map when at least 80% of a field's values are places, and `kind="auto"` draws it.
+- Docs: "Maps" guide and a generated map coverage page with the 30 most-used countries checked against official lists.
+
+### Fixed (Phase 5)
+- `ts.aggregate` crashed when a grouping column's name started with `__`.
+
 ### Added (Phase 4: choosing and checking charts)
 - `ts.recommend(data, x, y, color)`: ranks the chart kinds that fit, each with a score and a reason, lists the kinds it ruled out with reasons, and `why_not(kind)`. Charts from later phases are listed with their phase; `.best` is the best one drawable today. Rules look at dates and their span, category counts and label lengths, whether a measure adds up, negative totals, IDs, nesting and units.
 - `ts.chart(..., kind="auto")` draws the best recommendation; anything you pass still wins.

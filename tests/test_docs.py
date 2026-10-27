@@ -108,6 +108,17 @@ def test_every_lint_rule_is_documented() -> None:
     assert documented == {code: severity for code, (severity, _) in RULES.items()}
 
 
+def test_map_coverage_page_is_current() -> None:
+    import subprocess
+    import sys
+
+    result = subprocess.run(
+        [sys.executable, str(ROOT / "tools" / "make_map_coverage.py"), "--check"],
+        capture_output=True, text=True, timeout=120,
+    )  # fmt: skip
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
 def test_every_setting_is_documented() -> None:
     page = (DOCS / "guide" / "settings.md").read_text(encoding="utf-8")
     import dataclasses

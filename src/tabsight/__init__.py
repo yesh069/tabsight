@@ -3,7 +3,7 @@
 Rule-based, no LLM, one offline HTML file. See PLAN.md for the roadmap.
 """
 
-from tabsight import warnings
+from tabsight import geo, warnings
 from tabsight._version import __version__
 from tabsight.aggregate import Aggregation, Measure, aggregate, bucket
 from tabsight.charts import chart
@@ -55,6 +55,7 @@ __all__ = [
     "custom_theme",
     "format_date",
     "format_number",
+    "geo",
     "load",
     "profile",
     "recommend",

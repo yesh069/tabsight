@@ -29,9 +29,10 @@ __all__ = ["DRAWN_KINDS", "chart"]
 
 BAR_KINDS = ("bar", "hbar", "grouped_bar", "stacked_bar", "stacked100_bar")
 LINE_KINDS = ("line", "multi_line", "area", "stacked_area", "sparkline")
-DRAWN_KINDS = (*BAR_KINDS, *LINE_KINDS, "donut", "kpi", "table")
+MAP_KINDS = ("choropleth", "symbol_map")
+DRAWN_KINDS = (*BAR_KINDS, *LINE_KINDS, "donut", "kpi", "table", *MAP_KINDS)
 _LATER = {
-    "choropleth": 5, "symbol_map": 5, "density_map": 6, "flow_map": 6, "treemap": 6, "sunburst": 6,
+    "density_map": 6, "flow_map": 6, "treemap": 6, "sunburst": 6,
     "waterfall": 6, "funnel": 6, "combo": 6, "calendar_heatmap": 6, "sankey": 6, "scatter": 6,
     "bubble": 6, "heatmap": 6, "histogram": 6, "boxplot": 6, "gauge": 6, "pareto": 6,
     "lollipop": 6, "bullet": 6,
@@ -65,11 +66,27 @@ def chart(
     colors: Mapping[str, str] | None = None,
     height: int | None = None,
     prof: Profile | None = None,
+    geo: str | None = None,
+    lat: str | None = None,
+    lon: str | None = None,
+    map: str | None = None,
+    level: str | None = None,
+    layer: str | None = None,
+    geo_map: Mapping[str, str] | None = None,
+    geo_names: str | None = None,
+    projection: str | None = None,
 ) -> Figure:
     """Build a chart. ``x`` is what you group by, ``y`` the measure(s), ``color`` splits
     the series. Everything else has a sensible default and can be overridden.
 
-    ``kind="auto"`` draws the best chart ``ts.recommend`` finds for these fields."""
+    ``kind="auto"`` draws the best chart ``ts.recommend`` finds for these fields.
+
+    Maps (``kind="map"``, ``"choropleth"`` or ``"symbol_map"``): ``geo`` is the column of
+    places, matched automatically to countries, regions or cities. ``map`` picks the map
+    (``"world"`` or a country such as ``"Ireland"``), ``level`` (country, region, city)
+    and ``layer`` (for example ``"nation"`` for the UK) narrow it, ``geo_map`` fixes
+    spellings, ``geo_names`` sets the language of place names, and ``lat``/``lon`` place
+    points by coordinates."""
     settings = resolve(locale=locale, currency=currency, palette=palette)
     chosen: list[str] = []
     freq_source = "asked" if freq else None
@@ -81,6 +98,7 @@ def chart(
         recs = recommend(data, x=x, y=y, color=color, prof=prof)
         pick = recs.best
         kind, x, color = pick.kind, pick.spec.x, pick.spec.color
+        geo = geo or pick.spec.geo
         top = top if top is not None else pick.spec.top
         sort = sort if sort is not None else pick.spec.sort
         runner_up = next((r for r in recs if r.available and r.kind != pick.kind), None)
@@ -96,9 +114,13 @@ def chart(
             freq, freq_source = pick.spec.options["freq"], "auto"
     theme_obj = theme if isinstance(theme, Theme) else get_theme(theme or settings.theme)
     options: dict[str, Any] = {"freq": freq} if freq else {}
+    for key, value in (("map", map), ("level", level), ("layer", layer), ("geo_map", geo_map),
+                       ("geo_names", geo_names), ("projection", projection)):  # fmt: skip
+        if value is not None:
+            options[key] = dict(value) if isinstance(value, Mapping) else value
     spec = ChartSpec(
         kind, x=_as_tuple(x), y=_as_tuple(y), color=color, agg=agg, sort=_as_tuple(sort), top=top, unit=unit, currency=currency,
-        decimals=decimals, format=format, title=title, subtitle=subtitle, options=options,
+        decimals=decimals, format=format, title=title, subtitle=subtitle, options=options, geo=geo, lat=lat, lon=lon,
     )  # fmt: skip
     if spec.kind in _LATER:
         raise InvalidSpecError(
@@ -113,6 +135,10 @@ def chart(
     ctx.decisions.extend(chosen or [f"{spec.kind.replace('_', ' ')} chart, as asked"])
     ctx.freq_source = freq_source
 
+    if spec.kind in MAP_KINDS:
+        from tabsight.charts.maps import map_chart
+
+        return map_chart(frame, ctx, height)
     if spec.kind == "kpi":
         return _kpi(frame, ctx, height)
     if spec.kind == "table":

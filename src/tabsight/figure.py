@@ -39,6 +39,9 @@ class Figure:
     height: int = 420
     notes: tuple[str, ...] = ()
     decisions: tuple[str, ...] = ()  # why the chart looks the way it does; see explain()
+    maps: tuple[
+        dict[str, Any], ...
+    ] = ()  # shapes a map needs (TopoJSON), registered in the browser
     facts: dict[str, Any] = dataclasses.field(default_factory=dict)  # what lint() checks
 
     def to_dict(self) -> dict[str, Any]:
@@ -59,6 +62,8 @@ class Figure:
             out["kpi"] = self.kpi
         if self.table is not None:
             out["table"] = self.table
+        if self.maps:
+            out["maps"] = list(self.maps)
         return out
 
     def to_html(self, path: str | Path | None = None, *, cdn: bool = False) -> str:
@@ -80,7 +85,8 @@ class Figure:
     def explain(self) -> str:
         """Every choice tabsight made for this chart, and why, in plain English."""
         what = {"kpi": "KPI card", "table": "table", "multi_line": "multi-line chart",
-                "stacked100_bar": "100% stacked bar chart", "hbar": "horizontal bar chart"}.get(
+                "stacked100_bar": "100% stacked bar chart", "hbar": "horizontal bar chart",
+                "choropleth": "filled map", "symbol_map": "symbol map"}.get(
             self.kind, self.kind.replace("_", " ") + " chart"
         )  # fmt: skip
         lines = [f"{self.title} ({what})", ""]

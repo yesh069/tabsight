@@ -101,6 +101,7 @@ nav:
       - Calculated fields: guide/calculated-fields.md
       - Making charts: guide/charts.md
       - Choosing a chart: guide/choosing-charts.md
+      - Maps: guide/maps.md
       - Formatting numbers and dates: guide/formatting.md
       - Colours and themes: guide/colors-and-themes.md
       - Settings: guide/settings.md
@@ -111,6 +112,7 @@ nav:
       - Locales and currencies: reference/locales.md
       - Chart kinds: reference/chart-kinds.md
       - Lint rules: reference/lint-rules.md
+      - Map coverage: reference/map-coverage.md
       - Warnings and errors: reference/warnings-and-errors.md
   - Project:
       - Roadmap: project/roadmap.md

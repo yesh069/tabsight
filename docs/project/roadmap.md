@@ -9,8 +9,8 @@ tabsight is built in phases. Each phase is finished and tested before the next o
 | 2 | Aggregation and correctness: exact parts, dates, top N, table calculations, calculated fields | Done |
 | 3 | Core charts (bar, line, area, donut, KPI, table) as offline HTML, plus the browser runtime | Done |
 | 4 | Chart recommender ("Show Me" with reasons), chart linter, `explain()` | Done |
-| 5 | World maps: countries, states/provinces/counties for every country, cities | Next |
-| 6 | Advanced charts: heatmaps, treemaps, Sankey, scatter, distributions, small multiples; numeric x-axis for lines; `df.plot` backend and `df.ts` accessor for notebooks | Planned |
+| 5 | World maps: countries, states/provinces/counties for every country, cities | Done |
+| 6 | Advanced charts: heatmaps, treemaps, Sankey, scatter, distributions, small multiples; numeric x-axis for lines; `df.plot` backend and `df.ts` accessor for notebooks | Next |
 | 7 | Analytics and insights: trend lines, forecasts, comparisons, plain-English insights | Planned |
 | 8 | Dashboards: cross-filtering, drill-down, filters, accessibility | Planned |
 | 9 | `ts.auto(df)` one-line dashboards, command line, web-framework helpers, optional PNG export | Planned |
