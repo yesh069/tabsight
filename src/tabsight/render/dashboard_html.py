@@ -91,6 +91,7 @@ def dashboard_page(
     runtime = read_static("tabsight.js")
     dash = read_static("dashboard.js")
     init = (
+        "Object.preventExtensions(Object.prototype);"  # no library may add to every object
         "(function(){var d=JSON.parse(document.getElementById('ts-dashboard').textContent);"
         "tabsightDashboard.mount(document.getElementById('ts-dash-root'),d);})();"
     )

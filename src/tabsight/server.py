@@ -132,7 +132,11 @@ class DashboardServer:
                 raise BadRequest("request too large")
             try:
                 req = json.loads(raw)
-            except (ValueError, UnicodeDecodeError) as e:
+            except (
+                ValueError,
+                UnicodeDecodeError,
+                RecursionError,
+            ) as e:  # RecursionError: deep nesting
                 raise BadRequest("request is not JSON") from e
         if not isinstance(req, Mapping):
             raise BadRequest("request must be a JSON object")
