@@ -49,6 +49,15 @@ def test_times_and_text_months() -> None:
     assert m is not None and m.values.iloc[2] == pd.Timestamp("2017-03-01")
 
 
+def test_zero_threshold_still_picks_the_right_layout() -> None:
+    """Regression: threshold=0 used to make every structural check pass (read as year-first)."""
+    r = read_dates(s(["01/15/2017", "03/02/2017", "junk"]), threshold=0.0)
+    assert r is not None and r.format == "%m/%d/%Y"
+    assert r.values.iloc[0] == pd.Timestamp("2017-01-15") and pd.isna(r.values.iloc[2])
+    m = read_dates(s(["5 Jan 2017", "Feb 2017"]), threshold=0.0)
+    assert m is not None and m.values.notna().sum() == 1
+
+
 def test_non_dates() -> None:
     assert read_dates(s(["West", "East"])) is None
     assert read_dates(pd.Series([1, 2, 3])) is None

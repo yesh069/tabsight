@@ -13,7 +13,8 @@ Security is built in as each piece is written, not reviewed afterwards. Most ite
 | Bandit-style lint rules (ruff `S`) | `pyproject.toml`, CI lint job |
 | Known-vulnerable dependencies | `pip-audit` CI job; Dependabot for pip, npm and GitHub Actions |
 | Vendored files unchanged | SHA-256 lock checked by `tools/fetch_vendor.py`; byte-exact via `.gitattributes` |
-| Public functions never change the input DataFrame | "unchanged input" tests per module |
+| Public functions never change the input DataFrame | "unchanged input" tests per module (`tests/test_never_mutates.py`) |
+| Formula language cannot run code or exhaust resources | `tests/test_formulas.py`: injection attempts, length/token/depth limits, fuzzing, overflow handling |
 
 ## Rules for every new piece of code
 

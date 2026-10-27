@@ -32,6 +32,17 @@ CALLS: dict[str, Callable[[pd.DataFrame], Any]] = {
     "clean apply/undo": lambda d: (lambda r: (r.apply(r.suggestions[0].id), r.undo("Region")))(
         ts.clean(d)[1]
     ),
+    "aggregate": lambda d: ts.aggregate(
+        d, ["Order_Date", "Region"], ["Sales", "Amount_Text", "Discount"], freq="month", top=2
+    ),
+    "aggregate+calcs": lambda d: ts.aggregate(
+        d,
+        "Category",
+        [ts.calc("M = SUM(Profit) / SUM(Sales)"), ts.calc("D = [Sales] * 2")],
+        min_group_size=3,
+    ),
+    "table_calc": lambda d: ts.table_calc(ts.aggregate(d, "Region", "Sales"), "pct_of_total"),
+    "calc row": lambda d: ts.calc("R = [Profit] / [Sales]").evaluate(d),
 }
 
 

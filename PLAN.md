@@ -357,6 +357,14 @@ Running total, % of total, rank, moving average, difference and % difference.
   - Work offline: Top N, measure switcher, reference-line and target values, and thresholds used on grouped values (`IF SUM(Profit) < [Target]`).
   - Need server mode: parameters inside row-level formulas (`IF Sales > [Threshold]`), because every row would have to be recomputed. The linter says so and suggests server mode.
 
+### 5.4a Decisions made while building Phase 2
+- **Top N never applies to dates.** It applies to the first category dimension, so `[Month, Region]` with `top=5` keeps the top 5 regions across all months (what a multi-line chart needs). If every dimension is a date, top N is skipped with a note.
+- **Ranking follows the first requested output**, which may be a calculated field (`top=` by margin works).
+- **An all-missing group is missing, not 0** (sums use `min_count=1`), so an empty group never looks like a real zero.
+- **"Other" is labelled with its size** (`Other (4)`), which also avoids clashing with a real category called "Other".
+- **Calculated fields:** a row-level formula is aggregated with `sum`. Aggregate formulas become hidden exact measures, so they stay exact after filtering. Division by zero, overflow, `LN(0)` and `SQRT(-1)` give a missing value, never an error or infinity. Formula limits: 2,000 characters, 1,000 tokens, 50 levels of nesting, 500-character text values, 100 parameters.
+- **`min_group_size` also hides formula results** for small groups.
+
 ### 5.5 Hierarchies
 Detected or declared hierarchies drive drill-down, treemap and sunburst levels, and "Other" grouping inside each parent.
 
@@ -644,7 +652,7 @@ tabsight/
     profile.py             roles, units, IDs, geo, date grain, hierarchies, overrides, schema save/load
     check.py               ts.check(df)
     clean.py               ts.clean(df): modes, CleanReport, apply/undo/reuse
-    calc.py                safe parser for calculated fields and parameters
+    formulas.py            safe parser for calculated fields and parameters (ts.calc); not calc.py, so the ts.calc function does not hide it
     aggregate.py           group-by, exact re-aggregation parts, top-N + Other, date bucketing
     tablecalc.py           running total, % of total, rank, moving average, difference
     recommend.py           rules, scores, reasons, rejections
@@ -922,7 +930,7 @@ These go in the README to show tabsight is better, with numbers.
 
 ## 20. Build order (each phase is finished and tested before the next)
 
-**Status:** Phase 0 done (27 Oct 2026). Phase 1 done (27 Oct 2026). Every phase follows `docs/SECURITY_CHECKLIST.md`, and its automated guards run with every test run.
+**Status:** Phase 0 done (27 Oct 2026). Phase 1 done (27 Oct 2026). Phase 2 done (27 Oct 2026). Every phase follows `docs/SECURITY_CHECKLIST.md`, and its automated guards run with every test run.
 
 | Phase | Deliverable | Done when |
 |-------|-------------|-----------|

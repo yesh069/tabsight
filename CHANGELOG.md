@@ -4,6 +4,17 @@ All notable changes are listed here. The project follows [Semantic Versioning](h
 
 ## Unreleased
 
+### Added (Phase 2: aggregation and correctness)
+- `ts.aggregate`: group-by through exact re-aggregation *parts* (sum/count for means, Σw·x and Σw for weighted averages, values for median and distinct count). A property test checks 150 random datasets: re-combining filtered parts always equals pandas on the filtered raw rows, for all 8 aggregations.
+- Date buckets (`ts.bucket`): year, quarter, month, week, day, hour, minute, second; fiscal years and quarters; Monday/Sunday/Saturday weeks. Missing periods as gaps, zeros or left out.
+- Top N + exact "Other" (with its member list), stable sorting (value, natural, ordered categories, custom lists, `by:<measure>`), automatic split by currency, `min_group_size` privacy suppression.
+- `ts.table_calc`: running total, % of total (filtered or fixed), rank, difference, % difference, moving average; restarts per group.
+- `ts.calc`: calculated fields with our own parser (no eval): arithmetic, comparisons, IF/ELSEIF/ELSE, AND/OR/NOT, 7 aggregates and 30 row functions, `$parameters`. Aggregate formulas stay exact after filtering.
+
+### Fixed
+- Date reader used the caller's success threshold for structural choices; with threshold 0 every column was read as year-first.
+
+
 ### Added (Phase 1: foundation)
 - `ts.load`: safe local file loading (CSV/TSV/TXT, Excel with defusedxml, Parquet with pyarrow >= 15, JSON). URLs are rejected; encodings detected (UTF-8, BOM, Windows-1252); delimiters sniffed; leading zeros kept.
 - `ts.profile`: roles, units (including from column names), default aggregation by unit, IDs, years, coordinates, ordered text, currency-code columns, mixed-currency warnings, hierarchies, overrides, and schema save/load. Every guess records its reason.

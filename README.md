@@ -2,7 +2,7 @@
 
 **BI-quality charts, world maps and dashboards from a pandas DataFrame. Rule-based. No LLM. One offline HTML file.**
 
-> Status: early development (Phase 1 of 10 done: reading, profiling, checking, cleaning and formatting data). Charts arrive in Phase 3. The full roadmap is in `PLAN.md`.
+> Status: early development (Phases 0-2 of 10 done: reading, profiling, checking, cleaning, formatting and exact aggregation). Charts arrive in Phase 3. The full roadmap is in `PLAN.md`.
 
 ## What works today
 
@@ -14,6 +14,8 @@ print(ts.profile(df))  # role, unit and aggregation of every column, with reason
 print(ts.check(df))  # data-quality report; changes nothing
 clean_df, report = ts.clean(df)  # optional; every change listed, undoable, reusable
 
+ts.aggregate(df, ["Order_Date", "Region"], "Sales", freq="month", top=3)  # exact, with "Other"
+ts.aggregate(df, "Category", ts.calc("Margin = SUM(Profit) / SUM(Sales)"))  # safe formulas
 ts.format_number(2297200.86, "currency", "compact")  # '$2.3M'
 ts.format_number(1234.5, "currency", locale="de_DE", currency="EUR", decimals=2)  # '1.234,50 €'
 ```

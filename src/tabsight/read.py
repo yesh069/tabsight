@@ -22,6 +22,7 @@ __all__ = [
 ]
 
 MAX_TEXT_LEN = 200  # longer strings are never treated as dates or numbers
+_MAJORITY = 0.5  # share needed for structural choices (year-first, two-digit years...)
 SAMPLE_ROWS = 10_000
 
 
@@ -87,15 +88,20 @@ def read_dates(
         return None
     probe = sample(text)
 
+    # Structural choices use a fixed majority, never the caller's success threshold:
+    # with threshold=0 ("parse what you can") every test would otherwise pass.
     numeric = probe.str.fullmatch(_NUMERIC_DATE)
-    if numeric.mean() >= threshold:
+    if numeric.mean() >= _MAJORITY:
         return _read_numeric_dates(series, text, dayfirst, threshold)
 
+    best_fmt, best_rate = None, 0.0
     for fmt in _TEXT_FORMATS:
-        parsed = pd.to_datetime(probe, format=fmt, errors="coerce")
-        if parsed.notna().mean() >= threshold:
-            full = pd.to_datetime(text, format=fmt, errors="coerce")
-            return _result(series, text, full, fmt, None, False, threshold)
+        rate = float(pd.to_datetime(probe, format=fmt, errors="coerce").notna().mean())
+        if rate > best_rate:
+            best_fmt, best_rate = fmt, rate
+    if best_fmt is not None and best_rate >= max(threshold, 1e-9):
+        full = pd.to_datetime(text, format=best_fmt, errors="coerce")
+        return _result(series, text, full, best_fmt, None, False, threshold)
     return None
 
 
@@ -106,7 +112,7 @@ def _read_numeric_dates(
     a = pd.to_numeric(parts["a"], errors="coerce")
     b = pd.to_numeric(parts["b"], errors="coerce")
     has_time = parts["time"].notna().any()
-    if (parts["a"].str.len() == 4).mean() >= threshold:
+    if (parts["a"].str.len() == 4).mean() >= _MAJORITY:
         order, first, assumed = "%Y/%m/%d", None, False
     else:
         day_first_proof = bool((a > 12).any())
@@ -117,7 +123,7 @@ def _read_numeric_dates(
             first, assumed = day_first_proof, False
         else:
             first, assumed = bool(dayfirst), True
-        year2 = (parts["c"].str.len() == 2).mean() >= threshold
+        year2 = (parts["c"].str.len() == 2).mean() >= _MAJORITY
         yy = "%y" if year2 else "%Y"
         order = f"%d/%m/{yy}" if first else f"%m/%d/{yy}"
     normal = parts["a"] + "/" + parts["b"] + "/" + parts["c"]
