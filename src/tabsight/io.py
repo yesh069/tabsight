@@ -104,6 +104,10 @@ def _local_path(source: Any) -> Path:
         path = Path(text)
     else:
         raise UnsafeInputError(f"expected a file path, got {type(source).__name__}")
+    if str(path).startswith(("\\\\", "//")):  # \\server\share: Windows would contact that server
+        raise UnsafeInputError(
+            "tabsight reads local files only, not network shares; copy the file to this computer first"
+        )
     if not path.is_file():
         raise FileNotFoundError(f"no such file: {safe_repr(str(path), 200)}")
     return path

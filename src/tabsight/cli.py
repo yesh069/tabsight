@@ -131,7 +131,7 @@ def _serve(args: argparse.Namespace) -> int:
         )
     from tabsight.localserver import serve
 
-    serve(dash, host=args.host, port=args.port, quiet=args.quiet)
+    serve(dash, host=args.host, port=args.port, quiet=args.quiet, allow_hosts=args.allow_host)
     return 0
 
 
@@ -255,6 +255,13 @@ def _parser() -> argparse.ArgumentParser:
         help="address to listen on (default 127.0.0.1: this computer only)",
     )
     p.add_argument("--port", type=int, default=8050)
+    p.add_argument(
+        "--allow-host",
+        action="append",
+        default=[],
+        metavar="NAME",
+        help="another host name to answer to, e.g. this computer's network name with --host 0.0.0.0",
+    )
     p.add_argument("-q", "--quiet", action="store_true", help="don't log each request")
 
     command("profile", "show what tabsight thinks each column is", _profile)

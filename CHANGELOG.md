@@ -11,6 +11,12 @@ All notable changes are listed here. The project follows [Semantic Versioning](h
 - `ts.web.fastapi_router`, `ts.web.flask_blueprint`, `ts.streamlit`, `ts.web.dash_iframe` and `ts.serve_payload`; `tabsight serve` runs server mode with Python's own HTTP server on 127.0.0.1.
 - `fig.to_png()`: the SVG picture rasterised by resvg-py, no browser needed (`tabsight[png]`, which no longer uses Playwright). New `web` extra.
 
+### Security
+- `tabsight serve` answers only requests addressed to its own host names, so a hostile web page can't read the served data by DNS rebinding; `--allow-host` adds names. Server-mode data requests must be `application/json` (415 otherwise in the FastAPI and Flask helpers).
+- Deeply nested JSON sent to server mode gets a 400 instead of an internal error.
+- Data values named like JavaScript object properties (`hasOwnProperty`, `__proto__`, `constructor`) no longer break or blank dashboard filtering. A label that is exactly `__proto__` no longer lets ECharts' text cache write to `Object.prototype`, and tabsight's pages now lock `Object.prototype`.
+- `ts.load` refuses Windows network-share paths (`\\server\share`), keeping the promise that tabsight never contacts another computer.
+
 ### Changed
 - The documentation site is built with Zensical, the successor to Material for MkDocs (which reaches end of life on 5 May 2027), from the same `mkdocs.yml`.
 - A dashboard spec file that isn't JSON now raises a clear `InvalidSpecError`.

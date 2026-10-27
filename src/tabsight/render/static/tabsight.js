@@ -287,7 +287,21 @@
   }
 
   // Replace {"$fmt": spec}, {"$label": spec} and {"$tooltip": cfg} with functions.
+  // ECharts caches text in plain objects, so a label that is exactly "__proto__" (or another
+  // Object.prototype name) would make it write to Object.prototype. Such text gets an
+  // invisible zero-width space before it reaches ECharts; plainName() takes it off again.
+  var PROTO_NAMES = Object.create(null);
+  Object.getOwnPropertyNames(Object.prototype).forEach(function (k) { PROTO_NAMES[k] = 1; });
+  var GUARD = "​";
+  function safeText(s) {
+    return PROTO_NAMES[s] === 1 ? s + GUARD : s;
+  }
+  function plainName(s) {
+    return typeof s === "string" && s.charAt(s.length - 1) === GUARD && PROTO_NAMES[s.slice(0, -1)] === 1 ? s.slice(0, -1) : s;
+  }
+
   function hydrate(node, locales) {
+    if (typeof node === "string") return safeText(node);
     if (Array.isArray(node)) {
       return node.map(function (item) {
         return hydrate(item, locales);
@@ -315,11 +329,12 @@
       return projection(node.$projection);
     }
     if (node.$render) {
-      return RENDERERS[node.$render] || RENDERERS.range;
+      return Object.prototype.hasOwnProperty.call(RENDERERS, node.$render) ? RENDERERS[node.$render] : RENDERERS.range;
     }
     var out = {};
     Object.keys(node).forEach(function (key) {
-      out[key] = hydrate(node[key], locales);
+      // defineProperty, so a key named "__proto__" (a series called that) stays a key
+      Object.defineProperty(out, safeText(key), { value: hydrate(node[key], locales), enumerable: true, writable: true, configurable: true });
     });
     return out;
   }
@@ -565,6 +580,7 @@
     formatNumber: formatNumber,
     escapeHtml: escapeHtml,
     hydrate: hydrate,
+    plainName: plainName,
     registerMaps: registerMaps,
     fitAspects: fitAspects,
     fitMaps: fitMaps,

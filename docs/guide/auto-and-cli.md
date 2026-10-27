@@ -70,7 +70,7 @@ tabsight recommend sales.csv --x Region --y Sales
 
 Files are read with [`ts.load`](loading-data.md): CSV, TSV, Excel (`--sheet`), Parquet and JSON. Output goes where `-o` says, or next to the input. tabsight refuses to write over the input file. Errors print one line and exit with code 2.
 
-`tabsight serve` runs a dashboard in [server mode](web-apps.md) with Python's own web server, on this computer only (`127.0.0.1`). The data stays in Python, so large files and every chart kind stay exact. `--host 0.0.0.0` lets other computers connect and prints a warning, since anyone who can reach the address can see the data.
+`tabsight serve` runs a dashboard in [server mode](web-apps.md) with Python's own web server, on this computer only (`127.0.0.1`). The data stays in Python, so large files and every chart kind stay exact. It only answers requests addressed to `127.0.0.1` or `localhost`, so a web page elsewhere can't reach it by pointing a domain at your computer. `--host 0.0.0.0` lets other computers connect and prints a warning, since anyone who can reach the address can see the data. Add the name they will use with `--allow-host my-laptop.local`.
 
 ## PNG pictures
 

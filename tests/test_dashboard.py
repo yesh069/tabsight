@@ -649,3 +649,22 @@ def test_tiles_with_their_own_data(orders: pd.DataFrame, tmp_path: Path) -> None
         saved.bind(orders)
     again = saved.bind(orders, targets=targets.head(4)).build()
     assert again["datasets"]["targets"]["rows"] <= 4
+
+
+@pytest.mark.node
+@pytest.mark.skipif(shutil.which("node") is None, reason="Node.js not installed")
+def test_values_named_like_object_properties_filter_correctly(tmp_path: Path) -> None:
+    """A category called "hasOwnProperty" or "__proto__" is an ordinary value in the browser."""
+    names = ["hasOwnProperty", "__proto__", "constructor", "toString", "valueOf", "West"]
+    df = pd.DataFrame({"Region": names * 10, "Sales": np.arange(60.0)})
+    dash = (
+        ts.Dashboard("x", data=df, filters=["Region"])
+        .add("bar", x="Region", y="Sales")
+        .add("kpi", y="Sales")
+    )
+    filters = [{"Region": {"type": "in", "values": [n]}} for n in names]
+    results = _node(dash.build(), filters, tmp_path)
+    for name, tiles in zip(names, results, strict=True):
+        want = float(df.loc[df["Region"] == name, "Sales"].sum())
+        bar = next(t for t in tiles if t["id"] == "t0")
+        assert bar["labels"] == [name] and _close(bar["series"]["Sales"][0], want), name

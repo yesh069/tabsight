@@ -71,6 +71,8 @@ Both show the offline page in a sandboxed frame (scripts only, no access to the 
 ## Security
 
 - **Requests are untrusted.** Bodies over 256 KB are refused. The shape of each request is checked. Filters keep only known columns and known values, the same rule the page applies to the address bar. Malformed requests get `400 {"error": "bad request"}`, and nothing is echoed back.
+- **Only JSON is accepted.** Data requests must be `application/json`, or the response is 415. A web page on another site can't send that without asking first (a CORS preflight these routes never approve).
+- **Check the host name too.** If your app runs on `localhost`, a hostile site can point its own domain at 127.0.0.1 ("DNS rebinding") and read the answers. Allow only your real host names: `TrustedHostMiddleware` in FastAPI/Starlette, `TRUSTED_HOSTS` in Flask 3.1+. `tabsight serve` does this for you.
 - **The page may only talk to its own address.** Its Content Security Policy adds `connect-src` for that one origin. Offline pages send nothing anywhere.
 - **Who may see the data is your app's job.** Put the routes behind your own login. tabsight adds `nosniff`, `no-referrer` and `no-store` headers.
 - The pandas work runs in a worker thread under FastAPI, so it doesn't block other requests.

@@ -409,6 +409,11 @@ def _flow_map(
         **{"__from": frame[source].map(place), "__to": frame[target_col].map(place)}
     )
     work = work[work["__from"].notna() & work["__to"].notna() & (work["__from"] != work["__to"])]
+    if work.empty:
+        raise InvalidSpecError(
+            f"no flows to draw: no row has both a {safe_repr(source)} and a {safe_repr(target_col)} "
+            f"found on the {target.label} (or every flow starts and ends in the same place)"
+        )
     measures = ctx.measures() if spec.y is not None else [Measure(None, "count")]
     m = measures[0]
     result = aggregate(work, ["__from", "__to"], measures[:1], prof=None, missing="connect").values

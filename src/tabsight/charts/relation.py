@@ -233,7 +233,7 @@ def _cartesian(
     option["grid"] = {
         "left": 8,
         "right": 24,
-        "top": 44 if legend else 30,
+        "top": 58 if legend else 30,  # room for the legend and, under it, the y-axis name
         "bottom": 30,
         "containLabel": True,
     }

@@ -53,6 +53,12 @@ def serve_payload(obj: Any, request: Any = None) -> dict[str, Any]:
     )
 
 
+def _is_json(content_type: str | None) -> bool:
+    """Data requests must say they are JSON: a browser won't send that to another site
+    without asking it first (a CORS preflight these routes never approve)."""
+    return (content_type or "").split(";", 1)[0].strip().lower() == "application/json"
+
+
 def _server(dash: Any, path: str) -> tuple[DashboardServer, str, str]:
     if (
         not isinstance(path, str)
@@ -87,6 +93,8 @@ def fastapi_router(dash: Any, path: str = "/dashboard", *, cdn: bool = False) ->
 
     @router.post(data_path)
     async def data(request: Request) -> JSONResponse:
+        if not _is_json(request.headers.get("content-type")):
+            return JSONResponse(_BAD, status_code=415, headers=HEADERS)
         size = request.headers.get("content-length")
         if size is not None and (not size.isdigit() or int(size) > MAX_REQUEST_BYTES):
             return JSONResponse(_BAD, status_code=413, headers=HEADERS)
@@ -118,6 +126,8 @@ def flask_blueprint(
         return Response(document, mimetype="text/html", headers=HEADERS)
 
     def data() -> Any:
+        if not _is_json(request.headers.get("Content-Type")):
+            return jsonify(_BAD), 415, HEADERS
         if request.content_length is None:
             return jsonify(_BAD), 411, HEADERS
         if request.content_length > MAX_REQUEST_BYTES:

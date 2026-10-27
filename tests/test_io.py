@@ -31,6 +31,12 @@ def test_urls_are_rejected(url: str) -> None:
         load(url)
 
 
+@pytest.mark.parametrize("share", [r"\\server\share\x.csv", "//server/share/x.csv"])
+def test_network_shares_are_rejected(share: str) -> None:
+    with pytest.raises(UnsafeInputError, match="network shares"):  # never touch the share
+        load(share)
+
+
 def test_missing_file_and_bad_types(tmp_path: Path) -> None:
     with pytest.raises(FileNotFoundError):
         load(tmp_path / "nope.csv")

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import http.client
 import json
 import shutil
 import sys
@@ -274,6 +275,7 @@ BAD_REQUESTS: list[Any] = [
     {"tiles": [{"id": "t0", "view": True}]},
     {"tiles": [{"id": "t0", "drill": ["Profit; DROP TABLE"]}]},
     {"tiles": [{"id": "t0"}] * 50},
+    "deeply nested",
 ]
 
 
@@ -282,6 +284,8 @@ def test_malformed_requests_are_refused(orders: pd.DataFrame, body: Any) -> None
     server = ts.Dashboard("x", data=orders).add("bar", x="Region", y="Sales").server("/data")
     if body == "too big":
         body = b"x" * (MAX_REQUEST_BYTES + 1)
+    if body == "deeply nested":  # RecursionError inside json.loads must still be a 400
+        body = b"[" * 100_000 + b"]" * 100_000
     with pytest.raises(BadRequest):
         server.respond(body)
 
@@ -341,20 +345,45 @@ def test_stdlib_server(orders: pd.DataFrame) -> None:
         with urllib.request.urlopen(req) as r:
             assert json.loads(r.read())["tiles"]["t0"]["table"]["rows"] >= 1
         with pytest.raises(urllib.error.HTTPError) as e:
-            urllib.request.urlopen(urllib.request.Request(base + "/data", data=b"nope"))
+            urllib.request.urlopen(
+                urllib.request.Request(
+                    base + "/data", data=b"nope", headers={"Content-Type": "application/json"}
+                )
+            )
         assert e.value.code == 400
         with pytest.raises(urllib.error.HTTPError) as e:
             urllib.request.urlopen(base + "/etc/passwd")
         assert e.value.code == 404
+        # DNS rebinding: a page on another domain pointed at 127.0.0.1 still sends its own Host
+        for method, path, payload in (("GET", "/", None), ("POST", "/data", body)):
+            conn = http.client.HTTPConnection("127.0.0.1", httpd.server_port, timeout=10)
+            headers = {
+                "Host": f"attacker.example:{httpd.server_port}",
+                "Content-Type": "application/json",
+            }
+            conn.request(method, path, body=payload, headers=headers)
+            assert conn.getresponse().status == 421, method
+            conn.close()
+        # a cross-site form or fetch can only send text/plain without asking first
+        plain = urllib.request.Request(
+            base + "/data", data=body, headers={"Content-Type": "text/plain"}
+        )
+        with pytest.raises(urllib.error.HTTPError) as e:
+            urllib.request.urlopen(plain)
+        assert e.value.code == 400
     finally:
         httpd.shutdown()
         httpd.server_close()
 
 
-def _client_checks(get: Any, post: Any) -> None:
+def _client_checks(get: Any, post: Any) -> None:  # post(path, body, content_type=JSON)
     page = get("/sales")
     assert page.status_code == 200 and page.headers["x-content-type-options"] == "nosniff"
     good = post("/sales/data", json.dumps({"tiles": [{"id": "t0", "view": 0}]}))
+    plain = post("/sales/data", json.dumps({"tiles": [{"id": "t0", "view": 0}]}), "text/plain")
+    assert (
+        plain.status_code == 415
+    )  # a cross-site form or fetch can't send JSON without a preflight
     assert good.status_code == 200 and good.json()["tiles"]["t0"]["table"]["rows"] == 4
     bad = post("/sales/data", "nope")
     assert bad.status_code == 400 and bad.json() == {"error": "bad request"}  # nothing echoed
@@ -372,7 +401,12 @@ def test_fastapi_router(orders: pd.DataFrame) -> None:
         )
     )
     client = TestClient(app)
-    _client_checks(client.get, lambda path, body: client.post(path, content=body))
+    _client_checks(
+        client.get,
+        lambda path, body, kind="application/json": client.post(
+            path, content=body, headers={"Content-Type": kind}
+        ),
+    )
 
 
 def test_flask_blueprint(orders: pd.DataFrame) -> None:
@@ -396,7 +430,12 @@ def test_flask_blueprint(orders: pd.DataFrame) -> None:
         def json(self) -> Any:
             return self._r.get_json()
 
-    _client_checks(lambda p: Reply(client.get(p)), lambda p, body: Reply(client.post(p, data=body)))
+    _client_checks(
+        lambda p: Reply(client.get(p)),
+        lambda p, body, kind="application/json": Reply(
+            client.post(p, data=body, content_type=kind)
+        ),
+    )
 
 
 def test_web_paths_are_checked(orders: pd.DataFrame) -> None:

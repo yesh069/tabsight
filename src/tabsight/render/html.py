@@ -72,7 +72,7 @@ body {{ margin: 0; background: {theme.page}; color: {theme.text}; font-family: {
 .ts-insights {{ margin: 10px 4px 0; padding-top: 8px; border-top: 1px solid {theme.grid}; font-size: 13px; }}
 .ts-insights__title {{ margin: 0 0 4px; font-size: 12px; font-weight: 650; color: {theme.text_secondary};
   text-transform: uppercase; letter-spacing: 0.04em; }}
-.ts-insights ul {{ margin: 0; padding-left: 18px; line-height: 1.55; }}
+.ts-insights ul {{ margin: 0; padding-left: 18px; line-height: 1.55; overflow-wrap: anywhere; }}
 .ts-insights__scope {{ margin-left: 4px; font-size: 11px; color: {theme.text_secondary}; }}
 .ts-footer {{ margin-top: 10px; font-size: 11px; color: {theme.text_secondary}; text-align: right; }}
 """
@@ -82,6 +82,7 @@ def page(figure: dict[str, Any], theme: Theme, *, cdn: bool = False, lang: str =
     """A complete, self-contained HTML document for one figure."""
     runtime = read_static("tabsight.js")
     init = (
+        "Object.preventExtensions(Object.prototype);"  # no library may add to every object
         "(function(){var d=JSON.parse(document.getElementById('ts-figure').textContent);"
         "tabsight.render(document.getElementById('ts-chart'),d);})();"
     )

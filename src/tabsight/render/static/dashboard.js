@@ -22,6 +22,25 @@
 
   // ------------------------------------------------------------- small helpers
 
+  // Lookup tables keyed by data values have no prototype, so a category called
+  // "constructor", "hasOwnProperty" or "__proto__" is an ordinary key.
+  function dict() {
+    return Object.create(null);
+  }
+  function has(obj, key) {
+    return Object.prototype.hasOwnProperty.call(obj, key);
+  }
+  // The colour pinned to a value ("constructor" is a value here, not Object's constructor).
+  function colorOf(payload, name) {
+    return payload.colors && has(payload.colors, name) ? payload.colors[name] : undefined;
+  }
+  // A prototype-free copy of a JSON object (one level), for tables read by data keys.
+  function own(obj) {
+    var out = dict();
+    if (obj) Object.keys(obj).forEach(function (k) { out[k] = obj[k]; });
+    return out;
+  }
+
   function clone(v) {
     return v === undefined ? v : JSON.parse(JSON.stringify(v));
   }
@@ -63,11 +82,15 @@
 
   function Table(data) {
     this.n = data.rows;
-    this.dims = data.dims;
-    this.nums = data.nums;
-    this.lists = data.lists || {};
-    this.labels = data.labels || {};
-    this.meta = data.meta || {};
+    this.dims = own(data.dims);
+    this.nums = own(data.nums);
+    this.lists = own(data.lists);
+    this.meta = own(data.meta);
+    this.labels = dict();
+    var labels = data.labels || {};
+    for (var col in labels) {
+      if (has(labels, col)) this.labels[col] = { full: own(labels[col].full), compact: own(labels[col].compact) };
+    }
   }
   Table.prototype.key = function (col, r) {
     var d = this.dims[col];
@@ -95,7 +118,7 @@
         var key = table.key(active[i][0], r);
         var g = active[i][1];
         if (g.type === "range") ok = key !== null && key >= g.lo && key <= g.hi;
-        else ok = g.set.hasOwnProperty(key === null ? "\u0000null" : key);
+        else ok = has(g.set, key === null ? "\u0000null" : key);
       }
       if (ok) out.push(r);
     }
@@ -159,10 +182,10 @@
     if (m.agg === "max") return P.max in parts.max ? parts.max[P.max] : null;
     var values = parts.lists[P.values] || [];
     if (m.agg === "countd") {
-      var seen = {};
+      var seen = dict();
       var n = 0;
       values.forEach(function (v) {
-        if (!seen.hasOwnProperty(v)) {
+        if (!has(seen, v)) {
           seen[v] = 1;
           n++;
         }
@@ -182,7 +205,7 @@
 
   // Group the given rows by `dims`: {id -> {keys, parts}} plus the ids in first-seen order.
   function group(table, rows, dims, measures) {
-    var groups = {};
+    var groups = dict();
     var order = [];
     rows.forEach(function (r) {
       var keys = dims.map(function (d) {
@@ -226,13 +249,13 @@
         return naturalCompare(a, c);
       });
       if (ranked.length > b.top + 1) {
-        var keep = {};
+        var keep = dict();
         ranked.slice(0, b.top).forEach(function (k) {
           keep[k === null ? "\u0000null" : k] = 1;
         });
         other = ranked.slice(b.top).sort(naturalCompare);
         xs = ranked.slice(0, b.top).concat([OTHER_KEY]);
-        ctx.otherSet = {};
+        ctx.otherSet = dict();
         other.forEach(function (k) {
           ctx.otherSet[k === null ? "\u0000null" : k] = 1;
         });
@@ -240,12 +263,12 @@
       }
     }
     var inOther = function (k) {
-      return ctx.otherSet && ctx.otherSet.hasOwnProperty(k === null ? "\u0000null" : k);
+      return ctx.otherSet && has(ctx.otherSet, k === null ? "\u0000null" : k);
     };
     // Cells: (x, colour) -> parts, with the Other members merged into one x.
-    var cells = {};
+    var cells = dict();
     var colours = [];
-    var seenColour = {};
+    var seenColour = dict();
     rows.forEach(function (r) {
       var xk = table.key(xcol, r);
       if (inOther(xk)) xk = OTHER_KEY;
@@ -274,7 +297,7 @@
         if (lo >= 0 && hi >= lo) xs = b.periods.slice(lo, hi + 1);
       }
     } else if (b.sort === "order" && b.order) {
-      var pos = {};
+      var pos = dict();
       b.order.forEach(function (k, i) {
         pos[k] = i;
       });
@@ -286,7 +309,7 @@
     } else if (b.sort === "natural") {
       xs.sort(naturalCompare);
     } else {
-      var total = {};
+      var total = dict();
       xs.forEach(function (xk) {
         var t = 0;
         var any = false;
@@ -372,7 +395,7 @@
   }
 
   function dimmed(set, key) {
-    return set && !set.hasOwnProperty(key === null ? "\u0000null" : key);
+    return set && !has(set, key === null ? "\u0000null" : key);
   }
 
   function cartesian(fig, b, model, labels, payload, sel) {
@@ -403,7 +426,7 @@
       base.name = s.name;
       var color = null;
       if (b.dims.length > 1) {
-        color = payload.colors[s.name] || (base.itemStyle && base.itemStyle.color);
+        color = colorOf(payload, s.name) || (base.itemStyle && base.itemStyle.color);
         base.itemStyle = base.itemStyle || {};
         base.itemStyle.color = color;
         if (base.lineStyle) base.lineStyle.color = color;
@@ -461,7 +484,7 @@
       var item = {
         name: labels[i],
         value: values[i],
-        itemStyle: { color: k === OTHER_KEY ? payload.other_color : payload.colors[labels[i]] || payload.other_color },
+        itemStyle: { color: k === OTHER_KEY ? payload.other_color : colorOf(payload, labels[i]) || payload.other_color },
       };
       if (set && dimmed(set, k) && k !== OTHER_KEY) item.itemStyle.opacity = 0.3;
       return item;
@@ -472,7 +495,7 @@
   function geo(fig, b, table, rows, ctx, sel) {
     var opt = clone(fig.option);
     var m = b.measures[0];
-    var byShape = {};
+    var byShape = dict();
     var order = [];
     var g = group(table, rows, b.dims, b.measures);
     g.order.forEach(function (id) {
@@ -486,7 +509,7 @@
       merge(byShape[shape], g.groups[id].parts);
     });
     var set = selectedSet(sel);
-    var selectedShapes = {};
+    var selectedShapes = dict();
     if (set) {
       for (var raw in b.shapes) if (!dimmed(set, raw)) selectedShapes[b.shapes[raw]] = 1;
     }
@@ -623,13 +646,13 @@
       };
     });
     var first = b.dims[0];
-    var firstTotals = {};
+    var firstTotals = dict();
     list.forEach(function (row) {
       var k = JSON.stringify(row.keys[0]);
       var v = row.values[0];
       firstTotals[k] = (firstTotals[k] || 0) + (v === null || v === undefined ? 0 : v);
     });
-    var pos = {};
+    var pos = dict();
     (b.order || []).forEach(function (k, i) {
       pos[k] = i;
     });
@@ -886,7 +909,7 @@
     var opt = clone(fig.option);
     var model = categoryModel(table, Object.assign({}, b, { top: null, missing: "connect" }), rows, ctx);
     var cells = group(table, rows, b.dims, b.measures);
-    var byX = {};
+    var byX = dict();
     cells.order.forEach(function (id) {
       var g = cells.groups[id];
       var xk = JSON.stringify(g.keys[0]);
@@ -894,7 +917,7 @@
     });
     var rowKeys = [];
     var sortedCells = [];
-    var seen = {};
+    var seen = dict();
     var rowTime = /\|[a-z]+$/.test(b.dims[1]);
     model.keys.forEach(function (xk) {
       var list = (byX[JSON.stringify(xk)] || []).slice();
@@ -919,11 +942,11 @@
     var rowLabels = rowKeys.map(function (k) {
       return keyLabel(table, b.dims[1], k, ctx, false);
     });
-    var xi = {};
+    var xi = dict();
     model.keys.forEach(function (k, i) {
       xi[JSON.stringify(k)] = i;
     });
-    var yi = {};
+    var yi = dict();
     rowKeys.forEach(function (k, i) {
       yi[JSON.stringify(k)] = i;
     });
@@ -949,7 +972,7 @@
       var g = cells.groups[id];
       return { keys: g.keys, parts: g.parts, value: finish(g.parts, measures[0], ctx.minGroup) };
     });
-    var totals = {};
+    var totals = dict();
     list.forEach(function (g) {
       var k = JSON.stringify(g.keys[0]);
       totals[k] = (totals[k] || 0) + (g.value === null ? 0 : g.value);
@@ -976,13 +999,13 @@
       leaves = leaves.slice(0, b.max_leaves);
     }
     var total = leaves.reduce(function (a, l) { return a + l.value; }, 0) || 1;
-    var rootNode = { children: {}, order: [] };
+    var rootNode = { children: dict(), order: [] };
     leaves.forEach(function (l) {
       var node = rootNode;
       l.keys.forEach(function (k) {
         var label = k === null ? "Unknown" : String(k);
         if (!node.children[label]) {
-          node.children[label] = { name: label, value: 0, children: {}, order: [] };
+          node.children[label] = { name: label, value: 0, children: dict(), order: [] };
           node.order.push(label);
         }
         node = node.children[label];
@@ -991,7 +1014,7 @@
     });
     var emit = function (node, depth, color) {
       var item = { name: node.name, value: Math.round(node.value * 1e10) / 1e10, note: pct1(node.value / total) + " of the total" };
-      if (depth === 0) color = payload.colors[node.name] || payload.other_color;
+      if (depth === 0) color = colorOf(payload, node.name) || payload.other_color;
       if (color) item.itemStyle = { color: color };
       var kids = node.order.map(function (k) { return node.children[k]; });
       kids.sort(function (a, c) { return c.value - a.value; });
@@ -1013,13 +1036,13 @@
     });
     links.sort(function (a, c) { return c[2] - a[2]; });
     links = links.slice(0, b.max_links);
-    var sources = {};
+    var sources = dict();
     links.forEach(function (l) { sources[l[0]] = 1; });
     var fixed = links.map(function (l) {
-      return [l[0], sources.hasOwnProperty(l[1]) ? "→ " + l[1] : l[1], l[2]];
+      return [l[0], has(sources, l[1]) ? "→ " + l[1] : l[1], l[2]];
     });
     var nodes = [];
-    var seen = {};
+    var seen = dict();
     fixed.map(function (l) { return l[0]; }).concat(fixed.map(function (l) { return l[1]; })).forEach(function (n) {
       if (!seen[n]) {
         seen[n] = 1;
@@ -1029,7 +1052,7 @@
     var s = opt.series[0];
     s.data = nodes.map(function (n) {
       var bare = n.indexOf("→ ") === 0 ? n.slice(2) : n;
-      return { name: n, itemStyle: { color: payload.colors[bare] || payload.other_color } };
+      return { name: n, itemStyle: { color: colorOf(payload, bare) || payload.other_color } };
     });
     s.links = fixed.map(function (l) { return { source: l[0], target: l[1], value: l[2] }; });
     return { option: opt, keys: [] };
@@ -1109,7 +1132,7 @@
     var model = categoryModel(table, Object.assign({}, b, { top: null, missing: "connect" }), rows, ctx);
     var cells = group(table, rows, b.dims, b.measures);
     var rowsOut = [];
-    var byId = {};
+    var byId = dict();
     cells.order.forEach(function (id) {
       byId[id] = cells.groups[id];
     });
@@ -1129,7 +1152,7 @@
     }
     var template = fig.option.series[0];
     var colourOf = b.dims.length > 1;
-    var groups = {};
+    var groups = dict();
     var names = [];
     rowsOut.forEach(function (r) {
       var name = colourOf ? (r.keys[1] === null ? ctx.unknown : String(r.keys[1])) : null;
@@ -1150,7 +1173,7 @@
       var s = clone(template);
       s.name = g.name === null ? template.name : g.name;
       s.data = g.data;
-      if (g.name !== null) s.itemStyle.color = payload.colors[g.name] || s.itemStyle.color;
+      if (g.name !== null) s.itemStyle.color = colorOf(payload, g.name) || s.itemStyle.color;
       if (labelled) {
         s.label = s.label || { show: true, formatter: "{b}", position: "right", fontSize: 10, color: payload.theme.text_secondary };
       } else {
@@ -1165,7 +1188,7 @@
     var opt = clone(fig.option);
     var m = b.measures[0];
     var cells = group(table, rows, b.dims, b.measures);
-    var byPlace = {};
+    var byPlace = dict();
     var order = [];
     cells.order.forEach(function (id) {
       var g = cells.groups[id];
@@ -1209,7 +1232,7 @@
   function flowsTile(fig, b, table, rows, ctx) {
     var opt = clone(fig.option);
     var cells = group(table, rows, b.dims, b.measures);
-    var pairs = {};
+    var pairs = dict();
     var order = [];
     cells.order.forEach(function (id) {
       var g = cells.groups[id];
@@ -1234,11 +1257,11 @@
     var biggest = 0;
     flows.forEach(function (f) { biggest = Math.max(biggest, f.v); });
     biggest = biggest || 1;
-    var ends = {};
+    var ends = dict();
     var endOrder = [];
     opt.series[0].data = flows.map(function (f) {
       [f.a, f.c].forEach(function (p) {
-        if (!ends.hasOwnProperty(p[3])) endOrder.push(p[3]);
+        if (!has(ends, p[3])) endOrder.push(p[3]);
         ends[p[3]] = [p[1], p[2]];
       });
       return {
@@ -1296,7 +1319,7 @@
   function boxTile(fig, b, table, rows, ctx) {
     var opt = clone(fig.option);
     var col = b.measures[0].parts.values;
-    var groups = {};
+    var groups = dict();
     var order = [];
     rows.forEach(function (r) {
       var k = b.dims.length ? table.key(b.dims[0], r) : b.name;
@@ -1324,7 +1347,7 @@
       return { id: id, box: [inside[0], q1, med, q3, inside[inside.length - 1]], n: v.length, out: out };
     });
     if (b.dims.length && b.order) {
-      var pos = {};
+      var pos = dict();
       b.order.forEach(function (k, i) { pos[k] = i; });
       stats.sort(function (a, c) {
         return (a.id in pos ? pos[a.id] : b.order.length) - (c.id in pos ? pos[c.id] : b.order.length);
@@ -1352,7 +1375,7 @@
     list.sort(function (a, c) { return parseFloat(a.keys[0]) - parseFloat(c.keys[0]); });
     var colourOf = b.dims.length > 1;
     var names = [];
-    var byName = {};
+    var byName = dict();
     list.forEach(function (g) {
       var name = colourOf ? (g.keys[1] === null ? ctx.unknown : String(g.keys[1])) : null;
       var id = String(name);
@@ -1371,7 +1394,7 @@
       b.measures.forEach(function (m) {
         var s = clone(template);
         var label = grp.name !== null ? grp.name : m.label;
-        var color = single ? template.itemStyle.color : payload.colors[label] || template.itemStyle.color;
+        var color = single ? template.itemStyle.color : colorOf(payload, label) || template.itemStyle.color;
         s.name = label;
         s.data = grp.cells.map(function (g) { return [parseFloat(g.keys[0]), finish(g.parts, m, ctx.minGroup)]; });
         s.showSymbol = s.data.length <= 40;
@@ -1860,8 +1883,8 @@
     found = found.concat(cfg.kept.map(function (k) { return { kind: k.kind, score: k.kind === "seasonality" ? 65 : 40, fields: k.fields, text: k.text, allData: true }; }));
     found.sort(function (a, c) { return c.score - a.score; });
     var kept = [];
-    var seen = {};
-    var perKind = {};
+    var seen = dict();
+    var perKind = dict();
     found.forEach(function (item) {
       var ident = JSON.stringify([item.kind, item.fields.slice(1), item.name || ""]);
       if ((item.kind === "contributor" || item.kind === "concentration" || item.kind === "negative") && seen[ident]) return;
@@ -1952,7 +1975,7 @@
         g.hi = f.hi;
       } else {
         g.values = f.values.slice();
-        g.set = {};
+        g.set = dict();
         f.values.forEach(function (v) {
           g.set[v === null ? "\u0000null" : v] = 1;
         });
@@ -2122,11 +2145,11 @@
         var c = controls[col];
         var s = state[col];
         if (c.boxes) {
-          var set = {};
+          var set = dict();
           if (s && s.type === "in" && !s.source) {
             s.values.forEach(function (v) { set[v === null ? "\u0000null" : v] = 1; });
           }
-          c.boxes.forEach(function (x) { x.cb.checked = set.hasOwnProperty(x.key === null ? "\u0000null" : x.key); });
+          c.boxes.forEach(function (x) { x.cb.checked = has(set, x.key === null ? "\u0000null" : x.key); });
           c.summary.textContent = c.filter.title + (s && !s.source && s.values ? ": " + s.values.length + " selected" : ": all");
         } else {
           var vals = c.filter.values;
@@ -2549,6 +2572,8 @@
     }
 
     function onClick(t, p) {
+      p = Object.assign({}, p, { name: tsj.plainName(p.name) }); // names come back as ECharts drew them
+      if (p.treePathInfo) p.treePathInfo = p.treePathInfo.map(function (n) { return { name: tsj.plainName(n.name) }; });
       var b = flatTile(t, themeName).binding;
       if (!b || !b.click || t.tile.action === "none") return;
       var ev = p.event && p.event.event ? p.event.event : {};
