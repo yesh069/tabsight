@@ -1,0 +1,64 @@
+<svg width="760" height="360" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full" viewBox="0 0 760 360">
+<rect width="760" height="360" x="0" y="0" fill="#ffffff"></rect>
+<path d="M50.9 293.5L736 293.5" fill="none" pointer-events="visible" stroke="#e9ecef" class="zr0-cls-0"></path>
+<path d="M50.9 251.5L736 251.5" fill="none" pointer-events="visible" stroke="#e9ecef" class="zr0-cls-0"></path>
+<path d="M50.9 208.5L736 208.5" fill="none" pointer-events="visible" stroke="#e9ecef" class="zr0-cls-0"></path>
+<path d="M50.9 166.5L736 166.5" fill="none" pointer-events="visible" stroke="#e9ecef" class="zr0-cls-0"></path>
+<path d="M50.9 124.5L736 124.5" fill="none" pointer-events="visible" stroke="#e9ecef" class="zr0-cls-0"></path>
+<path d="M50.9 82.5L736 82.5" fill="none" pointer-events="visible" stroke="#e9ecef" class="zr0-cls-0"></path>
+<path d="M50.9 40.5L736 40.5" fill="none" pointer-events="visible" stroke="#e9ecef" class="zr0-cls-0"></path>
+<path d="M50.9 293.5L736 293.5" fill="none" pointer-events="visible" stroke="#c9ced6" stroke-linecap="round" class="zr0-cls-0"></path>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" transform="translate(42.92 293.1077)" fill="#5f6670">$0</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" transform="translate(42.92 250.9231)" fill="#5f6670">$20K</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" transform="translate(42.92 208.7385)" fill="#5f6670">$40K</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" transform="translate(42.92 166.5538)" fill="#5f6670">$60K</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" transform="translate(42.92 124.3692)" fill="#5f6670">$80K</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" transform="translate(42.92 82.1846)" fill="#5f6670">$100K</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" transform="translate(42.92 40)" fill="#5f6670">$120K</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" transform="matrix(0.866,-0.5,0.5,0.866,165.1,301.1077)" fill="#5f6670">Technology</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" transform="matrix(0.866,-0.5,0.5,0.866,393.46,301.1077)" fill="#5f6670">Office Supplies</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" transform="matrix(0.866,-0.5,0.5,0.866,621.82,301.1077)" fill="#5f6670">Furniture</text>
+<path d="M85.2 293.1l159.9 0l0 -129.3l-159.9 0Z" fill="#4e79a7" ecmeta_series_index="0" ecmeta_data_index="0" ecmeta_ssr_type="chart" class="zr0-cls-1"></path>
+<path d="M313.5 293.1l159.9 0l0 -97.3l-159.9 0Z" fill="#4e79a7" ecmeta_series_index="0" ecmeta_data_index="1" ecmeta_ssr_type="chart" class="zr0-cls-1"></path>
+<path d="M541.9 293.1l159.9 0l0 -86.4l-159.9 0Z" fill="#4e79a7" ecmeta_series_index="0" ecmeta_data_index="2" ecmeta_ssr_type="chart" class="zr0-cls-1"></path>
+<path d="M85.2 163.8l159.9 0l0 -64.4l-159.9 0Z" fill="#f28e2b" ecmeta_series_index="1" ecmeta_data_index="0" ecmeta_ssr_type="chart" class="zr0-cls-2"></path>
+<path d="M313.5 195.8l159.9 0l0 -51.8l-159.9 0Z" fill="#f28e2b" ecmeta_series_index="1" ecmeta_data_index="1" ecmeta_ssr_type="chart" class="zr0-cls-2"></path>
+<path d="M541.9 206.7l159.9 0l0 -45.5l-159.9 0Z" fill="#f28e2b" ecmeta_series_index="1" ecmeta_data_index="2" ecmeta_ssr_type="chart" class="zr0-cls-2"></path>
+<path d="M85.2 99.3l159.9 0l0 -40.6l-159.9 0Z" fill="#e15759" ecmeta_series_index="2" ecmeta_data_index="0" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M313.5 144l159.9 0l0 -31.1l-159.9 0Z" fill="#e15759" ecmeta_series_index="2" ecmeta_data_index="1" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M541.9 161.2l159.9 0l0 -34l-159.9 0Z" fill="#e15759" ecmeta_series_index="2" ecmeta_data_index="2" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M-5 -6.5l246.8 0l0 25l-246.8 0Z" transform="translate(5 6.5)" fill="rgb(0,0,0)" fill-opacity="0" stroke="#b7b9be" stroke-width="0" class="zr0-cls-0"></path>
+<path d="M2.5 0L7.5 0A2.5 2.5 0 0 1 10 2.5L10 7.5A2.5 2.5 0 0 1 7.5 10L2.5 10A2.5 2.5 0 0 1 0 7.5L0 2.5A2.5 2.5 0 0 1 2.5 0Z" transform="translate(5 7.5)" fill="#4e79a7" ecmeta_series_index="0" ecmeta_data_index="0" ecmeta_ssr_type="legend" ecmeta_silent="true" class="zr0-cls-0"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" x="15" y="5" transform="translate(5 7.5)" fill="#5f6670">Consumer</text>
+<path d="M0 -1l70.4 0l0 12l-70.4 0Z" transform="translate(5 7.5)" fill="none" pointer-events="visible" ecmeta_series_index="0" ecmeta_data_index="0" ecmeta_ssr_type="legend" class="zr0-cls-4"></path>
+<path d="M2.5 0L7.5 0A2.5 2.5 0 0 1 10 2.5L10 7.5A2.5 2.5 0 0 1 7.5 10L2.5 10A2.5 2.5 0 0 1 0 7.5L0 2.5A2.5 2.5 0 0 1 2.5 0Z" transform="translate(83.44 7.5)" fill="#f28e2b" ecmeta_series_index="1" ecmeta_data_index="1" ecmeta_ssr_type="legend" ecmeta_silent="true" class="zr0-cls-0"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" x="15" y="5" transform="translate(83.44 7.5)" fill="#5f6670">Corporate</text>
+<path d="M0 -1l68.5 0l0 12l-68.5 0Z" transform="translate(83.44 7.5)" fill="none" pointer-events="visible" ecmeta_series_index="1" ecmeta_data_index="1" ecmeta_ssr_type="legend" class="zr0-cls-4"></path>
+<path d="M2.5 0L7.5 0A2.5 2.5 0 0 1 10 2.5L10 7.5A2.5 2.5 0 0 1 7.5 10L2.5 10A2.5 2.5 0 0 1 0 7.5L0 2.5A2.5 2.5 0 0 1 2.5 0Z" transform="translate(159.96 7.5)" fill="#e15759" ecmeta_series_index="2" ecmeta_data_index="2" ecmeta_ssr_type="legend" ecmeta_silent="true" class="zr0-cls-0"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:12px;font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;" xml:space="preserve" x="15" y="5" transform="translate(159.96 7.5)" fill="#5f6670">Home Office</text>
+<path d="M0 -1l81.8 0l0 12l-81.8 0Z" transform="translate(159.96 7.5)" fill="none" pointer-events="visible" ecmeta_series_index="2" ecmeta_data_index="2" ecmeta_ssr_type="legend" class="zr0-cls-4"></path>
+<style ><![CDATA[
+.zr0-cls-0:hover {
+pointer-events:none;
+}
+.zr0-cls-1:hover {
+cursor:pointer;
+fill:rgba(85,133,183,1);
+}
+.zr0-cls-2:hover {
+cursor:pointer;
+fill:rgba(255,156,47,1);
+}
+.zr0-cls-3:hover {
+cursor:pointer;
+fill:rgba(247,95,97,1);
+}
+.zr0-cls-4:hover {
+cursor:pointer;
+fill:rgba(0,0,0,0);
+}
+
+]]>
+
+</style>
+</svg>

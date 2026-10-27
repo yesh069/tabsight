@@ -30,3 +30,6 @@ Thumbs.db
 
 # Generated output from examples
 *.out.html
+
+# Chart gallery (python tools/make_gallery.py)
+/gallery/

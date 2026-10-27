@@ -15,7 +15,7 @@ from tabsight.warnings import InvalidSpecError, safe_repr
 __all__ = ["THEMES", "Theme", "contrast_problems", "custom_theme", "get_theme"]
 
 SYSTEM_FONTS = (
-    '"Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif'
+    "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif"
 )
 _FONT_RE = re.compile(r"[A-Za-z0-9 ,\"'\-]{1,200}")
 _COLOR_FIELDS = (

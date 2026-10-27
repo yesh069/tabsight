@@ -18,13 +18,15 @@ from tabsight.spec import ALIASES, CHART_KINDS
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 PAGES = sorted(DOCS.rglob("*.md"))
-PAGES_WITH_CODE = [p for p in PAGES if "```python" in p.read_text(encoding="utf-8")]
+PAGES_WITH_CODE = [
+    p for p in [*PAGES, ROOT / "README.md"] if "```python" in p.read_text(encoding="utf-8")
+]
 
 sys.path.insert(0, str(ROOT / "tools"))
 import render_doc_outputs  # noqa: E402 - tools/ is not a package
 
 
-@pytest.mark.parametrize("page", PAGES_WITH_CODE, ids=lambda p: str(p.relative_to(DOCS)))
+@pytest.mark.parametrize("page", PAGES_WITH_CODE, ids=lambda p: p.relative_to(ROOT).as_posix())
 def test_examples_run_and_shown_output_is_current(page: Path) -> None:
     """Every example runs, and every 'Output' block shows exactly what the code prints.
 
@@ -35,14 +37,14 @@ def test_examples_run_and_shown_output_is_current(page: Path) -> None:
     os.chdir(ROOT)
     try:
         text = page.read_text(encoding="utf-8")
-        rendered = render_doc_outputs.render(text, str(page.relative_to(DOCS)))
+        rendered = render_doc_outputs.render(text, page.relative_to(ROOT).as_posix())
     finally:
         os.chdir(old)
         ts.settings.reset_defaults()
     if int(pd.__version__.split(".")[0]) < 3:
         return  # examples ran; exact output is defined by pandas 3 (pandas 2 prints some types differently)
     assert rendered == text, (
-        f"{page.relative_to(DOCS)}: shown output is out of date; run python tools/render_doc_outputs.py"
+        f"{page.relative_to(ROOT).as_posix()}: shown output is out of date; run python tools/render_doc_outputs.py"
     )
 
 
@@ -132,3 +134,20 @@ def test_mkdocs_nav_lists_every_page() -> None:
         if rel == "README.md":
             continue  # GitHub index of the docs folder
         assert rel in nav, f"{rel} is not in mkdocs.yml nav"
+
+
+def test_readme_images_are_valid_svg() -> None:
+    from defusedxml import minidom  # never parse XML with the standard library
+
+    images = sorted((DOCS / "assets" / "examples").glob("*.svg"))
+    assert len(images) >= 4
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    for image in images:
+        minidom.parse(str(image))  # broken quoting in an attribute would fail here
+        assert f"docs/assets/examples/{image.name}" in readme
+
+
+def test_readme_links_point_to_real_files() -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    for target in re.findall(r"\]\(((?!https?://|#)[^)#]+)", readme):
+        assert (ROOT / target).exists(), target

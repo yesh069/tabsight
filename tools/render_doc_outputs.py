@@ -76,7 +76,8 @@ def render(text: str, name: str) -> str:
 
 
 def pages() -> list[Path]:
-    return sorted(DOCS.rglob("*.md"))
+    """Documentation pages plus the README, which shows real output too."""
+    return [*sorted(DOCS.rglob("*.md")), ROOT / "README.md"]
 
 
 def main() -> int:
@@ -95,9 +96,10 @@ def main() -> int:
             text = page.read_text(encoding="utf-8")
             if "```python" not in text:
                 continue
-            new = render(text, str(page.relative_to(DOCS)))
+            name = page.relative_to(ROOT).as_posix()
+            new = render(text, name)
             if new != text:
-                stale.append(page.relative_to(DOCS).as_posix())
+                stale.append(name)
                 if not args.check:
                     page.write_text(new, encoding="utf-8", newline="\n")
             import tabsight.settings
