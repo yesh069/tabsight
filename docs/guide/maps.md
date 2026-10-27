@@ -81,8 +81,8 @@ To choose yourself:
 
 ```python
 # not run
-ts.chart(df, "map", geo="State", y="Sales", map="Australia")       # a country's regions
-ts.chart(df, "map", geo="Country", y="Sales", map="world")           # the world map
+ts.chart(df, "map", geo="State", y="Sales", map="Australia")  # a country's regions
+ts.chart(df, "map", geo="Country", y="Sales", map="world")  # the world map
 ts.chart(df, "map", geo="Area", y="Sales", map="GBR", layer="region")  # a particular layer
 ```
 

@@ -29,7 +29,13 @@ Facets work with the bar kinds, lollipop, the line and area kinds, scatter, hist
 
 ```python
 fig = ts.chart(orders, "map", geo="State", y="Sales", facet="Category")
-print(len(fig.option["geo"]), "maps,", fig.option["visualMap"]["min"], "to", fig.option["visualMap"]["max"])
+print(
+    len(fig.option["geo"]),
+    "maps,",
+    fig.option["visualMap"]["min"],
+    "to",
+    fig.option["visualMap"]["max"],
+)
 ```
 
 ```text title="Output"

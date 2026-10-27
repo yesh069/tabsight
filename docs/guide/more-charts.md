@@ -71,7 +71,14 @@ import numpy as np
 wave = pd.DataFrame({"angle": np.arange(0, 6.3, 0.05)})
 wave["sine"] = np.sin(wave["angle"])
 fig = ts.chart(wave, "line", x="angle", y="sine")
-print(fig.title, "|", fig.option["xAxis"]["type"], "axis,", len(fig.option["series"][0]["data"]), "points")
+print(
+    fig.title,
+    "|",
+    fig.option["xAxis"]["type"],
+    "axis,",
+    len(fig.option["series"][0]["data"]),
+    "points",
+)
 ```
 
 ```text title="Output"
@@ -102,7 +109,10 @@ A waterfall walks from one total to another. Each bar starts where the last ende
 
 ```python
 bridge = pd.DataFrame(
-    {"Step": ["Revenue", "Costs", "Marketing", "Grants", "Tax"], "Amount": [1000, -420, -180, 60, -45]}
+    {
+        "Step": ["Revenue", "Costs", "Marketing", "Grants", "Tax"],
+        "Amount": [1000, -420, -180, 60, -45],
+    }
 )
 fig = ts.chart(bridge, "waterfall", x="Step", y="Amount")
 print([(d["name"], d["value"][4]) for d in fig.option["series"][0]["data"]])

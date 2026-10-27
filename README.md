@@ -166,7 +166,11 @@ A donut of average discounts would show shares of a total that doesn't exist, so
 </p>
 
 ```python
-for values in (["Bayern", "Hessen", "Sachsen"], ["England", "Scotland", "Wales"], ["CA", "TX", "NY"]):
+for values in (
+    ["Bayern", "Hessen", "Sachsen"],
+    ["England", "Scotland", "Wales"],
+    ["CA", "TX", "NY"],
+):
     print(ts.geo.detect(values).label)
 ```
 
