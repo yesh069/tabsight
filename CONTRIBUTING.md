@@ -23,6 +23,26 @@ See the "Development setup" section in `README.md`.
 - Code uses Python 3.11 syntax only (no 3.12+ features)
 - `CHANGELOG.md` has an entry under "Unreleased"
 
+## Branches and commits
+
+- Never push to `main` directly: it is protected. Work on a branch named after the change,
+  for example `fix/kpi-compare-label` or `feat/server-mode`, and open a pull request.
+- Write commit messages in the [Conventional Commits](https://www.conventionalcommits.org/)
+  style: `type(scope): summary`, in the imperative and under 72 characters. For example:
+  `fix(dashboard): keep drill crumbs after a theme switch`.
+  Types: `feat`, `fix`, `docs`, `test`, `refactor`, `perf`, `build`, `ci`, `chore`, `security`.
+- Explain *why* in the commit body when it isn't obvious. Mark breaking changes with `!`
+  (`feat(spec)!: ...`) and a `BREAKING CHANGE:` line.
+- Keep each pull request to one change. Pull requests are squash-merged, so the title
+  must follow the same commit style.
+- CI must be green: tests on Python 3.11–3.14, lint, types and the dependency audit.
+- Never commit data files, secrets, `.env` files, built sites (`site/`) or notebooks with outputs.
+
+## Reporting security problems
+
+Don't open a public issue. Follow [SECURITY.md](https://github.com/yesh069/tabsight/blob/main/SECURITY.md) and use GitHub's private
+vulnerability reporting.
+
 ## Third-party files
 
 Never edit files in `src/tabsight/render/static/` that come from upstream. Change the pinned version in `tools/fetch_vendor.py`, run `python tools/fetch_vendor.py --update`, and update `NOTICE`.
