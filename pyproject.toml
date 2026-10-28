@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "tabsight"
 dynamic = ["version"]
-description = "BI-quality charts, world maps and dashboards from a pandas DataFrame. Rule-based, no LLM, one offline HTML file."
+description = "BI-quality charts, world maps and dashboards from a pandas DataFrame, in one offline HTML file."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE", "NOTICE", "licenses/*"]
@@ -13,7 +13,7 @@ requires-python = ">=3.11"
 authors = [{ name = "tabsight contributors" }]
 keywords = ["dashboard", "visualization", "charts", "maps", "pandas", "echarts", "bi"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "Operating System :: OS Independent",

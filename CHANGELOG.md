@@ -2,6 +2,17 @@
 
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/).
 
+## 0.1.0 (28 Oct 2026)
+
+The first full release. Everything below, from 0.1.0a1, plus:
+
+### Changed
+- The project description no longer mentions LLMs.
+- Installs with a plain `pip install tabsight`; the README, documentation home page and installation guide say so.
+- The README (also the PyPI page) starts with a quick start, links the sample data it uses, and shows the PyPI version.
+- The documentation's table of contents (`docs/README.md`) lists every page, and the quickstart ends by drawing a chart and a dashboard.
+- `SECURITY.md` and the warnings-and-errors reference cover server mode, `tabsight serve`, decompression bombs, network shares and dashboard size steps.
+
 ## 0.1.0a1 (28 Oct 2026, first pre-release)
 
 ### Added: auto, command line and web apps
@@ -46,7 +57,7 @@ All notable changes are listed here. The project follows [Semantic Versioning](h
 - GitHub Sponsors button in the README, on the docs home page and in `.github/FUNDING.yml`.
 
 ### Added: analytics and insights
-- `ts.insights(df)`: plain-English facts from fixed rules (no LLM): change on the previous period, peak and low, trend direction, seasonality, biggest contributor, concentration, negative segments and outliers. Facts only, never causes; rates change in points; every threshold configurable; each insight tagged with the data it describes. `insights=True` lists them under a chart.
+- `ts.insights(df)`: plain-English facts from fixed rules: change on the previous period, peak and low, trend direction, seasonality, biggest contributor, concentration, negative segments and outliers. Facts only, never causes; rates change in points; every threshold configurable; each insight tagged with the data it describes. `insights=True` lists them under a chart.
 - `ts.compare(df, y, date)`: year, quarter and month comparisons on the same window shifted back, fiscal-year aware, `as_of=` for "today" (otherwise the latest date in the data, never the clock), `previous_period` with `window=`. A sliver of a new period falls back to the last complete one; no previous data says so instead of +100%. KPI cards take `compare=` and `as_of=`.
 - Analytics pane on charts: `trend=True` (least squares, R² in `explain()`), `forecast=N` (additive Holt-Winters in numpy, `season=`, dashed "Estimate" with a range, needs two full seasons), `ref=` reference lines (mean, median, percentiles, constants), `band=` shaded bands, `outliers=True` (circled, never removed).
 - `ts.analytics`: `linear_trend`, `forecast`, `outliers`, `reference_value` for your own use.

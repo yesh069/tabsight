@@ -1,6 +1,6 @@
 # Trends, forecasts and insights
 
-tabsight can add the "analytics pane" of a BI tool to a chart: trend lines, forecasts, reference lines, bands and flagged outliers. It can also compare periods and write plain-English insights. Everything is computed in Python by fixed rules, with no LLM and no randomness, so the same data always gives the same result.
+tabsight can add the "analytics pane" of a BI tool to a chart: trend lines, forecasts, reference lines, bands and flagged outliers. It can also compare periods and write plain-English insights. Everything is computed in Python by fixed rules, with no randomness, so the same data always gives the same result.
 
 ## Plain-English insights
 

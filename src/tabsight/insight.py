@@ -1,4 +1,4 @@
-"""Plain-English insights, from fixed rules. Never an LLM, never a guess at causes.
+"""Plain-English insights, from fixed rules. Facts only, never a guess at causes.
 
 Each rule states a fact the numbers show ("Sales peaked in Nov 2017"), never a reason
 ("because of the holiday sale"). Sentences come from templates in ``tabsight/i18n`` so

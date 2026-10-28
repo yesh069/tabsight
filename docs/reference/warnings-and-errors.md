@@ -9,7 +9,7 @@ tabsight warns rather than stops (rule 3). Every warning is a subclass of `Tabsi
 | Warning | When |
 |---------|------|
 | `TabsightWarning` | Base class |
-| `DataWarning` | Something in the data may mislead (mixed currencies, summing IDs, % of total of an average) |
+| `DataWarning` | Something in the data may mislead (mixed currencies, summing IDs, % of total of an average), or a dashboard was shrunk to fit the size limit (see `dash.size_steps`) |
 | `ProfileWarning` | A guess was made (assumed date order, guessed file encoding) |
 | `CleanWarning` | Something about cleaning (a saved step for a missing column) |
 | `FormatWarning` | A formatting fallback (unknown locale) |
@@ -32,7 +32,8 @@ To turn every tabsight warning into an error, use strict mode: `ts.set_defaults(
 | `TabsightError` | Base class (and strict-mode warnings) |
 | `InvalidSpecError` | An argument, setting, spec, schema or saved decision failed validation (also a `ValueError`) |
 | `ChartLintError` | `fig.lint(strict=True)` found a chart design problem (see [lint rules](lint-rules.md)) |
-| `UnsafeInputError` | Input refused for safety: a URL, an unsupported file type, Excel without defusedxml, old pyarrow (also a `ValueError`) |
+| `UnsafeInputError` | Input refused for safety: a URL or network-share path, an unsupported file type, Excel without defusedxml, an Excel decompression bomb, JSON nested too deeply, old pyarrow (also a `ValueError`) |
 | `CalcError` | A formula cannot be parsed or evaluated (in `tabsight.formulas`; a subclass of `InvalidSpecError`) |
+| `BadRequest` | A server-mode request from the page is malformed (in `tabsight.server`; a subclass of `InvalidSpecError`). The web helpers answer it with HTTP 400 |
 
 Messages show untrusted values shortened and quoted, so data cannot flood or fake error messages.

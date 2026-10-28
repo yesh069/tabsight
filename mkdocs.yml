@@ -1,7 +1,7 @@
 # Built with Zensical (`zensical build`), which reads this file. Material for MkDocs, which
 # it replaces, reaches end of life on 5 May 2027.
 site_name: tabsight
-site_description: BI-quality charts, world maps and dashboards from a pandas DataFrame. Rule-based, no LLM, one offline HTML file.
+site_description: BI-quality charts, world maps and dashboards from a pandas DataFrame, in one offline HTML file.
 site_url: https://yesh069.github.io/tabsight/
 repo_url: https://github.com/yesh069/tabsight
 repo_name: yesh069/tabsight
