@@ -52,7 +52,7 @@ When the same setting is given in several places, the most specific wins: an arg
 | `top` | `10` | Default top N for charts |
 | `strict` | `False` | Turn tabsight warnings into errors |
 | `quiet` | `False` | Hide data warnings |
-| `max_size_mb` | `5.0` | Warn when an HTML file would be bigger than this |
+| `max_size_mb` | `5.0` | Largest data table a dashboard file may carry; bigger ones are shrunk in steps (see [dashboards](dashboards.md)) |
 | `min_group_size` | `None` | Hide groups with fewer rows than this |
 | `csv_safe` | `True` | Protect CSV downloads from spreadsheet formula injection |
 | `picture` | `True` | In notebooks, add a still picture under each live chart, so a saved notebook still shows the chart when it is reopened untrusted or viewed on GitHub. Needs the `static` extra (dukpy); without it nothing changes |
