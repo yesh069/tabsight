@@ -16,7 +16,7 @@
   <img alt="Python 3.11 to 3.14" src="https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-1f3b5c">
   <img alt="pandas 2 and 3" src="https://img.shields.io/badge/pandas-2%20%7C%203-1f3b5c">
   <img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-f28e2b">
-  <a href="https://pypi.org/project/tabsight/"><img alt="PyPI" src="https://img.shields.io/pypi/v/tabsight?include_prereleases&label=pypi&color=1f3b5c"></a>
+  <a href="https://pypi.org/project/tabsight/"><img alt="PyPI" src="https://img.shields.io/pypi/v/tabsight?label=pypi&color=1f3b5c"></a>
   <a href="https://github.com/sponsors/yesh069"><img alt="Sponsor yesh069" src="https://img.shields.io/badge/sponsor-%E2%9D%A4-ea4aaa?logo=githubsponsors&logoColor=white"></a>
 </p>
 
