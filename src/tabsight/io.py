@@ -211,7 +211,35 @@ def _infer_plain_types(frame: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(out, index=frame.index)
 
 
+MAX_UNZIPPED_BYTES = 1_000_000_000  # an .xlsx is a zip; refuse one that unpacks to more
+MAX_ZIP_RATIO = 500  # real workbooks compress about 5-50 times; bombs about 1000 times
+
+
+def _check_zip(path: Path) -> None:
+    """Refuse a decompression bomb before any of it is unpacked (defusedxml only stops XML bombs)."""
+    import zipfile
+
+    try:
+        with zipfile.ZipFile(path) as z:
+            infos = z.infolist()
+    except zipfile.BadZipFile as e:
+        raise UnsafeInputError("this .xlsx file is not a valid workbook (not a zip archive)") from e
+    total = sum(i.file_size for i in infos)
+    bomb = [
+        i
+        for i in infos
+        if i.file_size > 10_000_000 and i.file_size > MAX_ZIP_RATIO * max(i.compress_size, 1)
+    ]
+    if total > MAX_UNZIPPED_BYTES or bomb or len(infos) > 10_000:
+        raise UnsafeInputError(
+            f"this workbook would unpack to {total / 1e6:,.0f} MB"
+            + (" with an unusually high compression ratio" if bomb else "")
+            + "; tabsight refuses it (it looks like a decompression bomb). Export it as CSV instead"
+        )
+
+
 def _read_excel(path: Path, sheet: str | int | None) -> pd.DataFrame:
+    _check_zip(path)
     try:
         import openpyxl
     except ImportError:
@@ -240,7 +268,10 @@ def _read_parquet(path: Path) -> pd.DataFrame:
 
 def _read_json(path: Path, encoding: str | None) -> pd.DataFrame:
     text = path.read_text(encoding=encoding or "utf-8-sig")
-    data = json.loads(text)
+    try:
+        data = json.loads(text)
+    except RecursionError as e:  # nested deeper than Python can follow
+        raise UnsafeInputError("JSON is nested too deeply to be a table") from e
     if isinstance(data, list) and all(isinstance(row, dict) for row in data):
         return pd.DataFrame.from_records(data)
     if isinstance(data, dict) and all(isinstance(v, list) for v in data.values()):
