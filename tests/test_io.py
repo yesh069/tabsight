@@ -161,6 +161,6 @@ def test_deeply_nested_json_is_refused(tmp_path: Path) -> None:
     deep = tmp_path / "deep.json"
     deep.write_text("[" * 100_000 + "]" * 100_000, encoding="utf-8")
     with pytest.raises(
-        UnsafeInputError, match="nested too deeply|list of objects"
+        UnsafeInputError, match=r"nested too deeply|list of objects"
     ):  # newer Pythons parse it
         load(deep)
