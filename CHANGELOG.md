@@ -17,6 +17,7 @@ All notable changes are listed here. The project follows [Semantic Versioning](h
 - `tabsight serve` answers only requests addressed to its own host names, so a hostile web page can't read the served data by DNS rebinding; `--allow-host` adds names. Server-mode data requests must be `application/json` (415 otherwise in the FastAPI and Flask helpers).
 - Deeply nested JSON sent to server mode gets a 400 instead of an internal error.
 - Data values named like JavaScript object properties (`hasOwnProperty`, `__proto__`, `constructor`) no longer break or blank dashboard filtering. A label that is exactly `__proto__` no longer lets ECharts' text cache write to `Object.prototype`, and tabsight's pages now lock `Object.prototype`.
+- `ts.load` refuses Excel files that would unpack to more than 1 GB or at an extreme compression ratio (decompression bombs; `defusedxml` already stopped XML bombs), and JSON nested too deeply to be a table.
 - `ts.load` refuses Windows network-share paths (`\\server\share`), keeping the promise that tabsight never contacts another computer.
 
 ### Changed

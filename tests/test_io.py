@@ -141,3 +141,26 @@ def test_as_frame_inputs() -> None:
         as_frame(42)
     with pytest.raises(UnsafeInputError):
         as_frame(["not", "dicts"])
+
+
+def test_excel_decompression_bombs_are_refused_before_unpacking(tmp_path: Path) -> None:
+    import zipfile
+
+    bomb = tmp_path / "bomb.xlsx"  # 49 KB on disk, 50 MB unpacked
+    with zipfile.ZipFile(bomb, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr("xl/worksheets/sheet1.xml", b"0" * 50_000_000)
+    with pytest.raises(UnsafeInputError, match="decompression bomb"):
+        load(bomb)
+    not_zip = tmp_path / "fake.xlsx"
+    not_zip.write_text("Region,Sales\nWest,1\n", encoding="utf-8")
+    with pytest.raises(UnsafeInputError, match="not a valid workbook"):
+        load(not_zip)
+
+
+def test_deeply_nested_json_is_refused(tmp_path: Path) -> None:
+    deep = tmp_path / "deep.json"
+    deep.write_text("[" * 100_000 + "]" * 100_000, encoding="utf-8")
+    with pytest.raises(
+        UnsafeInputError, match=r"nested too deeply|list of objects"
+    ):  # newer Pythons parse it
+        load(deep)
