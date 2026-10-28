@@ -57,9 +57,12 @@ def _time(prof: Profile, frame: pd.DataFrame) -> Field | None:
     return None
 
 
-def _place(prof: Profile, frame: pd.DataFrame) -> str | None:
+def _place(prof: Profile, frame: pd.DataFrame) -> tuple[str, str] | None:
+    """The column to map and its level. Countries and regions (filled maps) win over
+    cities (points), so Superstore's State is mapped rather than its City."""
     from tabsight.geo import detect
 
+    found: list[tuple[int, str, str]] = []
     checked = 0
     for f in prof.fields:
         if f.role != "dimension" or not 2 <= f.distinct <= 5000 or f.currency_code_column:
@@ -72,8 +75,11 @@ def _place(prof: Profile, frame: pd.DataFrame) -> str | None:
         except InvalidSpecError:
             continue
         if target is not None and target.share >= 0.8:
-            return f.name
-    return None
+            found.append((target.level == "city", f.name, target.level))
+    if not found:
+        return None
+    _, name, level = min(found, key=lambda t: t[0])  # stable: column order breaks ties
+    return name, level
 
 
 def _categories(prof: Profile, skip: set[str]) -> list[Field]:
@@ -116,7 +122,8 @@ def auto(
         prof = profile(frame, quiet=True)
         measures = [prof[counted]]
     when = _time(prof, frame)
-    place = _place(prof, frame)
+    mapped = _place(prof, frame)
+    place = mapped[0] if mapped else None
     cats = _categories(prof, {place} if place else set())
     decisions: list[str] = []
     tiles: list[tuple[str, dict[str, Any]]] = []
@@ -165,8 +172,9 @@ def auto(
                           {"x": first.name, "y": main, "w": 4}))  # fmt: skip
             cats = cats[1:]
     if place is not None:
-        tiles.append(("map", {"geo": place, "y": main, "w": 6 if cats else 12}))
-        decisions.append(f"map: {place} holds places")
+        level = mapped[1] if mapped else ""
+        tiles.append(("symbol_map" if level == "city" else "map", {"geo": place, "y": main, "w": 6 if cats else 12}))
+        decisions.append(f"map: {place} holds {'cities' if level == 'city' else 'places'}")
     for f in cats[:MAX_BARS]:
         many = f.distinct > 6
         tiles.append(
