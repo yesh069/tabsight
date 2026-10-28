@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/logo-wordmark-dark.svg">
-    <img alt="tabsight" src="docs/assets/logo-wordmark.svg" width="360">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yesh069/tabsight/main/docs/assets/logo-wordmark-dark.svg">
+    <img alt="tabsight" src="https://raw.githubusercontent.com/yesh069/tabsight/main/docs/assets/logo-wordmark.svg" width="360">
   </picture>
 </p>
 
@@ -27,12 +27,12 @@ Most chart tools take your columns at face value. They add up discounts, treat z
 tabsight starts one step earlier. It works out what each column actually is, tells you why it thinks so, keeps every number exact, and only then draws the chart, formatted the way a finance team would expect. The result is a single HTML file that opens in any browser, offline, with nothing to install on the other end.
 
 <p align="center">
-  <img alt="Sum of Sales by Region, drawn by tabsight" src="docs/assets/examples/sales-by-region.svg" width="49%">
-  <img alt="Sales by quarter for each region, drawn by tabsight" src="docs/assets/examples/sales-by-quarter.svg" width="49%">
+  <img alt="Sum of Sales by Region, drawn by tabsight" src="https://raw.githubusercontent.com/yesh069/tabsight/main/docs/assets/examples/sales-by-region.svg" width="49%">
+  <img alt="Sales by quarter for each region, drawn by tabsight" src="https://raw.githubusercontent.com/yesh069/tabsight/main/docs/assets/examples/sales-by-quarter.svg" width="49%">
 </p>
 <p align="center">
-  <img alt="Sales by category and segment, stacked" src="docs/assets/examples/category-mix.svg" width="49%">
-  <img alt="Share of sales by sub-category, donut" src="docs/assets/examples/sub-category-share.svg" width="49%">
+  <img alt="Sales by category and segment, stacked" src="https://raw.githubusercontent.com/yesh069/tabsight/main/docs/assets/examples/category-mix.svg" width="49%">
+  <img alt="Share of sales by sub-category, donut" src="https://raw.githubusercontent.com/yesh069/tabsight/main/docs/assets/examples/sub-category-share.svg" width="49%">
 </p>
 <p align="center"><sub>Real output from <code>ts.chart</code> on the sample data in this repository, nothing edited by hand.</sub></p>
 
@@ -163,7 +163,7 @@ A donut of average discounts would show shares of a total that doesn't exist, so
 **Draws maps of any country, offline.** Give it a column of places and it finds the map: countries, the states, provinces or counties of every country, or about 7,300 cities. Names match in about 25 languages and as ISO or postal codes. Ambiguous names like Georgia or Punjab are settled by the other values, and anything that doesn't match is reported with a suggestion, never dropped silently.
 
 <p align="center">
-  <img alt="Sales by US state on a tabsight map, with Alaska and Hawaii as insets" src="docs/assets/examples/sales-by-state-map.svg" width="70%">
+  <img alt="Sales by US state on a tabsight map, with Alaska and Hawaii as insets" src="https://raw.githubusercontent.com/yesh069/tabsight/main/docs/assets/examples/sales-by-state-map.svg" width="70%">
 </p>
 
 ```python
@@ -184,8 +184,8 @@ United States map (states)
 **Works like `df.plot` in notebooks.** A figure on the last line of a cell draws itself. Set `pd.options.plotting.backend = "tabsight"` and pandas' own `df.plot.bar(...)`, `.hist()` or `.scatter()` draw tabsight charts, or use `df.ts.treemap(...)` without changing any pandas setting.
 
 <p align="center">
-  <img alt="A treemap of sales by category and sub-category" src="docs/assets/examples/sales-treemap.svg" width="49%">
-  <img alt="Small multiples: sales by category and segment, one panel per region" src="docs/assets/examples/region-panels.svg" width="49%">
+  <img alt="A treemap of sales by category and sub-category" src="https://raw.githubusercontent.com/yesh069/tabsight/main/docs/assets/examples/sales-treemap.svg" width="49%">
+  <img alt="Small multiples: sales by category and segment, one panel per region" src="https://raw.githubusercontent.com/yesh069/tabsight/main/docs/assets/examples/region-panels.svg" width="49%">
 </p>
 
 **Insights in plain English, from rules, never an LLM.** tabsight states what the numbers show, never guesses why. "Today" is the latest date in the data, so the answer is the same on every machine.
@@ -202,7 +202,7 @@ print(ts.insights(orders, y="Profit", x="Sub_Category", date="Order_Date"))
 ```
 
 <p align="center">
-  <img alt="Monthly sales with a 12-month forecast, dashed, with a shaded range" src="docs/assets/examples/sales-forecast.svg" width="70%">
+  <img alt="Monthly sales with a 12-month forecast, dashed, with a shaded range" src="https://raw.githubusercontent.com/yesh069/tabsight/main/docs/assets/examples/sales-forecast.svg" width="70%">
 </p>
 
 Charts take an analytics pane like a BI tool's: `trend=True`, `forecast=6` (Holt-Winters, dashed and labelled "Estimate", with a range), `ref="mean"`, `band=("p25", "p75")` and `outliers=True`. A KPI card compares periods with `compare="previous_year"`.
@@ -227,7 +227,7 @@ tabsight auto sales.csv          # writes sales.html
 tabsight serve sales.csv         # server mode on this computer: no size limit, every tile filters
 ```
 
-**In your web app.** `dash.server(url)` keeps the data in Python, and the page asks for the numbers it needs as the viewer filters. `ts.web.fastapi_router`, `ts.web.flask_blueprint`, `ts.streamlit` and `ts.web.dash_iframe` wire it up. See [Web apps and server mode](docs/guide/web-apps.md).
+**In your web app.** `dash.server(url)` keeps the data in Python, and the page asks for the numbers it needs as the viewer filters. `ts.web.fastapi_router`, `ts.web.flask_blueprint`, `ts.streamlit` and `ts.web.dash_iframe` wire it up. See [Web apps and server mode](https://github.com/yesh069/tabsight/blob/main/docs/guide/web-apps.md).
 
 **Saved notebooks still show their charts.** With `pip install "tabsight[static]"`, each chart also carries a still picture of itself, drawn in Python. A notebook reopened untrusted, or viewed on GitHub, shows the picture where the interactive chart would be blank. `fig.to_svg()` saves the same picture for slides, and `fig.to_png()` (`tabsight[png]`) saves it as a PNG image.
 
@@ -244,7 +244,7 @@ tabsight serve sales.csv         # server mode on this computer: no size limit, 
 
 A chart is a web page someone else will open, so tabsight treats every value in your data as hostile. Data never becomes markup. Each page carries a strict Content Security Policy that allows only tabsight's own scripts (pinned by hash) and blocks all network access. Formulas run through tabsight's own parser, never `eval`. Saved specs and settings are validated against allow-lists.
 
-Most of this is enforced automatically: a code scanner rejects risky calls, fuzz tests exercise every parser, and every chart kind is tested with attack strings. [More on security](docs/project/security.md). To report a problem, please use GitHub's private vulnerability reporting rather than a public issue.
+Most of this is enforced automatically: a code scanner rejects risky calls, fuzz tests exercise every parser, and every chart kind is tested with attack strings. [More on security](https://github.com/yesh069/tabsight/blob/main/docs/project/security.md). To report a problem, please use GitHub's private vulnerability reporting rather than a public issue.
 
 ## Install
 
@@ -257,16 +257,16 @@ python -m pip install -e .                    # core: needs only pandas
 python -m pip install -e ".[excel,parquet]"   # optional readers
 ```
 
-Other extras: `static` (still SVG pictures and saved-notebook previews), `png` (PNG export), `web` (FastAPI and Flask for server mode) and `polars`. The [installation guide](docs/getting-started/installation.md) lists them all.
+Other extras: `static` (still SVG pictures and saved-notebook previews), `png` (PNG export), `web` (FastAPI and Flask for server mode) and `polars`. The [installation guide](https://github.com/yesh069/tabsight/blob/main/docs/getting-started/installation.md) lists them all.
 
 ## Documentation
 
-The full guide is on the **[documentation website](https://yesh069.github.io/tabsight/)**, and the same pages read directly on GitHub in [`docs/`](docs/README.md). Every example in it is run by the test suite, and the printed output you see is real.
+The full guide is on the **[documentation website](https://yesh069.github.io/tabsight/)**, and the same pages read directly on GitHub in [`docs/`](https://github.com/yesh069/tabsight/blob/main/docs/README.md). Every example in it is run by the test suite, and the printed output you see is real.
 
-- [Quickstart](docs/getting-started/quickstart.md): one file from CSV to chart
-- [How tabsight thinks](docs/getting-started/concepts.md): the ideas behind the defaults
-- User guide: [profiling](docs/guide/profiling.md), [aggregating](docs/guide/aggregating.md), [calculated fields](docs/guide/calculated-fields.md), [charts](docs/guide/charts.md), [choosing a chart](docs/guide/choosing-charts.md), [more chart types](docs/guide/more-charts.md), [small multiples](docs/guide/small-multiples.md), [notebooks and df.plot](docs/guide/notebooks.md), [maps](docs/guide/maps.md), [trends, forecasts and insights](docs/guide/analytics.md), [dashboards](docs/guide/dashboards.md), [one-line dashboards and the CLI](docs/guide/auto-and-cli.md), [web apps and server mode](docs/guide/web-apps.md), [formatting](docs/guide/formatting.md) and more
-- Reference: [formula functions](docs/reference/formula-functions.md), [locales](docs/reference/locales.md), [chart kinds](docs/reference/chart-kinds.md), [lint rules](docs/reference/lint-rules.md), [map coverage](docs/reference/map-coverage.md)
+- [Quickstart](https://github.com/yesh069/tabsight/blob/main/docs/getting-started/quickstart.md): one file from CSV to chart
+- [How tabsight thinks](https://github.com/yesh069/tabsight/blob/main/docs/getting-started/concepts.md): the ideas behind the defaults
+- User guide: [profiling](https://github.com/yesh069/tabsight/blob/main/docs/guide/profiling.md), [aggregating](https://github.com/yesh069/tabsight/blob/main/docs/guide/aggregating.md), [calculated fields](https://github.com/yesh069/tabsight/blob/main/docs/guide/calculated-fields.md), [charts](https://github.com/yesh069/tabsight/blob/main/docs/guide/charts.md), [choosing a chart](https://github.com/yesh069/tabsight/blob/main/docs/guide/choosing-charts.md), [more chart types](https://github.com/yesh069/tabsight/blob/main/docs/guide/more-charts.md), [small multiples](https://github.com/yesh069/tabsight/blob/main/docs/guide/small-multiples.md), [notebooks and df.plot](https://github.com/yesh069/tabsight/blob/main/docs/guide/notebooks.md), [maps](https://github.com/yesh069/tabsight/blob/main/docs/guide/maps.md), [trends, forecasts and insights](https://github.com/yesh069/tabsight/blob/main/docs/guide/analytics.md), [dashboards](https://github.com/yesh069/tabsight/blob/main/docs/guide/dashboards.md), [one-line dashboards and the CLI](https://github.com/yesh069/tabsight/blob/main/docs/guide/auto-and-cli.md), [web apps and server mode](https://github.com/yesh069/tabsight/blob/main/docs/guide/web-apps.md), [formatting](https://github.com/yesh069/tabsight/blob/main/docs/guide/formatting.md) and more
+- Reference: [formula functions](https://github.com/yesh069/tabsight/blob/main/docs/reference/formula-functions.md), [locales](https://github.com/yesh069/tabsight/blob/main/docs/reference/locales.md), [chart kinds](https://github.com/yesh069/tabsight/blob/main/docs/reference/chart-kinds.md), [lint rules](https://github.com/yesh069/tabsight/blob/main/docs/reference/lint-rules.md), [map coverage](https://github.com/yesh069/tabsight/blob/main/docs/reference/map-coverage.md)
 
 The same pages build a documentation website with search and dark mode: `python -m pip install -e ".[docs]"`, then `zensical serve`.
 
@@ -285,8 +285,8 @@ python tools/make_readme_images.py             # the chart images in this README
 
 Python and JavaScript share one number formatter: `tabsight.js` is a line-by-line port, checked against Python on 54,950 cases. CI runs the full suite on Windows, macOS and Linux, on Python 3.11 to 3.14, with pandas 2 and 3.
 
-Contributions are welcome. [CONTRIBUTING.md](CONTRIBUTING.md) has the ground rules, and [SECURITY.md](SECURITY.md) explains how to report a vulnerability.
+Contributions are welcome. [CONTRIBUTING.md](https://github.com/yesh069/tabsight/blob/main/CONTRIBUTING.md) has the ground rules, and [SECURITY.md](https://github.com/yesh069/tabsight/blob/main/SECURITY.md) explains how to report a vulnerability.
 
 ## Licence and credits
 
-tabsight is MIT licensed. It bundles [Apache ECharts](https://echarts.apache.org/) (Apache 2.0) and [topojson-client](https://github.com/topojson/topojson-client) (ISC), and its maps use [Natural Earth](https://www.naturalearthdata.com/) data (public domain). Details are in [NOTICE](NOTICE). The sample data in `examples/` is synthetic.
+tabsight is MIT licensed. It bundles [Apache ECharts](https://echarts.apache.org/) (Apache 2.0) and [topojson-client](https://github.com/topojson/topojson-client) (ISC), and its maps use [Natural Earth](https://www.naturalearthdata.com/) data (public domain). Details are in [NOTICE](https://github.com/yesh069/tabsight/blob/main/NOTICE). The sample data in `examples/` is synthetic.

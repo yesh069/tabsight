@@ -78,3 +78,30 @@ jobs:
       - run: npm install --ignore-scripts --no-audit --no-fund
         working-directory: tools
       - run: python -m pytest -m node
+
+  package:
+    name: package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - name: Build the sdist and wheel
+        run: python -m pip install build twine && python -m build
+      - name: Check the metadata PyPI will show
+        run: python -m twine check --strict dist/*
+      - name: Install the wheel in a clean environment and use it
+        run: |
+          python -m venv /tmp/clean
+          /tmp/clean/bin/pip install dist/*.whl
+          cd /tmp
+          /tmp/clean/bin/tabsight --version
+          /tmp/clean/bin/python - <<'PY'
+          import pandas as pd
+          import tabsight as ts
+          df = pd.DataFrame({"Region": ["West", "East"] * 5, "Sales": range(10)})
+          assert ts.chart(df, "bar", x="Region", y="Sales").to_html().startswith("<!doctype html>")
+          assert ts.auto(df).to_html().startswith("<!doctype html>")
+          print("tabsight", ts.__version__, "works from the wheel")
+          PY
