@@ -50,7 +50,7 @@ from tabsight.io import as_frame
 from tabsight.profile import Profile, _prepare, profile
 from tabsight.settings import resolve
 from tabsight.theme import Theme, get_theme
-from tabsight.warnings import InvalidSpecError, safe_repr
+from tabsight.warnings import DataWarning, InvalidSpecError, safe_repr
 
 __all__ = ["DASHBOARD_VERSION", "Dashboard"]
 
@@ -78,6 +78,8 @@ TILE_KEYS = frozenset({
 _TOP_KEYS = frozenset({"tabsight_dashboard", "title", "subtitle", "filters", "tiles", "theme", "locale",
                        "currency", "palette", "insights", "theme_toggle", "switch", "drill"})  # fmt: skip
 DEFAULT_WIDTH = {"kpi": 3, "gauge": 3, "bullet": 6, "table": 12, "sparkline": 3}
+MAX_SIZE_STEPS = 12
+MANY_VALUES = 50  # only fields with at least this many values are worth taking out of the table
 GRAINS_FINE_TO_COARSE = ("hour", "day", "week", "month", "quarter", "year")
 
 
@@ -136,6 +138,14 @@ def _check_tile(tile: Mapping[str, Any]) -> dict[str, Any]:
     if out.get("action", "filter") not in ("filter", "highlight", "none"):
         raise InvalidSpecError("action must be 'filter', 'highlight' or 'none'")
     return out
+
+
+class _TooLarge(InvalidSpecError):
+    """The shared table is over the size limit; ``dims`` lists (field, grain, values), widest first."""
+
+    def __init__(self, dataset: str, dims: list[tuple[str, str | None, int]], message: str) -> None:
+        super().__init__(message)
+        self.dataset, self.dims = dataset, dims
 
 
 @dataclasses.dataclass
@@ -199,6 +209,7 @@ class Dashboard:
         self.tiles: list[dict[str, Any]] = []
         self.insight_count = 0
         self.decisions: list[str] = []  # why ts.auto chose these tiles
+        self.size_steps: list[str] = []  # how the last build shrank to fit the size limit
         self.data = None if data is None else as_frame(data)
 
     # ------------------------------------------------------------ building it up
@@ -400,11 +411,78 @@ class Dashboard:
         return DashboardServer(self, url)
 
     def _build(self, server: bool = False) -> _Built:
+        """Build the page. When the shared table is over the size limit, shrink it in
+        steps and say so: first coarser dates on the tiles that use them (day, then week,
+        then month), then the tiles grouped by the field with the most values are drawn
+        from all the data instead of following the filters."""
+        overrides: dict[int, dict[str, Any]] = {}
+        static: set[int] = set()
+        steps: list[str] = []
+        for _ in range(MAX_SIZE_STEPS):
+            try:
+                built = self._build_once(server, overrides, static)
+            except _TooLarge as big:
+                step = self._shrink(big, overrides, static)
+                if step is None:
+                    raise InvalidSpecError(str(big)) from None
+                steps.append(step)
+                continue
+            built.report[:0] = steps
+            self.size_steps = steps
+            if steps:
+                warnings.warn("the dashboard was too big for one file, so tabsight " + "; then ".join(steps),
+                              DataWarning, stacklevel=3)  # fmt: skip
+            return built
+        raise InvalidSpecError("the dashboard is still too big after shrinking it; use server mode")
+
+    def _shrink(
+        self, big: _TooLarge, overrides: dict[int, dict[str, Any]], static: set[int]
+    ) -> str | None:
+        """One step that makes the shared table smaller, described for the user, or None."""
+        uses = ("x", "color", "geo", "source", "target")
+
+        def using(field: str) -> list[int]:
+            out = []
+            for i, t in enumerate(self.tiles):
+                if i in static or (t.get("data") or MAIN) != big.dataset:
+                    continue
+                cols = [
+                    v
+                    for k in uses
+                    for v in ([t.get(k)] if isinstance(t.get(k), str) else list(t.get(k) or ()))
+                ]
+                if field in cols:
+                    out.append(i)
+            return out
+
+        for field, grain, _n in big.dims:  # widest first
+            if grain not in ("hour", "day", "week"):
+                continue
+            coarser = GRAINS_FINE_TO_COARSE[GRAINS_FINE_TO_COARSE.index(grain) + 1]
+            tiles = [i for i in using(field) if self.tiles[i].get("kind") != "calendar_heatmap"]
+            if tiles:
+                for i in tiles:
+                    overrides.setdefault(i, {})["freq"] = coarser
+                return f"showed {field} by {coarser} instead of by {grain}"
+        for field, grain, n in big.dims:
+            if grain is not None or field in self.filters or n < MANY_VALUES:
+                continue
+            tiles = using(field)
+            if tiles:
+                static.update(tiles)
+                return (f"drew the tile(s) grouped by {field} ({n:,} values) from all the data; "
+                        "they no longer follow the filters")  # fmt: skip
+        return None
+
+    def _build_once(self, server: bool, overrides: Mapping[int, Mapping[str, Any]],
+                    static: set[int]) -> _Built:  # fmt: skip
         if self.data is None:
             raise InvalidSpecError("this dashboard has no data yet: pass data= or call .bind(df)")
         if not self.tiles:
             raise InvalidSpecError("add at least one tile (dash.add(...) or dash.kpi(...))")
         from tabsight.charts import chart
+
+        own_tiles = [{**t, **overrides.get(i, {})} for i, t in enumerate(self.tiles)]
 
         settings = resolve(locale=self.locale, currency=self.currency, palette=self.palette)
         theme: Theme = get_theme(self.theme or settings.theme)
@@ -416,14 +494,14 @@ class Dashboard:
         profs: dict[str, Profile] = {}
         tables: dict[str, _SharedTable] = {}
         for name, df in sources.items():
-            missing_data = [t for t in self.tiles if t.get("data", MAIN) == name]
+            missing_data = [t for t in own_tiles if t.get("data", MAIN) == name]
             if name != MAIN and not missing_data:
                 continue
             frames[name], _ = _prepare(df)
             profs[name] = profile(frames[name], quiet=True)
             tables[name] = _SharedTable(frames[name], profs[name], settings.fiscal_start, settings.week_start,
-                                        settings.locale)  # fmt: skip
-        for t in self.tiles:
+                                        settings.locale, name)  # fmt: skip
+        for t in own_tiles:
             if t.get("data", MAIN) not in frames:
                 raise InvalidSpecError(
                     f"tile data {safe_repr(t.get('data'))} was not given; pass it to bind()"
@@ -455,10 +533,10 @@ class Dashboard:
                     **args,
                 )
 
-        first = [draw(t, None, theme) for t in self.tiles]
+        first = [draw(t, None, theme) for t in own_tiles]
         # One colour per value across the whole dashboard (a region keeps its colour everywhere).
         registry = ColorRegistry(settings.palette)
-        for tile, fig in zip(self.tiles, first, strict=True):
+        for tile, fig in zip(own_tiles, first, strict=True):
             name = tile.get("data", MAIN)
             for col in _colour_fields(fig):
                 registry.assign(_labels_of(frames[name], col, profs[name]))
@@ -468,7 +546,7 @@ class Dashboard:
         report: list[str] = []
         tiles: list[dict[str, Any]] = []
         view_args: dict[tuple[int, str], dict[str, Any]] = {}
-        for i, tile in enumerate(self.tiles):
+        for i, tile in enumerate(own_tiles):
             name = tile.get("data", MAIN)
             frame, prof, table = frames[name], profs[name], tables[name]
 
@@ -487,7 +565,13 @@ class Dashboard:
                     payload_fig = fig.to_dict()
                     for entry in payload_fig.pop("maps", []):
                         maps.setdefault(entry["name"], entry)
-                    binding, why = _binding(fig, tile, table, prof, frame, f"{i}_{key}")
+                    if i in static:
+                        binding, why = (
+                            None,
+                            "drawn from all the data to keep the page under the size limit",
+                        )
+                    else:
+                        binding, why = _binding(fig, tile, table, prof, frame, f"{i}_{key}")
                     side: dict[str, Any] = {"figure": payload_fig}
                     if binding is None:
                         side["static"] = why
@@ -634,9 +718,15 @@ class _SharedTable:
     """Collects the dimensions and measures every tile needs, then groups once."""
 
     def __init__(
-        self, frame: pd.DataFrame, prof: Profile, fiscal_start: int, week_start: str, locale: str
+        self,
+        frame: pd.DataFrame,
+        prof: Profile,
+        fiscal_start: int,
+        week_start: str,
+        locale: str,
+        name: str = MAIN,
     ):
-        self.frame, self.prof = frame, prof
+        self.frame, self.prof, self.name = frame, prof, name
         self.fiscal_start, self.week_start, self.locale = fiscal_start, week_start, locale
         self.dims: dict[str, pd.Series] = {}  # column id -> keys
         self.meta: dict[str, dict[str, Any]] = {}
@@ -838,14 +928,24 @@ class _SharedTable:
         out["size_mb"] = round(size, 3)
         if size > max_mb:
             widest = sorted(dims, key=lambda c: -len(out["dims"][c]["values"]))[:3]
-            raise InvalidSpecError(
+            raise _TooLarge(
+                self.name,
+                [
+                    (
+                        self.meta[c]["field"],
+                        self.meta[c].get("grain"),
+                        len(out["dims"][c]["values"]),
+                    )
+                    for c in sorted(dims, key=lambda c: -len(out["dims"][c]["values"]))
+                    if not self.meta[c].get("hidden")
+                ],
                 f"the dashboard's data table would be {size:.1f} MB ({len(parts):,} rows), over the "
                 f"{max_mb:g} MB limit. The fields with the most values are "
                 + ", ".join(
                     f"{self.meta[c]['field']} ({len(out['dims'][c]['values']):,})" for c in widest
                 )
                 + ". Use a coarser freq= for dates, fewer filter fields, top= on large categories, "
-                "ts.set_defaults(max_size_mb=...), or server mode (dash.server(...))"
+                "ts.set_defaults(max_size_mb=...), or server mode (dash.server(...))",
             )
         return out
 

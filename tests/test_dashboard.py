@@ -17,7 +17,7 @@ import pytest
 import tabsight as ts
 from tabsight.aggregate import _time_values, bucket
 from tabsight.profile import _prepare, profile
-from tabsight.warnings import InvalidSpecError
+from tabsight.warnings import DataWarning, InvalidSpecError
 
 from .conftest import assert_unchanged, superstore_like
 from .test_html_security import EVIL, _parse
@@ -329,6 +329,33 @@ def test_too_big_a_table_is_refused_with_advice() -> None:
     dash = ts.Dashboard("Big", data=big, filters=["Order_ID"]).add("bar", x="Region", y="Sales")
     with ts.config(max_size_mb=0.1), pytest.raises(InvalidSpecError, match="Order_ID"):
         dash.build()
+
+
+def test_a_dashboard_too_big_for_one_file_shrinks_in_steps() -> None:
+    big = superstore_like(4000, seed=3)
+    dash = (ts.Dashboard("Daily", data=big)
+            .add("multi_line", x="Order_Date", y="Sales", color="Segment", freq="day")
+            .add("bar", x="Region", y="Sales"))  # fmt: skip
+    with ts.config(max_size_mb=0.1), pytest.warns(DataWarning, match="instead of by day"):
+        payload = dash.build()
+    assert dash.size_steps[0] == "showed Order_Date by week instead of by day"
+    line = payload["tiles"][0]["views"][0]["themes"]["light"]
+    assert "binding" in line  # coarser, but still follows the filters
+    assert dash.tiles[0]["freq"] == "day"  # the dashboard itself is unchanged
+
+
+def test_a_field_with_too_many_values_stops_following_filters() -> None:
+    big = superstore_like(6000, seed=3)
+    dash = (
+        ts.Dashboard("IDs", data=big)
+        .add("bar", x="Order_ID", y="Sales", top=10)
+        .add("bar", x="Region", y="Sales")
+    )
+    with ts.config(max_size_mb=0.1), pytest.warns(DataWarning, match="Order_ID"):
+        payload = dash.build()
+    ids, regions = (t["views"][0]["themes"]["light"] for t in payload["tiles"])
+    assert "size limit" in ids["static"] and "binding" in regions
+    assert "Order_ID" not in payload["data"]["dims"]
 
 
 def test_hostile_values_stay_text_in_the_page() -> None:

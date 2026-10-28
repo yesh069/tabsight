@@ -34,7 +34,7 @@ dash.to_html("superstore.html")
 4. **Bars** (or a donut, for a few parts of a total) of the main measure by the categories with a handful of values. A hierarchy's top level comes first (Region before State).
 5. **Filters** on the date and the smallest categories, and an **insights** panel.
 
-`dash.decisions` lists what was chosen and why. Every tile is tried before it is added, and the dashboard is checked against the size limit, dropping filters and then tiles until it fits. A table with no measures still works: tiles count rows (as `Records`), and distinct IDs get a KPI.
+`dash.decisions` lists what was chosen and why. Every tile is tried before it is added, and the dashboard is checked against the size limit. If the [dashboard's own steps](dashboards.md) aren't enough, it drops filters and then tiles until it fits. A table with no measures still works: tiles count rows (as `Records`), and distinct IDs get a KPI.
 
 The result is an ordinary [`Dashboard`](dashboards.md), so you can keep going:
 

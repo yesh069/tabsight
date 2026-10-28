@@ -82,7 +82,7 @@ print(sorted(c for c in table["dims"] if not c.startswith("__")))
 ['Category', 'City', 'Order_Date|month', 'Region', 'Segment', 'Ship_Mode', 'State', 'Sub_Category']
 ```
 
-This sample is small, so almost every order is its own group; with thousands of orders per state and month, the table stays the same size while the data grows. Date filters work by month, so a date can't multiply the table by its days. If the table would be larger than `max_size_mb` (5 MB by default), tabsight stops and names the fields with the most values. You can then use a coarser `freq=`, fewer filter fields or `top=`.
+This sample is small, so almost every order is its own group; with thousands of orders per state and month, the table stays the same size while the data grows. Date filters work by month, so a date can't multiply the table by its days. If the table would be larger than `max_size_mb` (5 MB by default), tabsight shrinks it in steps and warns you about each one. First it shows over-detailed dates more coarsely on the tiles that use them (by day, then week, then month). Then it draws the tiles grouped by a field with many values from all the data, so they no longer follow the filters. `dash.size_steps` lists what it did. If that isn't enough, for example because a filter field itself has too many values, it stops and names the fields with the most values. Use fewer filter fields, `top=`, or [server mode](web-apps.md), which has no size limit.
 
 After a filter, the browser re-ranks the top N and the "Other" group, re-sorts the bars, and redraws each tile. Tests run the browser code and `ts.chart` on the same filtered data and check that every tile gives the same numbers.
 

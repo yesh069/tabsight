@@ -219,6 +219,9 @@ def _fit(dash: Dashboard, decisions: list[str]) -> None:
     while True:
         try:
             dash.build()
+            decisions.extend(
+                f"to stay under the size limit, tabsight {step}" for step in dash.size_steps
+            )
             return
         except InvalidSpecError as e:
             if "MB" not in str(e) or (not dash.filters and len(dash.tiles) <= 1):
