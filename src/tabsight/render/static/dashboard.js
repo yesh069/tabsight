@@ -1987,6 +1987,8 @@
 
   // ------------------------------------------------------------- the page
 
+  var LONG_PRESS_MS = 450; // touch: hold this long to filter; a shorter tap shows the tooltip
+
   function el(tag, cls, text) {
     var e = root.document.createElement(tag);
     if (cls) e.className = cls;
@@ -2247,7 +2249,25 @@
       t.target = el("div", "ts-chart");
       t.target.setAttribute("role", "img");
       t.target.setAttribute("aria-label", first.title);
-      t.target.addEventListener("pointerdown", function (ev) { t.ctrl = ev.ctrlKey || ev.metaKey; }, true);
+      t.target.addEventListener("pointerdown", function (ev) {
+        t.ctrl = ev.ctrlKey || ev.metaKey;
+        // On a touch screen a tap shows the tooltip; pressing and holding filters.
+        t.touch = ev.pointerType === "touch";
+        t.downAt = Date.now();
+        clearTimeout(t.holdTimer);
+        if (t.touch) {
+          t.holdTimer = setTimeout(function () {
+            box.classList.add("ts-dash-tile--hold");
+            if (root.navigator && typeof root.navigator.vibrate === "function") root.navigator.vibrate(12);
+          }, LONG_PRESS_MS);
+        }
+      }, true);
+      var release = function () {
+        clearTimeout(t.holdTimer);
+        setTimeout(function () { box.classList.remove("ts-dash-tile--hold"); }, 150);
+      };
+      t.target.addEventListener("pointerup", release, true);
+      t.target.addEventListener("pointercancel", release, true);
       if (first.kind !== "kpi" && first.kind !== "table") t.target.style.height = first.height + "px"; // no jump when drawn
       body.appendChild(t.target);
       t.notes = el("div", "ts-tile__notes");
@@ -2576,6 +2596,7 @@
       if (p.treePathInfo) p.treePathInfo = p.treePathInfo.map(function (n) { return { name: tsj.plainName(n.name) }; });
       var b = flatTile(t, themeName).binding;
       if (!b || !b.click || t.tile.action === "none") return;
+      if (t.touch && Date.now() - t.downAt < LONG_PRESS_MS) return; // a tap: just the tooltip
       var ev = p.event && p.event.event ? p.event.event : {};
       var add = !!(ev.ctrlKey || ev.metaKey || ev.shiftKey);
       if (b.shape === "geo") {
