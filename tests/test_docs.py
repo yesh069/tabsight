@@ -43,9 +43,17 @@ def test_examples_run_and_shown_output_is_current(page: Path) -> None:
         ts.settings.reset_defaults()
     if int(pd.__version__.split(".")[0]) < 3:
         return  # examples ran; exact output is defined by pandas 3 (pandas 2 prints some types differently)
-    assert rendered == text, (
-        f"{page.relative_to(ROOT).as_posix()}: shown output is out of date; run python tools/render_doc_outputs.py"
-    )
+    if rendered != text:
+        import difflib
+
+        diff = "".join(
+            difflib.unified_diff(
+                text.splitlines(True), rendered.splitlines(True), "shown", "real", n=1
+            )
+        )
+        pytest.fail(
+            f"{page.relative_to(ROOT).as_posix()}: shown output is out of date; run python tools/render_doc_outputs.py\n{diff}"
+        )
 
 
 def test_pages_with_code_show_real_output() -> None:

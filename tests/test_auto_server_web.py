@@ -500,5 +500,9 @@ def test_auto_maps_regions_before_cities() -> None:
     sample = ts.load(Path(__file__).resolve().parent.parent / "examples" / "superstore_sample.csv")
     maps = [t for t in ts.auto(sample).tiles if t["kind"] in ("map", "symbol_map")]
     assert maps == [{"kind": "map", "w": 6, "action": "filter", "geo": "State", "y": "Sales"}]
-    cities = pd.DataFrame({"City": ["Paris", "Berlin", "Madrid", "Rome", "Dublin"] * 4, "Sales": np.arange(20.0)})
-    assert [t["kind"] for t in ts.auto(cities).tiles if "geo" in t] == ["symbol_map"]  # points, not regions
+    cities = pd.DataFrame(
+        {"City": ["Paris", "Berlin", "Madrid", "Rome", "Dublin"] * 4, "Sales": np.arange(20.0)}
+    )
+    assert [t["kind"] for t in ts.auto(cities).tiles if "geo" in t] == [
+        "symbol_map"
+    ]  # points, not regions
