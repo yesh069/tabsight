@@ -173,7 +173,12 @@ def auto(
             cats = cats[1:]
     if place is not None:
         level = mapped[1] if mapped else ""
-        tiles.append(("symbol_map" if level == "city" else "map", {"geo": place, "y": main, "w": 6 if cats else 12}))
+        tiles.append(
+            (
+                "symbol_map" if level == "city" else "map",
+                {"geo": place, "y": main, "w": 6 if cats else 12},
+            )
+        )
         decisions.append(f"map: {place} holds {'cities' if level == 'city' else 'places'}")
     for f in cats[:MAX_BARS]:
         many = f.distinct > 6

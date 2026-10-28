@@ -13,12 +13,11 @@ for line in dash.decisions:
 ```
 
 ```text title="Output"
-<Dashboard 'Superstore': 9 tiles, filters ['Order_Date', 'Category', 'Region', 'City']>
+<Dashboard 'Superstore': 10 tiles, filters ['Order_Date', 'Category', 'Region', 'State']>
 measures: Sales (currency, sum), Profit (currency, sum), Quantity (count, sum), Discount (percent, mean)
 date: Order_Date (KPIs compare with the previous year)
-map: City holds places
-skipped map of City: City holds cities, which are points: use kind='symbol_map' (or map=/level= to choose regions)
-filters: Order_Date, Category, Region, City
+map: State holds places
+filters: Order_Date, Category, Region, State
 ```
 
 ```python
@@ -47,7 +46,7 @@ print(len(dash.tiles), "tiles;", len(spec["tiles"]), "in the saved spec")
 ```
 
 ```text title="Output"
-10 tiles; 10 in the saved spec
+11 tiles; 11 in the saved spec
 ```
 
 Options: `max_tiles=` (default 10), `insights=False`, and `theme=`, `locale=`, `currency=` as for any dashboard.
