@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false  # nothing here pushes, so keep no git token on disk
       - uses: actions/setup-python@v7
         with:
           python-version: "3.13"
@@ -42,4 +44,5 @@ jobs:
         with:
           name: dist
           path: dist/
-      - uses: pypa/gh-action-pypi-publish@release/v1
+      # Pinned to a commit: this step holds the PyPI publishing identity. v1.14.3 (Dependabot updates it).
+      - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086
