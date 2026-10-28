@@ -46,3 +46,11 @@ vulnerability reporting.
 ## Third-party files
 
 Never edit files in `src/tabsight/render/static/` that come from upstream. Change the pinned version in `tools/fetch_vendor.py`, run `python tools/fetch_vendor.py --update`, and update `NOTICE`.
+
+## Releasing (maintainer)
+
+1. In a pull request, set the version in `src/tabsight/_version.py` (for example `0.1.0`) and rename the changelog's "Unreleased" heading to that version and date.
+2. Once it is merged and CI is green, tag `main` and push the tag: `git tag v0.1.0 && git push origin v0.1.0`.
+3. The **Release** workflow checks that the tag matches the version, builds the sdist and wheel, checks them, and publishes to PyPI with trusted publishing (no token stored anywhere). The first time, add the repository as a trusted publisher on pypi.org: project `tabsight`, workflow `release.yml`, environment `pypi`.
+
+Release tags can't be moved or deleted (a ruleset protects `v*`), so a published version always matches its tag.

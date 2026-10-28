@@ -1,0 +1,48 @@
+name: Release
+
+# Publishes to PyPI when a version tag (v0.1.0, ...) is pushed. Uses PyPI trusted
+# publishing: no API token is stored anywhere. Before the first release, add this
+# repository as a trusted publisher on pypi.org (project "tabsight", workflow
+# "release.yml", environment "pypi").
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false  # nothing here pushes, so keep no git token on disk
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - name: The tag must match the package version
+        run: |
+          version=$(python -c "exec(open('src/tabsight/_version.py').read()); print(__version__)")
+          test "v$version" = "$GITHUB_REF_NAME" || { echo "tag $GITHUB_REF_NAME but version $version"; exit 1; }
+      - run: python -m pip install build twine && python -m build && python -m twine check --strict dist/*
+      - uses: actions/upload-artifact@v5
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/tabsight/
+    permissions:
+      id-token: write  # trusted publishing
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          name: dist
+          path: dist/
+      # Pinned to a commit: this step holds the PyPI publishing identity. v1.14.3 (Dependabot updates it).
+      - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086

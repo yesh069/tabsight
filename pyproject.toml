@@ -13,7 +13,7 @@ requires-python = ">=3.11"
 authors = [{ name = "tabsight contributors" }]
 keywords = ["dashboard", "visualization", "charts", "maps", "pandas", "echarts", "bi"]
 classifiers = [
-    "Development Status :: 1 - Planning",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "Operating System :: OS Independent",
@@ -68,7 +68,10 @@ tabsight = "tabsight.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/yesh069/tabsight"
+Documentation = "https://yesh069.github.io/tabsight/"
+Changelog = "https://github.com/yesh069/tabsight/blob/main/CHANGELOG.md"
 Issues = "https://github.com/yesh069/tabsight/issues"
+Funding = "https://github.com/sponsors/yesh069"
 
 [project.entry-points.pandas_plotting_backends]
 tabsight = "tabsight.plotting"

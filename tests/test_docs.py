@@ -175,6 +175,15 @@ def test_readme_images_are_valid_svg() -> None:
 
 
 def test_readme_links_point_to_real_files() -> None:
+    """The README is also the PyPI page, so its links are absolute; ours must exist here."""
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    for target in re.findall(r"\]\(((?!https?://|#)[^)#]+)", readme):
+    ours = re.findall(
+        r"https://(?:github\.com/yesh069/tabsight/blob|raw\.githubusercontent\.com/yesh069/tabsight)/main/([^)\"#\s]+)",
+        readme,
+    )
+    assert len(ours) > 20
+    for target in ours:
         assert (ROOT / target).exists(), target
+    assert not re.findall(r"\]\((?!https?://|#)[^)]+\)|(?:src|srcset)=\"(?!https://)", readme), (
+        "relative link"
+    )
