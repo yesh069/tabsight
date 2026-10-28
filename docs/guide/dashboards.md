@@ -48,6 +48,7 @@ Each value keeps one colour in every tile: West is the same colour in the stacke
 
 - **Filter** with the bar at the top: a list of values for each category field, and a from–to month range for each date field.
 - **Click a bar, slice, map region, point or table row** to filter every other tile to it. Ctrl or Shift + click adds or removes more values. Clicking the same mark again removes the filter. Clicking the grey "Other" bar filters to everything inside it.
+- **On a phone or tablet,** a tap shows the tooltip, and pressing and holding a mark for about half a second filters to it (the tile is outlined, and the phone gives a short buzz where it can).
 - **See what is filtered.** Each filter shows as a chip with an × to remove it, plus "Reset all filters".
 - **The clicked tile highlights instead of filtering itself**, so you still see what you picked against the rest.
 - **Share the view.** The filters are kept in the page address (`#f=...`), so a copied link opens the same view. This works when the file is hosted somewhere; a `file://` address only works on the computer that has the file.
@@ -177,7 +178,3 @@ ts.Dashboard.load("sales.json").bind(new_orders).to_html("sales_november.html")
 ```
 
 `bind` checks that every column the dashboard needs exists in the new data, and suggests the closest name if one was renamed. Loading a file someone else wrote is safe: every key is checked against a fixed list, values must be plain JSON, and each tile is validated like a `ts.chart` call.
-
-## Not built yet
-
-- touch gestures beyond tapping (long-press to filter)

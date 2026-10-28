@@ -11,6 +11,7 @@ All notable changes are listed here. The project follows [Semantic Versioning](h
 - `ts.web.fastapi_router`, `ts.web.flask_blueprint`, `ts.streamlit`, `ts.web.dash_iframe` and `ts.serve_payload`; `tabsight serve` runs server mode with Python's own HTTP server on 127.0.0.1.
 - `fig.to_png()`: the SVG picture rasterised by resvg-py, no browser needed (`tabsight[png]`, which no longer uses Playwright). New `web` extra.
 - Dashboards over the size limit shrink themselves in steps instead of stopping: coarser dates on the tiles that use them, then tiles grouped by a field with many values are drawn from all the data. Each step is reported (`dash.size_steps`, and a warning).
+- Touch screens: a tap on a dashboard chart shows the tooltip, and pressing and holding filters (the tile is outlined while held).
 
 ### Security
 - `tabsight serve` answers only requests addressed to its own host names, so a hostile web page can't read the served data by DNS rebinding; `--allow-host` adds names. Server-mode data requests must be `application/json` (415 otherwise in the FastAPI and Flask helpers).

@@ -45,6 +45,8 @@ def _dash_css(theme: Theme) -> str:
 .ts-reset {{ font-size: 12.5px; text-decoration: underline; padding: 2px 6px; }}
 .ts-grid {{ display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 14px; }}
 .ts-dash-tile {{ min-width: 0; }}
+.ts-dash-tile--hold {{ outline: 2px solid {theme.accent}; outline-offset: -2px; }}
+.ts-chart {{ -webkit-touch-callout: none; user-select: none; }}
 .ts-dash-tile .ts-tile__head {{ display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }}
 .ts-dash-tile .ts-tile__title {{ font-size: 14px; flex: 1; }}
 .ts-dash-tile .ts-tile__subtitle {{ flex-basis: 100%; order: 3; }}
