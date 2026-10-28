@@ -36,7 +36,7 @@ tabsight starts one step earlier. It works out what each column actually is, tel
 </p>
 <p align="center"><sub>Real output from <code>ts.chart</code> on the sample data in this repository, nothing edited by hand.</sub></p>
 
-> **Status:** early development, not yet on PyPI. Install it from this repository (see [Install](#install)).
+> **Status:** early development. The first pre-release is on PyPI: `pip install --pre tabsight`. Expect changes before 1.0.
 
 ## A first look
 
@@ -248,13 +248,11 @@ Most of this is enforced automatically: a code scanner rejects risky calls, fuzz
 
 ## Install
 
-tabsight needs Python 3.11 or newer and pandas 2.2 or newer. It isn't on PyPI yet, so install from a clone:
+tabsight needs Python 3.11 or newer and pandas 2.2 or newer. It is a pre-release, so pip needs `--pre`:
 
 ```bash
-git clone https://github.com/yesh069/tabsight.git
-cd tabsight
-python -m pip install -e .                    # core: needs only pandas
-python -m pip install -e ".[excel,parquet]"   # optional readers
+python -m pip install --pre tabsight                     # core: needs only pandas
+python -m pip install --pre "tabsight[excel,parquet]"    # optional readers
 ```
 
 Other extras: `static` (still SVG pictures and saved-notebook previews), `png` (PNG export), `web` (FastAPI and Flask for server mode) and `polars`. The [installation guide](https://github.com/yesh069/tabsight/blob/main/docs/getting-started/installation.md) lists them all.

@@ -2,7 +2,7 @@
 
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/).
 
-## Unreleased
+## 0.1.0a1 (28 Oct 2026, first pre-release)
 
 ### Added: auto, command line and web apps
 - `ts.auto(df)`: a whole dashboard from fixed rules on the column profile: KPI cards (money first, compared with the previous year when the dates allow), a line over time at a grain that suits the span, a map when a column holds places, bars by the smallest categories, filters and insights. `dash.decisions` says what was chosen and why; tiles are tried before they are added and the result is fitted under the size limit. Tables without measures count rows.
