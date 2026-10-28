@@ -3,9 +3,17 @@
 tabsight needs **Python 3.11 or newer** (3.11, 3.12, 3.13 and 3.14 are tested) and pandas 2.2 or newer (pandas 2 and 3 are both supported).
 
 > [!NOTE]
-> tabsight is not on PyPI yet. Until the first release, install it from a clone of the repository.
+> tabsight is in pre-release, so pip only installs it when asked: add `--pre`. Expect some changes before 1.0.
+
+## From PyPI
+
+```bash
+python -m pip install --pre tabsight
+```
 
 ## From the repository
+
+For the newest code, or to work on tabsight itself:
 
 ```bash
 git clone https://github.com/yesh069/tabsight.git
@@ -28,7 +36,7 @@ The core package only needs pandas. Extra file formats need extra packages:
 | `dev` | test and lint tools | Working on tabsight itself. |
 
 ```bash
-python -m pip install -e ".[excel,parquet]"
+python -m pip install --pre "tabsight[excel,parquet]"
 ```
 
 ## Check it works
