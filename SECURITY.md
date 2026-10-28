@@ -12,7 +12,9 @@ tabsight writes HTML files that other people open, so these matter most:
 - Formula fields or saved dashboard files that execute code
 - CSV downloads that run as formulas in spreadsheet software
 - Any network request the user did not ask for
+- Server mode (`dash.server`, `ts.web`, `tabsight serve`): requests that read data they shouldn't, or reach a local `tabsight serve` from another website
+- Files that `ts.load` should refuse: anything that makes it contact another computer, or exhausts memory (decompression bombs)
 
 ## Supported versions
 
-Only the latest release receives security fixes until version 1.0.
+Until version 1.0, only the latest release receives security fixes. Fixes ship as a new release on PyPI and are listed in the changelog.

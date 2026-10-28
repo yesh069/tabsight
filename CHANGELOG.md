@@ -2,6 +2,16 @@
 
 All notable changes are listed here. The project follows [Semantic Versioning](https://semver.org/).
 
+## 0.1.0 (28 Oct 2026)
+
+The first full release. Everything below, from 0.1.0a1, plus:
+
+### Changed
+- Installs with a plain `pip install tabsight`; the README, documentation home page and installation guide say so.
+- The README (also the PyPI page) starts with a quick start, links the sample data it uses, and shows the PyPI version.
+- The documentation's table of contents (`docs/README.md`) lists every page, and the quickstart ends by drawing a chart and a dashboard.
+- `SECURITY.md` and the warnings-and-errors reference cover server mode, `tabsight serve`, decompression bombs, network shares and dashboard size steps.
+
 ## 0.1.0a1 (28 Oct 2026, first pre-release)
 
 ### Added: auto, command line and web apps

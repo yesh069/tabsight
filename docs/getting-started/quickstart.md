@@ -123,4 +123,12 @@ $275.3K
 €275,259
 ```
 
-That's the core loop. From here, [how tabsight thinks](concepts.md) explains the rules behind these defaults, and the [user guide](../guide/loading-data.md) goes deeper into each step.
+## 7. Draw it
+
+```python
+# not run
+ts.chart(orders, "bar", x="Region", y="Sales").to_html("sales_by_region.html")
+ts.auto(orders, "Superstore").to_html("superstore.html")  # a whole dashboard
+```
+
+That's the core loop. From here, [how tabsight thinks](concepts.md) explains the rules behind these defaults, and the user guide goes deeper: [making charts](../guide/charts.md), [dashboards](../guide/dashboards.md), [one-line dashboards and the command line](../guide/auto-and-cli.md), and [loading data](../guide/loading-data.md) for every step before that.

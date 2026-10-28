@@ -16,7 +16,7 @@
   <img alt="Python 3.11 to 3.14" src="https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-1f3b5c">
   <img alt="pandas 2 and 3" src="https://img.shields.io/badge/pandas-2%20%7C%203-1f3b5c">
   <img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-f28e2b">
-  <img alt="Status: early development" src="https://img.shields.io/badge/status-early%20development-f28e2b">
+  <a href="https://pypi.org/project/tabsight/"><img alt="PyPI" src="https://img.shields.io/pypi/v/tabsight?include_prereleases&label=pypi&color=1f3b5c"></a>
   <a href="https://github.com/sponsors/yesh069"><img alt="Sponsor yesh069" src="https://img.shields.io/badge/sponsor-%E2%9D%A4-ea4aaa?logo=githubsponsors&logoColor=white"></a>
 </p>
 
@@ -36,9 +36,35 @@ tabsight starts one step earlier. It works out what each column actually is, tel
 </p>
 <p align="center"><sub>Real output from <code>ts.chart</code> on the sample data in this repository, nothing edited by hand.</sub></p>
 
-> **Status:** early development. The first pre-release is on PyPI: `pip install --pre tabsight`. Expect changes before 1.0.
+> **Status:** version 0.1, the first release. It is tested on Windows, macOS and Linux with Python 3.11 to 3.14 and pandas 2 and 3. Some names may still change before 1.0; the changelog will say when.
+
+## Quick start
+
+```bash
+pip install tabsight
+```
+
+```python
+# not run
+import pandas as pd
+import tabsight as ts
+
+df = pd.read_csv("sales.csv")  # or ts.load("sales.csv")
+ts.auto(df).to_html("sales.html")  # a whole dashboard, chosen from the data
+ts.chart(df, "bar", x="Region", y="Sales").to_html("bar.html")  # or one chart
+```
+
+Or from a terminal, with no code at all:
+
+```bash
+tabsight auto sales.csv          # writes sales.html
+```
+
+The file is one offline HTML page: open it in any browser, email it, or put it on a website.
 
 ## A first look
+
+The examples below use [the sample file](https://github.com/yesh069/tabsight/blob/main/examples/superstore_sample.csv) in this repository.
 
 ```python
 import tabsight as ts
@@ -248,11 +274,11 @@ Most of this is enforced automatically: a code scanner rejects risky calls, fuzz
 
 ## Install
 
-tabsight needs Python 3.11 or newer and pandas 2.2 or newer. It is a pre-release, so pip needs `--pre`:
+tabsight needs Python 3.11 or newer and pandas 2.2 or newer. Install it from PyPI:
 
 ```bash
-python -m pip install --pre tabsight                     # core: needs only pandas
-python -m pip install --pre "tabsight[excel,parquet]"    # optional readers
+python -m pip install tabsight                     # core: needs only pandas
+python -m pip install "tabsight[excel,parquet]"    # optional readers
 ```
 
 Other extras: `static` (still SVG pictures and saved-notebook previews), `png` (PNG export), `web` (FastAPI and Flask for server mode) and `polars`. The [installation guide](https://github.com/yesh069/tabsight/blob/main/docs/getting-started/installation.md) lists them all.
@@ -274,7 +300,7 @@ The same pages build a documentation website with search and dark mode: `python 
 python -m pip install -e ".[dev,docs]"
 python tools/fetch_vendor.py                   # pinned, hash-checked third-party files
 cd tools && npm install --ignore-scripts && cd ..
-python -m pytest                               # about 1,000 tests, including Node checks
+python -m pytest                               # over 1,000 tests, including Node checks
 python -m ruff check . && python -m mypy
 python tools/render_doc_outputs.py             # refresh the real outputs in docs and README
 python tools/make_gallery.py                   # every chart kind, into ./gallery

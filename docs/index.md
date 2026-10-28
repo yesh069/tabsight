@@ -7,7 +7,7 @@ hide:
 
 Most chart tools take your columns at face value. They sum discounts, treat zip codes as numbers, and average averages when you filter. tabsight starts one step earlier: it works out what each column actually is, tells you why it thinks so, and only then does the maths.
 
-Here it is on a small sales file that ships with the repository:
+Here it is on [a small sales file](https://github.com/yesh069/tabsight/blob/main/examples/superstore_sample.csv) from the repository:
 
 ```python
 import tabsight as ts
@@ -78,8 +78,22 @@ $2.3M
 ₹12.3L
 ```
 
+## One line, or one command
+
+```python
+# not run
+ts.auto(orders, "Sales").to_html("sales.html")  # KPIs, a trend, a map, bars, filters and insights
+```
+
+```bash
+tabsight auto sales.csv          # the same from a terminal
+tabsight serve sales.csv         # server mode: no size limit, every tile follows the filters
+```
+
+[Dashboards](guide/dashboards.md) cross-filter in one offline file, and [server mode](guide/web-apps.md) puts them in FastAPI, Flask, Streamlit or Dash apps.
+
 ## Where to start
 
-If you have five minutes, the [quickstart](getting-started/quickstart.md) walks through one file from loading to calculated fields. If you want to know why tabsight behaves the way it does, read [how tabsight thinks](getting-started/concepts.md). The [user guide](guide/loading-data.md) covers each feature in depth.
+If you have five minutes, the [quickstart](getting-started/quickstart.md) walks through one file from loading to a chart. If you want to know why tabsight behaves the way it does, read [how tabsight thinks](getting-started/concepts.md). The [user guide](guide/loading-data.md) covers each feature in depth.
 
-tabsight is in pre-release: `pip install --pre tabsight` ([installation](getting-started/installation.md)).
+Install it with `pip install tabsight` ([installation](getting-started/installation.md)).
