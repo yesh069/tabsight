@@ -1,4 +1,5 @@
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -12,7 +13,8 @@ LOCK = json.loads((ROOT / "tools" / "vendor.lock.json").read_text(encoding="utf-
 
 
 def test_version_is_exposed() -> None:
-    assert tabsight.__version__.startswith("0.0.1")
+    # A PEP 440 release number: 0.1.0, 0.1.0a1, 0.1.0rc2, 0.2.0.dev0 ...
+    assert re.fullmatch(r"\d+\.\d+\.\d+((a|b|rc)\d+)?(\.dev\d+)?", tabsight.__version__)
 
 
 def test_python_floor_is_311() -> None:
