@@ -10,6 +10,7 @@ All notable changes are listed here. The project follows [Semantic Versioning](h
 - Server mode: `dash.server(url)` keeps the data in Python. The page posts its filters and gets back, per tile, a small table from the filtered rows, drawn by the same runtime (parity-tested against the offline page), or for tiles the browser can't recompute, the chart redrawn in Python. No size limit for the page; medians, distinct counts and scatter plots follow every filter. Requests are size-capped, shape-checked and filtered against known values; the page's CSP allows `connect-src` to that one origin only.
 - `ts.web.fastapi_router`, `ts.web.flask_blueprint`, `ts.streamlit`, `ts.web.dash_iframe` and `ts.serve_payload`; `tabsight serve` runs server mode with Python's own HTTP server on 127.0.0.1.
 - `fig.to_png()`: the SVG picture rasterised by resvg-py, no browser needed (`tabsight[png]`, which no longer uses Playwright). New `web` extra.
+- Dashboards over the size limit shrink themselves in steps instead of stopping: coarser dates on the tiles that use them, then tiles grouped by a field with many values are drawn from all the data. Each step is reported (`dash.size_steps`, and a warning).
 
 ### Security
 - `tabsight serve` answers only requests addressed to its own host names, so a hostile web page can't read the served data by DNS rebinding; `--allow-host` adds names. Server-mode data requests must be `application/json` (415 otherwise in the FastAPI and Flask helpers).
