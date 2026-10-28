@@ -1,4 +1,4 @@
-"""``ts.recommend``: "Show Me" without an LLM.
+"""``ts.recommend``: ranked chart suggestions, each with its reason.
 
 Given the fields you picked, rank the chart kinds that fit, with a plain-English reason
 for each and a reason for every kind that was ruled out. The rules look at what the

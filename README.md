@@ -7,7 +7,7 @@
 
 <p align="center">
   <b>BI-quality charts, world maps and dashboards from a pandas DataFrame.</b><br>
-  Rule-based. No LLM. One offline HTML file.
+  Exact numbers. Every guess explained. One offline HTML file.
 </p>
 
 <p align="center">
@@ -214,7 +214,7 @@ United States map (states)
   <img alt="Small multiples: sales by category and segment, one panel per region" src="https://raw.githubusercontent.com/yesh069/tabsight/main/docs/assets/examples/region-panels.svg" width="49%">
 </p>
 
-**Insights in plain English, from rules, never an LLM.** tabsight states what the numbers show, never guesses why. "Today" is the latest date in the data, so the answer is the same on every machine.
+**Insights in plain English.** tabsight states what the numbers show, never guesses why. "Today" is the latest date in the data, so the answer is the same on every machine.
 
 ```python
 print(ts.insights(orders, y="Profit", x="Sub_Category", date="Order_Date"))
